@@ -19,11 +19,11 @@ public class Partido {
 	private ObserverPartido observador;
 	
 	public void cambiarEstado(EstadoPartido estado) {
-		
+		this.estado = estado;
 	}
 	
 	public void crearEquipo(Equipo equipo) {
-		
+		equipos.add(equipo);
 	}
 	
 	public void elegirEstrategia(IEmparejamientoStrategy estrategia) {
