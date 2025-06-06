@@ -1,6 +1,6 @@
 package controller;
 
-import model.IEmparejamientoStrategy;
+import model.IEstrategiaPartido;
 import DTO.PartidoDTO;
 
 public class PartidoController {
@@ -29,7 +29,7 @@ public class PartidoController {
 		
 	}
 	
-	public void elegirEstrategia(IEmparejamientoStrategy estrategia) {
+	public void elegirEstrategia(IEstrategiaPartido estrategia) {
 		
 	}
 	

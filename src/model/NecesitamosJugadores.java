@@ -1,30 +1,34 @@
 package model;
 
-public class NecesitamosJugadores implements EstadoPartido {
+public class NecesitamosJugadores implements IEstadoPartido {
     public void confirmar(Partido contexto) {
-        System.out.println("Pasando a estado ARMADO");
-        contexto.setEstado(new Armado());
+        System.out.println("¡Partido confirmado!");
+        contexto.cambiarEstado(new Confirmado());
     }
 
     public void cancelar(Partido contexto) {
         System.out.println("Partido cancelado");
-        contexto.setEstado(new Cancelado());
+        contexto.cambiarEstado(new Cancelado());
     }
 
     public void iniciar(Partido contexto) {
-        System.out.println("No se puede iniciar, faltan jugadores.");
+        System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
 
     public void finalizar(Partido contexto) {
-        System.out.println("No se puede finalizar, ni empezó.");
+        System.out.println("No se puede finalizar. El partido no está en juego.");
     }
 
-    public void agregarComentario(Partido contexto) {
-        System.out.println("Comentario agregado en estado: NecesitamosJugadores.");
+    public void necesitamosJugadores(Partido contexto) {
+    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en ese estado");
+    }
+    
+    public void agregarComentario(Partido contexto, String comentario) {
+        System.out.println("No se puede agregar comentarios, el partido no ha finalizado.");
     }
 
-    public void agregarEstadistica(Partido contexto) {
-        System.out.println("No se pueden agregar estadísticas todavía.");
+    public void agregarEstadistica(Partido contexto, String estadistica) {
+        System.out.println("No se pueden agregar estadísticas, el partido no ha finalizado.");
     }
 }
 

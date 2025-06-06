@@ -1,32 +1,53 @@
 package DTO;
 
 import java.util.Date;
-
-import model.EstadoPartido;
+import model.Geolocalizacion;
+import model.Deporte;
 
 public class PartidoDTO {
-    private String idPartido;
-    private String ubicacion;
-    private Date fecha;
-    private int duracion;
-    private EstadoPartido estado;
-
-    public PartidoDTO(String idPartido, String ubicacion, Date fecha, int duracion, EstadoPartido estado) {
-        this.idPartido = idPartido;
-        this.ubicacion = ubicacion;
-        this.fecha = fecha;
-        this.duracion = duracion;
-        this.estado = estado;
-    }
-
-    public String getIdPartido() { return idPartido; }
-    public void setIdPartido(String idPartido) { this.idPartido = idPartido; }
-    public String getUbicacion() { return ubicacion; }
-    public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
-    public int getDuracion() { return duracion; }
-    public void setDuracion(int duracion) { this.duracion = duracion; }
-    public EstadoPartido getEstado() { return estado; }
-    public void setEstado(EstadoPartido estado) { this.estado = estado; }
+	private String idPartido;
+	private Deporte deporte;
+	private int cantJugadores;
+	private double duracion;
+	private Geolocalizacion ubicacion;
+	private Date horario;
+	
+	public String getIdPartido() {
+		return idPartido;
+	}
+	public void setIdPartido(String idPartido) {
+		this.idPartido = idPartido;
+	}
+	public Deporte getDeporte() {
+		return deporte;
+	}
+	public void setDeporte(Deporte deporte) {
+		this.deporte = deporte;
+	}
+	public int getCantJugadores() {
+		return cantJugadores;
+	}
+	public void setCantJugadores(int cantJugadores) {
+		this.cantJugadores = cantJugadores;
+	}
+	public double getDuracion() {
+		return duracion;
+	}
+	public void setDuracion(double duracion) {
+		this.duracion = duracion;
+	}
+	public Geolocalizacion getUbicacion() {
+		return ubicacion;
+	}
+	public void setUbicacion(Geolocalizacion ubicacion) {
+		this.ubicacion = ubicacion;
+	}
+	public java.util.Date getHorario() {
+		return horario;
+	}
+	public void setHorario(Date horario) {
+		this.horario = horario;
+	}
 }
+
+

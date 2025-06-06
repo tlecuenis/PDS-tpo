@@ -1,29 +1,33 @@
 package model;
 
-public class EnJuego implements EstadoPartido {
+public class EnJuego implements IEstadoPartido {
+	
     public void confirmar(Partido contexto) {
-        System.out.println("Ya está en juego, no se puede confirmar nuevamente.");
+        System.out.println("No puede confirmarse. El partido ya está en juego.");
     }
 
     public void cancelar(Partido contexto) {
-        System.out.println("Cancelando partido en juego...");
-        contexto.setEstado(new Cancelado());
+        System.out.println("No puede cancelarse. El partido ya está en juego.");
     }
 
     public void iniciar(Partido contexto) {
-        System.out.println("Ya está en juego.");
+        System.out.println("No puede iniciarse. El partido ya está en juego.");
     }
 
     public void finalizar(Partido contexto) {
-        System.out.println("Finalizando partido...");
-        contexto.setEstado(new Finalizado());
+        System.out.println("¡Partido finalizado!");
+        contexto.cambiarEstado(new Finalizado());
     }
 
-    public void agregarComentario(Partido contexto) {
-        System.out.println("Comentario agregado en estado: EnJuego.");
+    public void necesitamosJugadores(Partido contexto) {
+    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en juego");
     }
 
-    public void agregarEstadistica(Partido contexto) {
-        System.out.println("Estadística registrada.");
+    public void agregarComentario(Partido contexto, String comentario) {
+        System.out.println("No se puede agregar comentarios, el partido no ha finalizado.");
+    }
+
+    public void agregarEstadistica(Partido contexto, String estadistica) {
+        System.out.println("No se pueden agregar estadísticas, el partido no ha finalizado.");
     }
 }
