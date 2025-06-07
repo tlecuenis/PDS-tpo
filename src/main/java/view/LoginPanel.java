@@ -1,6 +1,10 @@
 package view;
 
 import javax.swing.*;
+
+import DTO.UsuarioDTO;
+import controller.UsuarioController;
+
 import java.awt.event.*;
 
 public class LoginPanel extends JPanel {
@@ -8,7 +12,7 @@ public class LoginPanel extends JPanel {
 	private JTextField txtUsuario;
 	private JPasswordField txtPassword;
 
-	public LoginPanel(MenuPrincipal parent) {
+	public LoginPanel(Ejecucion parent) {
 		setLayout(null);
 
 		JLabel lblUsuario = new JLabel("Usuario:");
@@ -36,22 +40,32 @@ public class LoginPanel extends JPanel {
 		add(btnRegistrar);
 		
 		btnIniciar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String usuario = txtUsuario.getText().trim();
-				String password = txtPassword.getText().trim();
+		    public void actionPerformed(ActionEvent e) {
+		        String usuario = txtUsuario.getText().trim();
+		        String password = txtPassword.getText().trim();
 
-				if (usuario.isEmpty() || password.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Por favor complete todos los campos.");
-					return;
-				}
+		        if (usuario.isEmpty() || password.isEmpty()) {
+		            JOptionPane.showMessageDialog(null, "Por favor complete todos los campos.");
+		            return;
+		        }
 
-				// Acá iría la lógica de guardar usuario, etc.
+		        UsuarioDTO dto = new UsuarioDTO(usuario, "", "", password, "", "");
+		        boolean loginExitoso = UsuarioController.getInstancia().loginUsuario(dto);
 
-				JOptionPane.showMessageDialog(null, "Inicio Sesion exitoso.");
-				parent.showPanel("menuPrincipal");
-			}
+		        if (loginExitoso) {
+		            JOptionPane.showMessageDialog(null, "Inicio de sesión exitoso.");
+
+		            // Le avisamos a Ejecucion quién es el usuario actual
+		            parent.setNicknameActual(usuario);
+
+		            // Mostrar menú principal
+		            parent.showPanel("menuPrincipal");
+		        } else {
+		            JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos.");
+		        }
+		    }
 		});
-		
+
 		
 		btnRegistrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

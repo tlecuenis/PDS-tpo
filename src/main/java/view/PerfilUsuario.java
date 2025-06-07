@@ -1,7 +1,9 @@
 package view;
 
 import javax.swing.*;
-import java.awt.event.*;
+import controller.UsuarioController;
+import DTO.UsuarioDTO;
+import model.Nivel;
 
 public class PerfilUsuario extends JPanel {
 
@@ -13,7 +15,13 @@ public class PerfilUsuario extends JPanel {
     private JButton btnGuardar;
     private JButton btnVolver;
 
-    public PerfilUsuario(MenuPrincipal parent) {
+    private String nickname;  // Identificador del usuario
+    private UsuarioController usuarioController;
+
+    public PerfilUsuario(Ejecucion parent, String nickname) {
+        this.nickname = nickname;
+        this.usuarioController = UsuarioController.getInstancia();
+
         setLayout(null);
 
         JLabel lblTitulo = new JLabel("Perfil del Usuario");
@@ -24,7 +32,7 @@ public class PerfilUsuario extends JPanel {
         lblNombre.setBounds(30, 60, 100, 25);
         add(lblNombre);
 
-        txtNombre = new JTextField("Juan Pérez");
+        txtNombre = new JTextField();
         txtNombre.setBounds(140, 60, 200, 25);
         txtNombre.setEditable(false);
         add(txtNombre);
@@ -33,7 +41,7 @@ public class PerfilUsuario extends JPanel {
         lblEmail.setBounds(30, 100, 100, 25);
         add(lblEmail);
 
-        txtEmail = new JTextField("juanperez@email.com");
+        txtEmail = new JTextField();
         txtEmail.setBounds(140, 100, 200, 25);
         txtEmail.setEditable(false);
         add(txtEmail);
@@ -82,6 +90,9 @@ public class PerfilUsuario extends JPanel {
         btnVolver.setBounds(260, 230, 90, 30);
         add(btnVolver);
 
+        // Cargar datos del usuario al iniciar
+        cargarDatosUsuario();
+
         // Acciones
         btnEditar.addActionListener(e -> {
             txtNombre.setEditable(true);
@@ -92,16 +103,48 @@ public class PerfilUsuario extends JPanel {
         });
 
         btnGuardar.addActionListener(e -> {
-            txtNombre.setEditable(false);
-            txtEmail.setEditable(false);
-            comboDeporte.setEnabled(false);
-            comboNivel.setEnabled(false);
-            btnGuardar.setEnabled(false);
-            JOptionPane.showMessageDialog(this, "Datos guardados exitosamente.");
+            // Crear DTO con datos editados
+            String nombre = txtNombre.getText().trim();
+            String email = txtEmail.getText().trim();
+            String deporte = (String) comboDeporte.getSelectedItem();
+            String nivel = (String) comboNivel.getSelectedItem();
+
+            UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", deporte, nivel);
+
+            // Llamar al controlador para actualizar
+            boolean exito = usuarioController.actualizarUsuario(dto);
+
+            if (exito) {
+                txtNombre.setEditable(false);
+                txtEmail.setEditable(false);
+                comboDeporte.setEnabled(false);
+                comboNivel.setEnabled(false);
+                btnGuardar.setEnabled(false);
+                JOptionPane.showMessageDialog(this, "Datos guardados exitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar los datos.");
+            }
         });
 
         btnVolver.addActionListener(e -> {
             parent.showPanel("menuPrincipal");
         });
     }
+
+    private void cargarDatosUsuario() {
+        // Pedimos al controlador el usuario por nickname
+    	model.Usuario usuario = usuarioController.getUserById(nickname);
+        if (usuario != null) {
+            txtNombre.setText(usuario.getNombre());
+            txtEmail.setText(usuario.getEmail());
+
+            if (!usuario.getDeportes().isEmpty()) {
+                comboDeporte.setSelectedItem(usuario.getDeportes().get(0).getNombre());
+                comboNivel.setSelectedItem(usuario.getDeportes().get(0).getNivelJuego().toString());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Usuario no encontrado");
+        }
+    }
 }
+
