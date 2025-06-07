@@ -11,6 +11,8 @@ public class PartidoDTO {
 	private double duracion;
 	private Geolocalizacion ubicacion;
 	private Date horario;
+	private int nivelMaximo;
+	private int nivelMinimo;
 	
 	public String getIdPartido() {
 		return idPartido;
@@ -47,6 +49,18 @@ public class PartidoDTO {
 	}
 	public void setHorario(Date horario) {
 		this.horario = horario;
+	}
+	public int getNivelJugadorMaximo(){
+		return nivelMaximo;
+	}
+	public void setNivelJugadorMaximo(int nivelMaximo) {
+		this.nivelMaximo = nivelMaximo;
+	}
+	public int getNivelJugadorMinimo() {
+		return nivelMinimo;
+	}
+	public void setNivelJugadorMinimo(int nivelMinimo) {
+		this.nivelMinimo = nivelMinimo;
 	}
 }
 
