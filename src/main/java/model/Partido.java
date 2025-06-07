@@ -18,6 +18,8 @@ public class Partido {
 	private String estadistica;
 	private String comentario;
 	private ObserverPartido observador;
+	private int nivelMaximo;
+	private int nivelMinimo;
 
 	public Partido() {
 		this.equipos = new ArrayList<>();
@@ -67,6 +69,8 @@ public class Partido {
 		this.duracion = partido.getDuracion();
 		this.ubicacion = partido.getUbicacion();
 		this.horario = partido.getHorario();
+		this.nivelMaximo = partido.getNivelJugadorMaximo();
+		this.nivelMinimo = partido.getNivelJugadorMinimo();
 	}
 
 	public void buscarPartido(PartidoDTO partido) {
@@ -160,6 +164,18 @@ public class Partido {
 	}
 	public void setObservador(ObserverPartido observador) {
 		this.observador = observador;
+	}
+	public void setNivelJugadorMinimo(int nivelMinimo) {
+		this.nivelMinimo = nivelMinimo;
+	}
+	public int getNivelJugadorMinimo() {
+		return nivelMinimo;
+	}
+	public void setNivelJugadorMaximo(int nivelMaximo) {
+		this.nivelMaximo = nivelMaximo;
+	}
+	public int getNivelJugadorMaximo() {
+		return nivelMaximo;
 	}
 	
 }
