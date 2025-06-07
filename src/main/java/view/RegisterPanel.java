@@ -1,6 +1,10 @@
 package view;
 
 import javax.swing.*;
+
+import DTO.UsuarioDTO;
+import controller.UsuarioController;
+
 import java.awt.event.*;
 
 public class RegisterPanel extends JPanel {
@@ -11,7 +15,7 @@ public class RegisterPanel extends JPanel {
     private JComboBox<String> comboDeporte;
     private JComboBox<String> comboNivel;
 
-    public RegisterPanel(MenuPrincipal parent) {
+    public RegisterPanel(Ejecucion parent) {
         setLayout(null);
 
         JLabel lblUsuario = new JLabel("Usuario:");
@@ -84,31 +88,33 @@ public class RegisterPanel extends JPanel {
         add(btnVolver);
 
         btnRegistrar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String usuario = txtUsuario.getText().trim();
-                String email = txtEmail.getText().trim();
-                String password = txtPassword.getText().trim();
-                String deporte = (String) comboDeporte.getSelectedItem();
-                String nivel = (String) comboNivel.getSelectedItem();
+        	public void actionPerformed(ActionEvent e) {
+        		String usuario = txtUsuario.getText().trim();
+        		String email = txtEmail.getText().trim();
+        		String password = txtPassword.getText().trim();
+        		String deporte = (String) comboDeporte.getSelectedItem();
+        		String nivel = (String) comboNivel.getSelectedItem();
 
-                if (usuario.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor complete todos los campos obligatorios.");
-                    return;
-                }
+        		if (usuario.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        			JOptionPane.showMessageDialog(null, "Por favor complete todos los campos obligatorios.");
+        			return;
+        		}
 
-                // Guardar los datos (simulado con impresión)
-                System.out.println("Usuario: " + usuario);
-                System.out.println("Email: " + email);
-                System.out.println("Password: " + password);
-                System.out.println("Deporte favorito: " + deporte);
-                if (!nivel.isEmpty()) {
-                    System.out.println("Nivel: " + nivel);
-                }
+        		if (nivel == null) nivel = "";
+        		if (deporte == null) deporte = "";
 
-                JOptionPane.showMessageDialog(null, "Registro exitoso.");
-                parent.showPanel("menuPrincipal");
-            }
+        		UsuarioDTO dto = new UsuarioDTO(usuario, usuario, email, password, deporte, nivel);
+        		boolean exito = UsuarioController.getInstancia().registrarUsuario(dto);
+
+        		if (exito) {
+        			JOptionPane.showMessageDialog(null, "Registro exitoso.");
+        			parent.showPanel("menuPrincipal");
+        		} else {
+        			JOptionPane.showMessageDialog(null, "No se pudo registrar el usuario (ya existe o error).");
+        		}
+        	}
         });
+
 
         btnVolver.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

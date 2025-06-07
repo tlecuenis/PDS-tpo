@@ -154,7 +154,20 @@ deportes:Array (3)
         }
         return null;
     }
+    
+    @Override
+    public void update(Usuario usuario) {
+        Document doc = userToDocument(usuario);
+        Bson filter = eq("_id", usuario.getIdUsuario());
+        try {
+            users.replaceOne(filter, doc);
+            System.out.println("Usuario actualizado");
+        } catch (Exception e) {
+            System.out.println("Error actualizando usuario: " + e.getMessage());
+        }
+    }
 
+    
     @Override
     public void agregarDeporteFavorito(Deporte d) {
         //implementar después, no es muy relevante

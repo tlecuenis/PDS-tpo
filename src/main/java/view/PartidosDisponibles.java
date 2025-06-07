@@ -11,7 +11,7 @@ public class PartidosDisponibles extends JPanel {
 	private JTextField txtFecha;
 	private JComboBox<String> comboNivel;
 
-	public PartidosDisponibles(MenuPrincipal parent) {
+	public PartidosDisponibles(Ejecucion parent) {
 		setLayout(null);
 
 		JLabel lblTitulo = new JLabel("Buscar Partido");

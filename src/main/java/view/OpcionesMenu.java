@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class OpcionesMenu extends JPanel {
 
-	public OpcionesMenu(MenuPrincipal parent) {
+	public OpcionesMenu(Ejecucion parent) {
 		setLayout(null);
 
 		JLabel lblTitulo = new JLabel("Menú Principal");
