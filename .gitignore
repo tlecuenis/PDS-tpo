@@ -1,0 +1,24 @@
+# Ignorar archivos generados por IntelliJ
+.idea/
+*.iml
+
+# Ignorar directorio de salida de compilación
+target/
+bin/
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de configuración personal
+*.log
+*.class
+
+# Ignorar configuraciones específicas de entorno
+.env
+*.env
+
+# Ignorar archivos de compilación temporales
+*.jar
+*.war
+*.ear
