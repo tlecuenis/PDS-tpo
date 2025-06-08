@@ -1,11 +1,12 @@
 package repository;
+import model.Deporte;
 import model.Usuario;
 import repository.mongoRepository.MongoUserRepository;
 import java.util.List;
 
-public class UserRepository implements DAO<Usuario> {
+public class UserRepository implements UserDAO {
     //Si queres cambiar la db simplemente instancias otra implementacion del mismo DAO, por ej MYSQL
-    DAO<Usuario> repo = new MongoUserRepository();
+    UserDAO repo = new MongoUserRepository();
 
     @Override
     public void save(Usuario user) {
@@ -33,5 +34,25 @@ public class UserRepository implements DAO<Usuario> {
     public Usuario findByField(String field, String value) {
         Usuario user = repo.findByField(field, value);
         return user;
+    }
+
+    @Override
+    public void agregarDeporteFavorito(Deporte d) {
+        repo.agregarDeporteFavorito(d);
+    }
+
+    @Override
+    public void eliminarDeporteFavorito(Deporte d) {
+        repo.eliminarDeporteFavorito(d);
+    }
+
+    @Override
+    public void update(Usuario usuario) {
+        repo.update(usuario);
+    }
+
+    @Override
+    public List<Usuario> findByDeporte(String deporte) {
+        return repo.findByDeporte(deporte);
     }
 }

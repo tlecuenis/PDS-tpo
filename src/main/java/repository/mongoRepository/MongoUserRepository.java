@@ -2,6 +2,8 @@ package repository.mongoRepository;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.MongoCursor;
 import model.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -154,7 +156,7 @@ deportes:Array (3)
         }
         return null;
     }
-    
+
     @Override
     public void update(Usuario usuario) {
         Document doc = userToDocument(usuario);
@@ -167,7 +169,24 @@ deportes:Array (3)
         }
     }
 
-    
+    public List<Usuario> findByDeporte(String deporte) { //Después hacer que reciba una instancia Deporte?
+        List<Usuario> usuarios = new ArrayList<>();
+
+        //Pensar como hacer para que NO sea case sensitive, hay registros "futbol" y otros registros "Futbol"
+        Bson filtro = Filters.elemMatch("deportes", Filters.eq("nombre", deporte));
+
+        try (MongoCursor<Document> cursor = users.find(filtro).iterator()) {
+            while (cursor.hasNext()) {
+                usuarios.add(DocumentToUser(cursor.next()));
+            }
+        } catch (Exception e) {
+            System.out.println("Error buscando usuarios por deporte: " + e.getMessage());
+        }
+        return usuarios;
+    }
+
+
+
     @Override
     public void agregarDeporteFavorito(Deporte d) {
         //implementar después, no es muy relevante
