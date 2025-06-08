@@ -1,47 +1,51 @@
 package view;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.*;
 
 public class OpcionesMenu extends JPanel {
 
-	public OpcionesMenu(Ejecucion parent) {
-		setLayout(null);
+    public OpcionesMenu(Ejecucion parent) {
+        setLayout(new GridBagLayout());
 
-		JLabel lblTitulo = new JLabel("Menú Principal");
-		lblTitulo.setBounds(140, 10, 200, 30);
-		add(lblTitulo);
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setOpaque(false);
 
-		// Botón para ver lista de partidos disponibles
-		JButton btnVerPartidos = new JButton("Ver Partidos Disponibles");
-		btnVerPartidos.setBounds(100, 50, 200, 30);
-		add(btnVerPartidos);
-		btnVerPartidos.addActionListener(e -> parent.showPanel("listaPartidos"));
+        JLabel lblTitulo = new JLabel("Menú Principal");
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        panelContenido.add(lblTitulo);
 
-		// Botón para crear un nuevo partido
-		JButton btnCrearPartido = new JButton("Crear Partido");
-		btnCrearPartido.setBounds(100, 90, 200, 30);
-		add(btnCrearPartido);
-		btnCrearPartido.addActionListener(e -> parent.showPanel("crearPartido"));
+        JButton btnVerPartidos = new JButton("Ver Partidos Disponibles");
+        JButton btnCrearPartido = new JButton("Crear Partido");
+        JButton btnPerfil = new JButton("Ver Perfil");
+        JButton btnNotificaciones = new JButton("Notificaciones");
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 
-		// Botón para ver el perfil del usuario
-		JButton btnPerfil = new JButton("Ver Perfil");
-		btnPerfil.setBounds(100, 130, 200, 30);
-		add(btnPerfil);
-		btnPerfil.addActionListener(e -> parent.showPanel("perfil"));
+        for (JButton btn : new JButton[]{btnVerPartidos, btnCrearPartido, btnPerfil, btnNotificaciones, btnCerrarSesion}) {
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            btn.setMaximumSize(new Dimension(220, 30));
+            btn.setPreferredSize(new Dimension(220, 30));
+            btn.setMinimumSize(new Dimension(220, 30));
+            panelContenido.add(Box.createVerticalStrut(10));
+            panelContenido.add(btn);
+        }
 
-		// Botón para ver notificaciones
-		JButton btnNotificaciones = new JButton("Notificaciones");
-		btnNotificaciones.setBounds(100, 170, 200, 30);
-		add(btnNotificaciones);
-		btnNotificaciones.addActionListener(e -> parent.showPanel("notificaciones"));
+        // Acciones
+        btnVerPartidos.addActionListener(e -> parent.showPanel("listaPartidos"));
+        btnCrearPartido.addActionListener(e -> parent.showPanel("crearPartido"));
+        btnPerfil.addActionListener(e -> parent.showPanel("perfil"));
+        btnNotificaciones.addActionListener(e -> parent.showPanel("notificaciones"));
+        btnCerrarSesion.addActionListener(e -> {
+            LoginPanel loginPanel = parent.getLoginPanel(); // Obtener la referencia
+            loginPanel.limpiarCampos(); // Limpiar campos antes de mostrar el panel
+            parent.showPanel("login");
+        });
 
-		// Botón para cerrar sesión (volver al login)
-		JButton btnCerrarSesion = new JButton("Cerrar Sesión");
-		btnCerrarSesion.setBounds(100, 210, 200, 30);
-		add(btnCerrarSesion);
-		btnCerrarSesion.addActionListener(e -> parent.showPanel("login"));
-	}
+        // Agregar contenido centrado
+        add(panelContenido);
+    }
 }
-
 

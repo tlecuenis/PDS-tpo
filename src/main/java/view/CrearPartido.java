@@ -16,7 +16,7 @@ public class CrearPartido extends JPanel {
     private JButton btnCrear;
     private JButton btnVolver;
 
-    public CrearPartido() {
+    public CrearPartido(Ejecucion parent) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -64,8 +64,7 @@ public class CrearPartido extends JPanel {
                 }
             }
         });
-
-
+        
         // Cantidad de jugadores
         gbc.gridy++;
         gbc.gridx = 0;
@@ -106,15 +105,23 @@ public class CrearPartido extends JPanel {
         comboNivel = new JComboBox<>(new String[] { "", "Principiante", "Intermedio", "Avanzado" });
         add(comboNivel, gbc);
 
-        // Botones
+        // Boton crear
         gbc.gridy++;
         gbc.gridx = 0;
         btnCrear = new JButton("Crear Partido");
         add(btnCrear, gbc);
 
+        // Boton volver
         gbc.gridx = 1;
-        btnVolver = new JButton("Volver");
-        add(btnVolver, gbc);
+        JButton btnVolver = new JButton("Volver");
+		btnVolver.setBounds(250, 220, 100, 30);
+		add(btnVolver, gbc);
+        
+    	btnVolver.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+    			parent.showPanel("menuPrincipal");
+    		}
+    	});
     }
 
     // Getters para el controlador
