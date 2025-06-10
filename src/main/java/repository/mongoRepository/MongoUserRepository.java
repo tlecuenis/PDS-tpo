@@ -184,6 +184,8 @@ deportes:Array (3)
             System.out.println("Error actualizando usuario: " + e.getMessage());
         }
     }
+    
+    
 
     public List<Usuario> findByDeporte(String deporte) { //Después hacer que reciba una instancia Deporte?
         List<Usuario> usuarios = new ArrayList<>();

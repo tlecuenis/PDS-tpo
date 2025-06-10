@@ -5,15 +5,17 @@ public class UsuarioDTO {
 	private String nombre;
 	private String email;
 	private String contrasena;
+	private String ciudad;
 	private String deporteFavorito;
 	private String nivelDeJuego;
 
-	public UsuarioDTO(String nickname, String nombre, String email, String contrasena,
+	public UsuarioDTO(String nickname, String nombre, String email, String contrasena, String ciudad,
 					  String deporteFavorito, String nivelDeJuego) {
 		this.nickname = nickname;
 		this.nombre = nombre;
 		this.email = email;
 		this.contrasena = contrasena;
+		this.ciudad = ciudad;
 		this.deporteFavorito = deporteFavorito;
 		this.nivelDeJuego = nivelDeJuego;
 	}
@@ -29,6 +31,10 @@ public class UsuarioDTO {
 
 	public String getContrasena() { return contrasena; }
 	public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+	
+
+	public String getCiudad() {return ciudad;}
+	public void setCiudad(String ciudad) {this.ciudad = ciudad;}
 
 	public String getDeporteFavorito() { return deporteFavorito; }
 	public void setDeporteFavorito(String deporteFavorito) { this.deporteFavorito = deporteFavorito; }

@@ -10,6 +10,7 @@ public class PerfilUsuario extends JPanel {
 
     private JTextField txtNombre;
     private JTextField txtEmail;
+    private JTextField txtCiudad; // <--- NUEVO
     private JComboBox<String> comboDeporte;
     private JComboBox<String> comboNivel;
     private JButton btnEditar;
@@ -44,6 +45,11 @@ public class PerfilUsuario extends JPanel {
         txtEmail = new JTextField();
         txtEmail.setEditable(false);
         panelContenido.add(crearFila("Email:", txtEmail));
+        
+        // Campo Ciudad
+        txtCiudad = new JTextField();
+        txtCiudad.setEditable(false);
+        panelContenido.add(crearFila("Ciudad:", txtCiudad));
 
         // Combo Deporte
         comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
@@ -85,6 +91,7 @@ public class PerfilUsuario extends JPanel {
         btnEditar.addActionListener(e -> {
             txtNombre.setEditable(true);
             txtEmail.setEditable(true);
+            txtCiudad.setEditable(true);
             comboDeporte.setEnabled(true);
             comboNivel.setEnabled(true);
             btnGuardar.setEnabled(true);
@@ -93,10 +100,11 @@ public class PerfilUsuario extends JPanel {
         btnGuardar.addActionListener(e -> {
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
+            String ciudad = txtCiudad.getText().trim();
             String deporte = (String) comboDeporte.getSelectedItem();
             String nivel = (String) comboNivel.getSelectedItem();
 
-            UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", deporte, nivel);
+            UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", ciudad, deporte, nivel);
 
             boolean exito = usuarioController.actualizarUsuario(dto);
 
@@ -113,7 +121,7 @@ public class PerfilUsuario extends JPanel {
         });
 
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
-
+        
         cargarDatosUsuario();
     }
 
@@ -133,6 +141,7 @@ public class PerfilUsuario extends JPanel {
         if (usuario != null) {
             txtNombre.setText(usuario.getNombre());
             txtEmail.setText(usuario.getEmail());
+            txtCiudad.setText(usuario.getUbicacion().getCiudad());
             if (!usuario.getDeportes().isEmpty()) {
                 comboDeporte.setSelectedItem(usuario.getDeportes().get(0).getNombre());
                 comboNivel.setSelectedItem(usuario.getDeportes().get(0).getNivelJuego().toString());

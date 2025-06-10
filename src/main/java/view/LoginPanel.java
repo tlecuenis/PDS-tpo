@@ -68,7 +68,7 @@ public class LoginPanel extends JPanel {
                     return;
                 }
 
-                UsuarioDTO dto = new UsuarioDTO(usuario, "", "", password, "", "");
+                UsuarioDTO dto = new UsuarioDTO(usuario, "", "", password, "", "", "");
                 boolean loginExitoso = UsuarioController.getInstancia().loginUsuario(dto);
 
                 if (loginExitoso) {
