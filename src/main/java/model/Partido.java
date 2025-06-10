@@ -7,7 +7,7 @@ import DTO.PartidoDTO;
 
 public class Partido {
 	private String idPartido;
-	private Deporte deporte;
+	private String deporte;
 	private int cantJugadores;
 	private double duracion;
 	private Geolocalizacion ubicacion;
@@ -105,20 +105,22 @@ public class Partido {
 		this.estadistica = estadistica;
 	}
 
-	
-	
 	public String getIdPartido() {
 		return idPartido;
 	}
 	public void setIdPartido(String idPartido) {
 		this.idPartido = idPartido;
 	}
-	public Deporte getDeporte() {
+	
+	public String getDeporte() {
 		return deporte;
 	}
-	public void setDeporte(Deporte deporte) {
+
+	public void setDeporte(String deporte) {
 		this.deporte = deporte;
 	}
+
+
 	public int getCantJugadores() {
 		return cantJugadores;
 	}

@@ -42,7 +42,7 @@ public class UsuarioController {
 		}
 
 		// Ubicación dummy
-		Geolocalizacion geo = new Geolocalizacion(0.0, 0.0, 0.0, "CiudadDesconocida");
+		Geolocalizacion geo = new Geolocalizacion(0.0, 0.0, 0.0, dto.getCiudad());
 
 		Usuario nuevoUsuario = new Usuario(dto.getNickname(), dto.getNombre(), dto.getEmail(),
 				dto.getContrasena(), deportes, geo);
@@ -61,9 +61,8 @@ public class UsuarioController {
 	    return userDAO.findById(id);
 	}
 
-	
 	public boolean actualizarUsuario(UsuarioDTO dto) {
-	    Usuario usuarioExistente = userDAO.findById(dto.getNickname());
+	    Usuario usuarioExistente = userDAO.findById(dto.getNombre());
 	    if (usuarioExistente == null) {
 	        System.out.println("Usuario no existe.");
 	        return false;
@@ -72,7 +71,10 @@ public class UsuarioController {
 	    // Actualizar datos básicos
 	    usuarioExistente.setNombre(dto.getNombre());
 	    usuarioExistente.setEmail(dto.getEmail());
-
+	    
+	    Geolocalizacion geo = new Geolocalizacion(0.0, 0.0, 0.0, dto.getCiudad());
+	    usuarioExistente.setUbicacion(geo);
+	    
 	    // Actualizar deporte y nivel (simplificado para 1 deporte)
 	    try {
 	        Nivel nivel = Nivel.valueOf(dto.getNivelDeJuego().toUpperCase());

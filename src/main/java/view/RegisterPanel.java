@@ -12,6 +12,7 @@ public class RegisterPanel extends JPanel {
     private JTextField txtUsuario;
     private JTextField txtEmail;
     private JTextField txtPassword;
+    private JTextField txtUbicacion;
     private JComboBox<String> comboDeporte;
     private JComboBox<String> comboNivel;
 
@@ -42,15 +43,22 @@ public class RegisterPanel extends JPanel {
         txtPassword.setBounds(140, 100, 200, 25);
         add(txtPassword);
 
+        JLabel lblUbicacion = new JLabel("Ubicación:");
+        lblUbicacion.setBounds(30, 140, 100, 20);
+        add(lblUbicacion);
+
+        txtUbicacion = new JTextField();
+        txtUbicacion.setBounds(140, 140, 200, 25);
+        add(txtUbicacion);
+
         JLabel lblDeporte = new JLabel("Deporte favorito (Opcional):");
-        lblDeporte.setBounds(30, 140, 180, 20);
+        lblDeporte.setBounds(30, 180, 180, 20);
         add(lblDeporte);
 
         comboDeporte = new JComboBox<>(new String[] {"Fútbol", "Básquet", "Tenis", "Padel", "Otro" });
-        comboDeporte.setBounds(210, 140, 130, 25);
+        comboDeporte.setBounds(210, 180, 130, 25);
         add(comboDeporte);
 
-        // Listener para permitir ingresar un deporte personalizado
         comboDeporte.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -61,18 +69,18 @@ public class RegisterPanel extends JPanel {
                         comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
                         comboDeporte.setSelectedItem(nuevoDeporte.trim());
                     } else {
-                        comboDeporte.setSelectedIndex(0); // vuelve al valor vacío
+                        comboDeporte.setSelectedIndex(0);
                     }
                 }
             }
         });
 
         JLabel lblNivel = new JLabel("Nivel (opcional):");
-        lblNivel.setBounds(30, 180, 120, 20);
+        lblNivel.setBounds(30, 220, 120, 20);
         add(lblNivel);
 
         comboNivel = new JComboBox<>();
-        comboNivel.setBounds(160, 180, 180, 25);
+        comboNivel.setBounds(160, 220, 180, 25);
         comboNivel.addItem("");
         comboNivel.addItem("Principiante");
         comboNivel.addItem("Intermedio");
@@ -80,39 +88,42 @@ public class RegisterPanel extends JPanel {
         add(comboNivel);
 
         JButton btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setBounds(140, 230, 100, 30);
+        btnRegistrar.setBounds(140, 270, 100, 30);
         add(btnRegistrar);
 
         JButton btnVolver = new JButton("Volver");
-        btnVolver.setBounds(250, 230, 100, 30);
+        btnVolver.setBounds(250, 270, 100, 30);
         add(btnVolver);
 
         btnRegistrar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		String usuario = txtUsuario.getText().trim();
-        		String email = txtEmail.getText().trim();
-        		String password = txtPassword.getText().trim();
-        		String deporte = (String) comboDeporte.getSelectedItem();
-        		String nivel = (String) comboNivel.getSelectedItem();
+            public void actionPerformed(ActionEvent e) {
+                String usuario = txtUsuario.getText().trim();
+                String email = txtEmail.getText().trim();
+                String password = txtPassword.getText().trim();
+                String ubicacion = txtUbicacion.getText().trim(); // <-- Asegurate de capturar esto también
+                String deporte = (String) comboDeporte.getSelectedItem();
+                String nivel = (String) comboNivel.getSelectedItem();
 
-        		if (usuario.isEmpty() || email.isEmpty() || password.isEmpty()) {
-        			JOptionPane.showMessageDialog(null, "Por favor complete todos los campos obligatorios.");
-        			return;
-        		}
+                if (usuario.isEmpty() || email.isEmpty() || password.isEmpty() || ubicacion.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor complete todos los campos obligatorios.");
+                    return;
+                }
 
-        		if (nivel == null) nivel = "";
-        		if (deporte == null) deporte = "";
+                if (nivel == null) nivel = "";
+                if (deporte == null) deporte = "";
 
-        		UsuarioDTO dto = new UsuarioDTO(usuario, usuario, email, password, deporte, nivel);
-        		boolean exito = UsuarioController.getInstancia().registrarUsuario(dto);
+                
+                UsuarioDTO dto = new UsuarioDTO(usuario, usuario, email, password, ubicacion, deporte, nivel);
 
-        		if (exito) {
-        			JOptionPane.showMessageDialog(null, "Registro exitoso.");
-        			parent.showPanel("menuPrincipal");
-        		} else {
-        			JOptionPane.showMessageDialog(null, "No se pudo registrar el usuario (ya existe o error).");
-        		}
-        	}
+                boolean exito = UsuarioController.getInstancia().registrarUsuario(dto);
+
+                if (exito) {
+                    JOptionPane.showMessageDialog(null, "Registro exitoso.");
+                    parent.showPanel("menuPrincipal");
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo registrar el usuario (ya existe o error).");
+                }
+            }
         });
 
 
@@ -123,6 +134,7 @@ public class RegisterPanel extends JPanel {
         });
     }
 }
+
 
 
 
