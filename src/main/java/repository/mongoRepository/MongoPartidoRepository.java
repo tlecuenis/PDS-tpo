@@ -1,6 +1,7 @@
 package repository.mongoRepository;
 
 import model.Equipo;
+import model.Geolocalizacion;
 import model.Partido;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -28,18 +29,27 @@ public class MongoPartidoRepository implements PartidoDAO {
         d.append("deporte", deporte);
         d.append("cantJugadores", p.getCantJugadores());
         d.append("duracion", p.getDuracion());
-        d.append("Geolocalizacion", p.getUbicacion().getCiudad());
+        Document geoLocation = new Document();
+        Geolocalizacion g = p.getUbicacion();
+        geoLocation.append("ciudad", g.getCiudad())
+                .append("latitud", g.getLatitud())
+                .append("longitud", g.getLongitud())
+                .append("varianza", g.getVarianza());
+        d.append("Geolocalizacion", geoLocation);
         d.append("horario", p.getHorario().toString());
 
         List<Document> equipos = new ArrayList<>();
         for(Equipo e : p.getEquipos()){
             Document equipo = new Document();
             equipo.append("nombre", e.getNombre());
-            Document jugadores = new Document();
+            List<Document> players = new ArrayList<>();
             for (Usuario u : e.getJugadores()) {
-                jugadores.append("nombre", u.getNombre());
+                Document player = new Document();
+                player.append("id", u.getIdUsuario())
+                        .append("nombre", u.getNombre());
+                players.add(player);
             }
-            equipo.append("jugadores", jugadores);
+            equipo.append("jugadores", players);
             equipos.add(equipo);
         }
         d.append("equipos", equipos);

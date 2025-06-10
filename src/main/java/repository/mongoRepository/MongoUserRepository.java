@@ -9,14 +9,15 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import repository.UserDAO;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class MongoUserRepository implements UserDAO {
-    public final MongoDatabase db = DBConnection.getDBConnection();
-    public final MongoCollection<Document> users;
+    private final MongoDatabase db = DBConnection.getDBConnection();
+    private final MongoCollection<Document> users;
 
     public MongoUserRepository(){
         users = db.getCollection("Users");
@@ -27,7 +28,11 @@ _id: "1"
 nombre: "juan"
 email: "juan@mail.com"
 contrasenia: "juan1234"
-ubicacion: "San Miguel"
+ubicacion: Object
+    ciudad: "San Miguel
+    latitud: -34.31
+    longitud: -58.21
+    varianza: 0.02
 deportes:Array (3)
     0: Object
     nombre:"fútbol"
@@ -43,11 +48,17 @@ deportes:Array (3)
 
     private Document userToDocument(Usuario user){
         Document doc = new Document();
+        Document gl = new Document();
+        Geolocalizacion geoLocation = user.getUbicacion();
+        gl.append("ciudad", geoLocation.getCiudad())
+                .append("latitud", geoLocation.getLatitud())
+                .append("longitud", geoLocation.getLongitud())
+                .append("varianza", geoLocation.getVarianza());
         doc.append("_id", user.getIdUsuario()).
                 append("nombre", user.getNombre()).
                 append("email", user.getEmail()).
                 append("contrasenia", user.getContraseña()).
-                append("ubicacion", user.getUbicacion().getCiudad());
+                append("ubicacion", gl);
 
 
         //Se puede mejorar usando programacion funcional con streams
@@ -71,7 +82,12 @@ deportes:Array (3)
         String nombre = document.getString("nombre");
         String email = document.getString("email");
         String contrasenia = document.getString("contrasenia");
-        Geolocalizacion gl = new Geolocalizacion(10.4, 0.2, 111.2, document.getString("ciudad"));
+        Document GeoLoc = (Document) document.get("ubicacion");
+        String ciudad = GeoLoc.getString("ciudad");
+        Double latitud = GeoLoc.getDouble("latitud");
+        Double longitud = GeoLoc.getDouble("longitud");
+        Double varianza = GeoLoc.getDouble("varianza");
+        Geolocalizacion gl = new Geolocalizacion(latitud, longitud, varianza, ciudad);
 
         List<Deporte> deportes = new ArrayList<>();
         List<Document> deportesDoc = (List<Document>) document.get("deportes");
