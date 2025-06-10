@@ -3,7 +3,8 @@ package view;
 import javax.swing.*;
 import controller.UsuarioController;
 import DTO.UsuarioDTO;
-import model.Nivel;
+
+import java.awt.*;
 
 public class PerfilUsuario extends JPanel {
 
@@ -15,45 +16,39 @@ public class PerfilUsuario extends JPanel {
     private JButton btnGuardar;
     private JButton btnVolver;
 
-    private String nickname;  // Identificador del usuario
+    private String nickname;
     private UsuarioController usuarioController;
 
     public PerfilUsuario(Ejecucion parent, String nickname) {
         this.nickname = nickname;
         this.usuarioController = UsuarioController.getInstancia();
 
-        setLayout(null);
+        setLayout(new GridBagLayout());
+
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setOpaque(false);
 
         JLabel lblTitulo = new JLabel("Perfil del Usuario");
-        lblTitulo.setBounds(130, 10, 200, 30);
-        add(lblTitulo);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        panelContenido.add(lblTitulo);
 
-        JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setBounds(30, 60, 100, 25);
-        add(lblNombre);
-
+        // Campo Nombre
         txtNombre = new JTextField();
-        txtNombre.setBounds(140, 60, 200, 25);
         txtNombre.setEditable(false);
-        add(txtNombre);
+        panelContenido.add(crearFila("Nombre:", txtNombre));
 
-        JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setBounds(30, 100, 100, 25);
-        add(lblEmail);
-
+        // Campo Email
         txtEmail = new JTextField();
-        txtEmail.setBounds(140, 100, 200, 25);
         txtEmail.setEditable(false);
-        add(txtEmail);
+        panelContenido.add(crearFila("Email:", txtEmail));
 
-        JLabel lblDeporte = new JLabel("Deporte favorito:");
-        lblDeporte.setBounds(30, 140, 120, 25);
-        add(lblDeporte);
-
+        // Combo Deporte
         comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
-        comboDeporte.setBounds(160, 140, 180, 25);
         comboDeporte.setEnabled(false);
-        add(comboDeporte);
+        panelContenido.add(crearFila("Deporte favorito:", comboDeporte));
 
         comboDeporte.addActionListener(e -> {
             if ("Otro".equals(comboDeporte.getSelectedItem()) && comboDeporte.isEnabled()) {
@@ -68,32 +63,25 @@ public class PerfilUsuario extends JPanel {
             }
         });
 
-        JLabel lblNivel = new JLabel("Nivel:");
-        lblNivel.setBounds(30, 180, 100, 25);
-        add(lblNivel);
-
+        // Combo Nivel
         comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
-        comboNivel.setBounds(140, 180, 200, 25);
         comboNivel.setEnabled(false);
-        add(comboNivel);
+        panelContenido.add(crearFila("Nivel:", comboNivel));
 
+        // Botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         btnEditar = new JButton("Editar");
-        btnEditar.setBounds(60, 230, 90, 30);
-        add(btnEditar);
-
         btnGuardar = new JButton("Guardar");
-        btnGuardar.setBounds(160, 230, 90, 30);
         btnGuardar.setEnabled(false);
-        add(btnGuardar);
-
         btnVolver = new JButton("Volver");
-        btnVolver.setBounds(260, 230, 90, 30);
-        add(btnVolver);
+        panelBotones.add(btnEditar);
+        panelBotones.add(btnGuardar);
+        panelBotones.add(btnVolver);
+        panelContenido.add(panelBotones);
 
-        // Cargar datos del usuario al iniciar
-        cargarDatosUsuario();
+        add(panelContenido); // lo agregás centrado
 
-        // Acciones
+        // Eventos
         btnEditar.addActionListener(e -> {
             txtNombre.setEditable(true);
             txtEmail.setEditable(true);
@@ -103,7 +91,6 @@ public class PerfilUsuario extends JPanel {
         });
 
         btnGuardar.addActionListener(e -> {
-            // Crear DTO con datos editados
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
             String deporte = (String) comboDeporte.getSelectedItem();
@@ -111,7 +98,6 @@ public class PerfilUsuario extends JPanel {
 
             UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", deporte, nivel);
 
-            // Llamar al controlador para actualizar
             boolean exito = usuarioController.actualizarUsuario(dto);
 
             if (exito) {
@@ -126,18 +112,27 @@ public class PerfilUsuario extends JPanel {
             }
         });
 
-        btnVolver.addActionListener(e -> {
-            parent.showPanel("menuPrincipal");
-        });
+        btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+
+        cargarDatosUsuario();
+    }
+
+    private JPanel crearFila(String etiqueta, JComponent campo) {
+        JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        fila.setMaximumSize(new Dimension(450, 40));
+        JLabel lbl = new JLabel(etiqueta);
+        lbl.setPreferredSize(new Dimension(140, 25));
+        campo.setPreferredSize(new Dimension(200, 25));
+        fila.add(lbl);
+        fila.add(campo);
+        return fila;
     }
 
     private void cargarDatosUsuario() {
-        // Pedimos al controlador el usuario por nickname
-    	model.Usuario usuario = usuarioController.getUserById(nickname);
+        model.Usuario usuario = usuarioController.getUserById(nickname);
         if (usuario != null) {
             txtNombre.setText(usuario.getNombre());
             txtEmail.setText(usuario.getEmail());
-
             if (!usuario.getDeportes().isEmpty()) {
                 comboDeporte.setSelectedItem(usuario.getDeportes().get(0).getNombre());
                 comboNivel.setSelectedItem(usuario.getDeportes().get(0).getNivelJuego().toString());

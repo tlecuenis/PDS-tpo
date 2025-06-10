@@ -1,102 +1,94 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class PartidosDisponibles extends JPanel {
 
-	private JComboBox<String> comboDeporte;
-	private JTextField txtUbicacion;
-	private JTextField txtFecha;
-	private JComboBox<String> comboNivel;
+    private JComboBox<String> comboDeporte;
+    private JTextField txtUbicacion;
+    private JTextField txtFecha;
+    private JComboBox<String> comboNivel;
 
-	public PartidosDisponibles(Ejecucion parent) {
-		setLayout(null);
+    public PartidosDisponibles(Ejecucion parent) {
+        setLayout(new GridBagLayout());
 
-		JLabel lblTitulo = new JLabel("Buscar Partido");
-		lblTitulo.setBounds(130, 10, 150, 30);
-		add(lblTitulo);
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setOpaque(false);
 
-		JLabel lblUbicacion = new JLabel("Ubicación:");
-        lblUbicacion.setBounds(30, 60, 100, 20);
-        add(lblUbicacion);
+        JLabel lblTitulo = new JLabel("Buscar Partido");
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        panelContenido.add(lblTitulo);
 
+        // Campo Ubicación
         txtUbicacion = new JTextField();
-        txtUbicacion.setBounds(140, 60, 200, 25);
-        add(txtUbicacion);
+        txtUbicacion.setPreferredSize(new Dimension(200, 25));
+        panelContenido.add(crearFila("Ubicación:", txtUbicacion));
 
-        JLabel lblFecha = new JLabel("Fecha (dd/mm/yyyy):");
-        lblFecha.setBounds(30, 100, 140, 20);
-        add(lblFecha);
-
+        // Campo Fecha
         txtFecha = new JTextField();
-        txtFecha.setBounds(180, 100, 160, 25);
-        add(txtFecha);
-        
-        JLabel lblDeporte = new JLabel("Deporte favorito (Opcional):");
-        lblDeporte.setBounds(30, 140, 180, 20);
-        add(lblDeporte);
+        txtFecha.setPreferredSize(new Dimension(200, 25));
+        panelContenido.add(crearFila("Fecha (dd/mm/yyyy):", txtFecha));
 
-        comboDeporte = new JComboBox<>(new String[] {"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
-        comboDeporte.setBounds(210, 140, 180, 25); 
-        add(comboDeporte);
+        // Combo Deporte
+        comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
+        panelContenido.add(crearFila("Deporte favorito (opcional):", comboDeporte));
+
+        // Combo Nivel
+        comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
+        panelContenido.add(crearFila("Nivel:", comboNivel));
+
+        // Botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JButton btnBuscar = new JButton("Buscar");
+        JButton btnVolver = new JButton("Volver");
+        panelBotones.add(btnBuscar);
+        panelBotones.add(btnVolver);
+        panelContenido.add(panelBotones);
+
+        // Agregar panel contenido al centro
+        add(panelContenido);
 
         // Listener para permitir ingresar un deporte personalizado
-        comboDeporte.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String seleccionado = (String) comboDeporte.getSelectedItem();
-                if ("Otro".equals(seleccionado)) {
-                    String nuevoDeporte = JOptionPane.showInputDialog(PartidosDisponibles.this, "Ingrese el deporte favorito:");
-                    if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
-                        comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
-                        comboDeporte.setSelectedItem(nuevoDeporte.trim());
-                    } else {
-                        comboDeporte.setSelectedIndex(0); // vuelve al valor vacío
-                    }
+        comboDeporte.addActionListener(e -> {
+            String seleccionado = (String) comboDeporte.getSelectedItem();
+            if ("Otro".equals(seleccionado)) {
+                String nuevoDeporte = JOptionPane.showInputDialog(this, "Ingrese el deporte favorito:");
+                if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
+                    comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
+                    comboDeporte.setSelectedItem(nuevoDeporte.trim());
+                } else {
+                    comboDeporte.setSelectedIndex(0);
                 }
             }
         });
 
-		JLabel lblNivel = new JLabel("Nivel:");
-		lblNivel.setBounds(30, 170, 100, 20);
-		add(lblNivel);
+        btnBuscar.addActionListener(e -> {
+            String deporte = (String) comboDeporte.getSelectedItem();
+            String ubicacion = txtUbicacion.getText().trim();
+            String fecha = txtFecha.getText().trim();
+            String nivel = (String) comboNivel.getSelectedItem();
 
-		comboNivel = new JComboBox<>();
-		comboNivel.setBounds(140, 170, 200, 25);
-		comboNivel.addItem("Principiante");
-		comboNivel.addItem("Intermedio");
-		comboNivel.addItem("Avanzado");
-		add(comboNivel);
+            JOptionPane.showMessageDialog(this, "Buscando partidos de " + deporte +
+                    " en " + ubicacion + " el " + fecha + " (Nivel: " + nivel + ")");
+        });
 
-		JButton btnBuscar = new JButton("Buscar");
-		btnBuscar.setBounds(140, 220, 100, 30);
-		add(btnBuscar);
+        btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+    }
 
-		JButton btnVolver = new JButton("Volver");
-		btnVolver.setBounds(250, 220, 100, 30);
-		add(btnVolver);
-
-		btnBuscar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String deporte = comboDeporte.getSelectedItem().toString();
-				String ubicacion = txtUbicacion.getText().trim();
-				String fecha = txtFecha.getText().trim();
-				String nivel = comboNivel.getSelectedItem().toString();
-
-				// Acá podrías filtrar desde una lista de partidos
-				JOptionPane.showMessageDialog(null, "Buscando partidos de " + deporte +
-					" en " + ubicacion + " el " + fecha + " (Nivel: " + nivel + ")");
-			}
-		});
-
-		btnVolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parent.showPanel("menuPrincipal");
-			}
-		});
-	}
+    private JPanel crearFila(String etiqueta, JComponent campo) {
+        JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        fila.setMaximumSize(new Dimension(450, 40));
+        JLabel lbl = new JLabel(etiqueta);
+        lbl.setPreferredSize(new Dimension(180, 25));
+        campo.setPreferredSize(new Dimension(200, 25));
+        fila.add(lbl);
+        fila.add(campo);
+        return fila;
+    }
 }
-
 
