@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import controller.UsuarioController;
+import model.Nivel;
 import DTO.UsuarioDTO;
 
 import java.awt.*;
@@ -10,12 +11,13 @@ public class PerfilUsuario extends JPanel {
 
     private JTextField txtNombre;
     private JTextField txtEmail;
-    private JTextField txtCiudad; // <--- NUEVO
+    private JTextField txtCiudad;
     private JComboBox<String> comboDeporte;
     private JComboBox<String> comboNivel;
     private JButton btnEditar;
     private JButton btnGuardar;
     private JButton btnVolver;
+    private JLabel lblMensaje;
 
     private String nickname;
     private UsuarioController usuarioController;
@@ -36,22 +38,18 @@ public class PerfilUsuario extends JPanel {
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         panelContenido.add(lblTitulo);
 
-        // Campo Nombre
         txtNombre = new JTextField();
         txtNombre.setEditable(false);
         panelContenido.add(crearFila("Nombre:", txtNombre));
 
-        // Campo Email
         txtEmail = new JTextField();
         txtEmail.setEditable(false);
         panelContenido.add(crearFila("Email:", txtEmail));
         
-        // Campo Ciudad
         txtCiudad = new JTextField();
         txtCiudad.setEditable(false);
         panelContenido.add(crearFila("Ciudad:", txtCiudad));
 
-        // Combo Deporte
         comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
         comboDeporte.setEnabled(false);
         panelContenido.add(crearFila("Deporte favorito:", comboDeporte));
@@ -69,12 +67,10 @@ public class PerfilUsuario extends JPanel {
             }
         });
 
-        // Combo Nivel
         comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
         comboNivel.setEnabled(false);
         panelContenido.add(crearFila("Nivel:", comboNivel));
 
-        // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         btnEditar = new JButton("Editar");
         btnGuardar = new JButton("Guardar");
@@ -85,9 +81,15 @@ public class PerfilUsuario extends JPanel {
         panelBotones.add(btnVolver);
         panelContenido.add(panelBotones);
 
-        add(panelContenido); // lo agregás centrado
+        // Label de mensajes
+        lblMensaje = new JLabel("");
+        lblMensaje.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblMensaje.setForeground(Color.RED);
+        lblMensaje.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        panelContenido.add(lblMensaje);
 
-        // Eventos
+        add(panelContenido); 
+
         btnEditar.addActionListener(e -> {
             txtNombre.setEditable(true);
             txtEmail.setEditable(true);
@@ -95,6 +97,7 @@ public class PerfilUsuario extends JPanel {
             comboDeporte.setEnabled(true);
             comboNivel.setEnabled(true);
             btnGuardar.setEnabled(true);
+            lblMensaje.setText("");
         });
 
         btnGuardar.addActionListener(e -> {
@@ -111,17 +114,21 @@ public class PerfilUsuario extends JPanel {
             if (exito) {
                 txtNombre.setEditable(false);
                 txtEmail.setEditable(false);
+                txtCiudad.setEditable(false);
                 comboDeporte.setEnabled(false);
                 comboNivel.setEnabled(false);
                 btnGuardar.setEnabled(false);
-                JOptionPane.showMessageDialog(this, "Datos guardados exitosamente.");
+
+                lblMensaje.setForeground(new Color(0, 128, 0));
+                lblMensaje.setText("Datos guardados exitosamente.");
             } else {
-                JOptionPane.showMessageDialog(this, "Error al guardar los datos.");
+                lblMensaje.setForeground(Color.RED);
+                lblMensaje.setText("Error al guardar los datos.");
             }
         });
 
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
-        
+
         cargarDatosUsuario();
     }
 
@@ -142,13 +149,29 @@ public class PerfilUsuario extends JPanel {
             txtNombre.setText(usuario.getNombre());
             txtEmail.setText(usuario.getEmail());
             txtCiudad.setText(usuario.getUbicacion().getCiudad());
+
             if (!usuario.getDeportes().isEmpty()) {
-                comboDeporte.setSelectedItem(usuario.getDeportes().get(0).getNombre());
-                comboNivel.setSelectedItem(usuario.getDeportes().get(0).getNivelJuego().toString());
+                Nivel nivelEnum = usuario.getDeportes().get(0).getNivelJuego();
+                String nivelNormalizado = nivelEnum.name().toLowerCase();
+
+                switch (nivelNormalizado) {
+                    case "principiante":
+                        comboNivel.setSelectedItem("Principiante");
+                        break;
+                    case "intermedio":
+                        comboNivel.setSelectedItem("Intermedio");
+                        break;
+                    case "avanzado":
+                        comboNivel.setSelectedItem("Avanzado");
+                        break;
+                    default:
+                        comboNivel.setSelectedIndex(0);
+                        break;
+                }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Usuario no encontrado");
+            lblMensaje.setForeground(Color.RED);
+            lblMensaje.setText("Usuario no encontrado.");
         }
     }
 }
-
