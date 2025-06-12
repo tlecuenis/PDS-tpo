@@ -17,6 +17,16 @@ public class LoginPanel extends JPanel {
     public LoginPanel(Ejecucion parent) {
         setLayout(new GridBagLayout());
 
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
+        panelContenido.setOpaque(false);
+        
+        JLabel lblTitulo = new JLabel("Bienvenido a Uno Más");
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        panelContenido.add(lblTitulo);
+        
         JPanel formPanel = new JPanel(null);
         formPanel.setPreferredSize(new Dimension(350, 210));
 
@@ -52,6 +62,9 @@ public class LoginPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        add(panelContenido, gbc); // <- Esto falta
+
+        gbc.gridy = 1;
         add(formPanel, gbc);
 
         // Listener para iniciar sesión
