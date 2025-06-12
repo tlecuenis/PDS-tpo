@@ -101,6 +101,20 @@ public class Ejecucion extends JFrame {
         if ("login".equals(name)) {
             loginPanel.limpiarCampos();
         }
+        if ("Deporte".equals(name)) {
+            // Eliminar si ya existe
+            for (int i = 0; i < contentPane.getComponentCount(); i++) {
+                if ("Deporte".equals(contentPane.getComponent(i).getName())) {
+                    contentPane.remove(i);
+                    break;
+                }
+            }
+
+            // Crear y agregar nuevo panel RegistrarDeporte
+            MisDeportes registrarDeporte = new MisDeportes(this, nicknameActual);
+            registrarDeporte.setName("Deporte");
+            contentPane.add(registrarDeporte, "Deporte");
+        }
 
         cardLayout.show(contentPane, name);
     }

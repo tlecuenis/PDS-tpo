@@ -15,12 +15,37 @@ public class UsuarioController {
 	private UsuarioController() {
 		this.userDAO = new MongoUserRepository();
 	}
-
+	
 	public static UsuarioController getInstancia() {
 		if (instancia == null) {
 			instancia = new UsuarioController();
 		}
 		return instancia;
+	}
+
+	public UsuarioDTO getUsuario(String nickname) {
+	    Usuario usuario = userDAO.findById(nickname);
+	    if (usuario == null) return null;
+
+	    // Convertir Usuario → UsuarioDTO
+	    String deporte = "";
+	    String nivel = "";
+
+	    if (!usuario.getDeportes().isEmpty()) {
+	        Deporte d = usuario.getDeportes().get(0);
+	        deporte = d.getNombre();
+	        nivel = d.getNivelJuego().toString();
+	    }
+
+	    return new UsuarioDTO(
+	        usuario.getIdUsuario(),
+	        usuario.getNombre(),
+	        usuario.getEmail(),
+	        usuario.getContraseña(),
+	        usuario.getUbicacion().getCiudad(),
+	        deporte,
+	        nivel
+	    );
 	}
 
 	public boolean registrarUsuario(UsuarioDTO dto) {
@@ -31,11 +56,11 @@ public class UsuarioController {
 
 		// Construir el usuario
 		List<Deporte> deportes = new ArrayList<>();
-		if (dto.getDeporteFavorito() != null && !dto.getDeporteFavorito().isEmpty()
-				&& dto.getNivelDeJuego() != null && !dto.getNivelDeJuego().isEmpty()) {
+		if (dto.getDeporte() != null && !dto.getDeporte().isEmpty()
+				&& dto.getNivel() != null && !dto.getNivel().isEmpty()) {
 			try {
-				Nivel nivel = Nivel.valueOf(dto.getNivelDeJuego().toUpperCase());
-				deportes.add(new Deporte(dto.getDeporteFavorito(), nivel));
+				Nivel nivel = Nivel.valueOf(dto.getNivel().toUpperCase());
+				deportes.add(new Deporte(dto.getDeporte(), nivel));
 			} catch (IllegalArgumentException e) {
 				System.out.println("Nivel inválido, se omite deporte.");
 			}
@@ -77,9 +102,9 @@ public class UsuarioController {
 	    
 	    // Actualizar deporte y nivel (simplificado para 1 deporte)
 	    try {
-	        Nivel nivel = Nivel.valueOf(dto.getNivelDeJuego().toUpperCase());
+	        Nivel nivel = Nivel.valueOf(dto.getNivel().toUpperCase());
 	        List<Deporte> deportes = new ArrayList<>();
-	        deportes.add(new Deporte(dto.getDeporteFavorito(), nivel));
+	        deportes.add(new Deporte(dto.getDeporte(), nivel));
 	        usuarioExistente.setDeportes(deportes);
 	    } catch (IllegalArgumentException e) {
 	        System.out.println("Nivel inválido, no se actualiza deporte.");
@@ -94,6 +119,92 @@ public class UsuarioController {
 	        return false;
 	    }
 	}
+	
+	public boolean agregarDeporteAUsuario(String nickname, String deporte, String nivel) {
+	    Usuario usuario = userDAO.findById(nickname);
+	    if (usuario == null) return false;
+
+	    List<Deporte> deportes = usuario.getDeportes();
+	    for (Deporte d : deportes) {
+	        if (d.getNombre().equalsIgnoreCase(deporte)) {
+	            if (!d.getNivelJuego().toString().equalsIgnoreCase(nivel)) {
+	                try {
+	                    d.setNivelJuego(Nivel.valueOf(nivel.toUpperCase()));
+	                    userDAO.update(usuario);
+	                    return true;
+	                } catch (IllegalArgumentException e) {
+	                    return false;
+	                }
+	            }
+	            return false; // mismo nivel
+	        }
+	    }
+
+	    try {
+	        deportes.add(new Deporte(deporte, Nivel.valueOf(nivel.toUpperCase())));
+	        usuario.setDeportes(deportes);
+	        userDAO.update(usuario);
+	        return true;
+	    } catch (IllegalArgumentException e) {
+	        return false;
+	    }
+	}
+	
+	public boolean existeDeporte(String nickname, String deporte) {
+		UsuarioDTO usuario = UsuarioController.getInstancia().getUsuario(nickname);
+	    if (usuario == null) return false;
+
+	    return usuario.getDeporte() != null &&
+	           usuario.getDeporte().equalsIgnoreCase(deporte);
+	}
+	
+	public String getNivelDeporte(String nickname, String deporte) {
+		UsuarioDTO usuario = UsuarioController.getInstancia().getUsuario(nickname);
+	    if (usuario == null) return "";
+
+	    if (usuario.getDeporte() != null &&
+	        usuario.getDeporte().equalsIgnoreCase(deporte)) {
+	        return usuario.getNivel();
+	    }
+	    return "";
+	}
+
+	public boolean modificarNivelDeporte(String nickname, String deporte, String nuevoNivel) {
+	    Usuario usuario = userDAO.findById(nickname);
+	    if (usuario == null) return false;
+
+	    List<Deporte> deportes = usuario.getDeportes();
+
+	    for (Deporte d : deportes) {
+	        if (d.getNombre().equalsIgnoreCase(deporte)) {
+	            try {
+	                Nivel nivelEnum = Nivel.valueOf(nuevoNivel.toUpperCase());
+	                d.setNivelJuego(nivelEnum);
+	                userDAO.update(usuario);  // <-- ¡GUARDAMOS!
+	                return true;
+	            } catch (IllegalArgumentException e) {
+	                System.out.println("Nivel inválido: " + nuevoNivel);
+	                return false;
+	            }
+	        }
+	    }
+
+	    return false;
+	}
+	
+	public List<String> obtenerDeportesConNivel(String nickname) {
+	    Usuario usuario = userDAO.findById(nickname);
+	    List<String> resultados = new ArrayList<>();
+
+	    if (usuario != null) {
+	        for (Deporte deporte : usuario.getDeportes()) {
+	            resultados.add(deporte.getNombre() + " - " + deporte.getNivelJuego().name());
+	        }
+	    }
+
+	    return resultados;
+	}
+	
 }
 
 
