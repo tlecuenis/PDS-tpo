@@ -1,63 +1,102 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
 
 public class PartidosDisponibles extends JPanel {
 
+    private JComboBox<String> comboFormaFiltrado;
     private JComboBox<String> comboDeporte;
     private JTextField txtUbicacion;
-    private JTextField txtFecha;
     private JComboBox<String> comboNivel;
+    private DefaultTableModel modeloTabla;
+    private JTable tablaPartidos;
+    private JPanel panelFiltros;
+    private JScrollPane scrollTabla;
 
     public PartidosDisponibles(Ejecucion parent) {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
 
-        JPanel panelContenido = new JPanel();
-        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-        panelContenido.setOpaque(false);
-
-        JLabel lblTitulo = new JLabel("Buscar Partido");
-        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Título
+        JLabel lblTitulo = new JLabel("Partidos Disponibles", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        panelContenido.add(lblTitulo);
+        add(lblTitulo, BorderLayout.NORTH);
 
-        // Campo Ubicación
-        txtUbicacion = new JTextField();
-        txtUbicacion.setPreferredSize(new Dimension(200, 25));
-        panelContenido.add(crearFila("Ubicación:", txtUbicacion));
+        // Panel de tabla
+        String[] columnas = {"Deporte", "Ubicación", "Fecha", "Nivel"};
+        modeloTabla = new DefaultTableModel(columnas, 0);
+        tablaPartidos = new JTable(modeloTabla);
+        scrollTabla = new JScrollPane(tablaPartidos);
+        add(scrollTabla, BorderLayout.CENTER);
 
-        // Campo Fecha
-        txtFecha = new JTextField();
-        txtFecha.setPreferredSize(new Dimension(200, 25));
-        panelContenido.add(crearFila("Fecha (dd/mm/yyyy):", txtFecha));
+        // Panel de filtros (inicialmente oculto)
+        panelFiltros = new JPanel();
+        panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
+        panelFiltros.setBorder(BorderFactory.createTitledBorder("Filtros de búsqueda"));
+        panelFiltros.setVisible(false);
 
-        // Combo Deporte
+        comboFormaFiltrado = new JComboBox<>(new String[]{"Por ubicación", "Por nivel", "Por deporte", "Todos"});
         comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
-        panelContenido.add(crearFila("Deporte favorito (opcional):", comboDeporte));
-
-        // Combo Nivel
+        txtUbicacion = new JTextField();
         comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
-        panelContenido.add(crearFila("Nivel:", comboNivel));
 
-        // Botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        JButton btnBuscar = new JButton("Buscar");
+        panelFiltros.add(crearFila("Forma de filtrado:", comboFormaFiltrado));
+        panelFiltros.add(crearFila("Deporte:", comboDeporte));
+        panelFiltros.add(crearFila("Ubicación:", txtUbicacion));
+        panelFiltros.add(crearFila("Nivel:", comboNivel));
+
+        // Botón de aplicar filtros
+        JButton btnAplicarFiltros = new JButton("Aplicar Filtros");
+        btnAplicarFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelFiltros.add(Box.createVerticalStrut(10));
+        panelFiltros.add(btnAplicarFiltros);
+
+        add(panelFiltros, BorderLayout.CENTER);
+
+        // Panel inferior con botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton btnFiltrar = new JButton("🔍 Filtrar");
         JButton btnVolver = new JButton("Volver");
-        panelBotones.add(btnBuscar);
         panelBotones.add(btnVolver);
-        panelContenido.add(panelBotones);
+        panelBotones.add(btnFiltrar);
+        add(panelBotones, BorderLayout.SOUTH);
 
-        // Agregar panel contenido al centro
-        add(panelContenido);
+        // Acción de "Filtrar" - muestra el panel de filtros y oculta la tabla
+        btnFiltrar.addActionListener(e -> {
+            scrollTabla.setVisible(false);
+            panelFiltros.setVisible(true);
+            revalidate();
+            repaint();
+        });
 
-        // Listener para permitir ingresar un deporte personalizado
+        // Acción de "Aplicar filtros" - simula filtrado y vuelve a la tabla
+        btnAplicarFiltros.addActionListener(e -> {
+            String forma = (String) comboFormaFiltrado.getSelectedItem();
+            String deporte = (String) comboDeporte.getSelectedItem();
+            String ubicacion = txtUbicacion.getText().trim();
+            String nivel = (String) comboNivel.getSelectedItem();
+
+            // Limpiar y simular resultado
+            modeloTabla.setRowCount(0);
+            modeloTabla.addRow(new Object[]{
+                    deporte,
+                    ubicacion.isEmpty() ? "Córdoba" : ubicacion,
+                    "12/06/2025",
+                    nivel
+            });
+
+            // Ocultar filtros, mostrar tabla
+            panelFiltros.setVisible(false);
+            scrollTabla.setVisible(true);
+            revalidate();
+            repaint();
+        });
+
+        // Acción de "Otro" en deporte
         comboDeporte.addActionListener(e -> {
-            String seleccionado = (String) comboDeporte.getSelectedItem();
-            if ("Otro".equals(seleccionado)) {
-                String nuevoDeporte = JOptionPane.showInputDialog(this, "Ingrese el deporte favorito:");
+            if ("Otro".equals(comboDeporte.getSelectedItem())) {
+                String nuevoDeporte = JOptionPane.showInputDialog(this, "Ingrese el deporte:");
                 if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
                     comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
                     comboDeporte.setSelectedItem(nuevoDeporte.trim());
@@ -67,16 +106,7 @@ public class PartidosDisponibles extends JPanel {
             }
         });
 
-        btnBuscar.addActionListener(e -> {
-            String deporte = (String) comboDeporte.getSelectedItem();
-            String ubicacion = txtUbicacion.getText().trim();
-            String fecha = txtFecha.getText().trim();
-            String nivel = (String) comboNivel.getSelectedItem();
-
-            JOptionPane.showMessageDialog(this, "Buscando partidos de " + deporte +
-                    " en " + ubicacion + " el " + fecha + " (Nivel: " + nivel + ")");
-        });
-
+        // Acción de "Volver"
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
     }
 
@@ -91,4 +121,3 @@ public class PartidosDisponibles extends JPanel {
         return fila;
     }
 }
-
