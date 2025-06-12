@@ -16,9 +16,10 @@ public class Ejecucion extends JFrame {
 
     // Guardar referencias a los paneles
     private LoginPanel loginPanel;
+    private OpcionesMenu dashboardPanel;
 
     public Ejecucion() {
-        setTitle("Sistema Deportivo");
+        setTitle("Uno Más - Plataforma de Encuentros Deportivos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null);
@@ -37,6 +38,7 @@ public class Ejecucion extends JFrame {
 
         // Inicializar y agregar paneles
         loginPanel = new LoginPanel(this);
+        dashboardPanel = new OpcionesMenu(this);
         RegisterPanel registerPanel = new RegisterPanel(this);
         OpcionesMenu dashboardPanel = new OpcionesMenu(this);
         PartidosDisponibles listaPartidosPanel = new PartidosDisponibles(this);
@@ -96,24 +98,31 @@ public class Ejecucion extends JFrame {
         contentPane.add(perfilPanel, "perfil");
     }
 
+
     public void showPanel(String name) {
-        // Si volvemos al login, limpiamos los campos
         if ("login".equals(name)) {
             loginPanel.limpiarCampos();
         }
+
         if ("Deporte".equals(name)) {
-            // Eliminar si ya existe
             for (int i = 0; i < contentPane.getComponentCount(); i++) {
                 if ("Deporte".equals(contentPane.getComponent(i).getName())) {
                     contentPane.remove(i);
                     break;
                 }
             }
-
-            // Crear y agregar nuevo panel RegistrarDeporte
             MisDeportes registrarDeporte = new MisDeportes(this, nicknameActual);
             registrarDeporte.setName("Deporte");
             contentPane.add(registrarDeporte, "Deporte");
+        }
+
+        if ("menuPrincipal".equals(name)) {
+            for (Component comp : contentPane.getComponents()) {
+                if (comp instanceof OpcionesMenu) {
+                    ((OpcionesMenu) comp).actualizarUsuario(nicknameActual);
+                    break;
+                }
+            }
         }
 
         cardLayout.show(contentPane, name);
