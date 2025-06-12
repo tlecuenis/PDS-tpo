@@ -41,23 +41,6 @@ public class RegisterPanel extends JPanel {
         txtUbicacion = new JTextField();
         panelContenido.add(crearFila("Ubicación:", txtUbicacion));
 
-        comboDeporte = new JComboBox<>(new String[] {"Fútbol", "Básquet", "Tenis", "Padel", "Otro" });
-        comboDeporte.addActionListener(e -> {
-            if ("Otro".equals(comboDeporte.getSelectedItem())) {
-                String nuevoDeporte = JOptionPane.showInputDialog(RegisterPanel.this, "Ingrese el deporte favorito:");
-                if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
-                    comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
-                    comboDeporte.setSelectedItem(nuevoDeporte.trim());
-                } else {
-                    comboDeporte.setSelectedIndex(0);
-                }
-            }
-        });
-        panelContenido.add(crearFila("Deporte favorito (opcional):", comboDeporte));
-
-        comboNivel = new JComboBox<>(new String[] {"", "Principiante", "Intermedio", "Avanzado"});
-        panelContenido.add(crearFila("Nivel (opcional):", comboNivel));
-
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         JButton btnRegistrar = new JButton("Registrar");
         JButton btnVolver = new JButton("Volver");
@@ -83,8 +66,8 @@ public class RegisterPanel extends JPanel {
             String email = txtEmail.getText().trim();
             String password = txtPassword.getText().trim();
             String ubicacion = txtUbicacion.getText().trim();
-            String deporte = (String) comboDeporte.getSelectedItem();
-            String nivel = (String) comboNivel.getSelectedItem();
+            String deporte = null;
+            String nivel = null;
 
             if (usuario.isEmpty() || email.isEmpty() || password.isEmpty() || ubicacion.isEmpty()) {
                 lblMensaje.setText("Por favor complete todos los campos obligatorios.");
@@ -93,14 +76,7 @@ public class RegisterPanel extends JPanel {
 
             if (deporte == null) deporte = "";
 
-            if (nivel == null || nivel.trim().isEmpty()) {
-                nivel = "";
-            } else {
-                nivel = nivel.trim().toUpperCase();
-                if (!nivel.equals("PRINCIPIANTE") && !nivel.equals("INTERMEDIO") && !nivel.equals("AVANZADO")) {
-                    nivel = "";
-                }
-            }
+            nivel = "";
 
             UsuarioDTO dto = new UsuarioDTO(usuario, usuario, email, password, ubicacion, deporte, nivel);
             boolean exito = UsuarioController.getInstancia().registrarUsuario(dto);
@@ -110,21 +86,13 @@ public class RegisterPanel extends JPanel {
                 lblMensaje.setText("Registro exitoso.");
                 parent.setNicknameActual(usuario); // <-- AÑADIR ESTO
 
-                // Espera 1 segundos y redirige
-                Timer timer = new Timer(1000, new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        parent.showPanel("menuPrincipal");
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
             } else {
                 lblMensaje.setForeground(Color.RED);
                 lblMensaje.setText("No se pudo registrar el usuario (ya existe o error).");
             }
         });
 
-        btnVolver.addActionListener(e -> parent.showPanel("login"));
+        btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
     }
 
     private JPanel crearFila(String etiqueta, JComponent campo) {
@@ -143,8 +111,6 @@ public class RegisterPanel extends JPanel {
         txtEmail.setText("");
         txtPassword.setText("");
         txtUbicacion.setText("");
-        comboDeporte.setSelectedIndex(0);
-        comboNivel.setSelectedIndex(0);
         lblMensaje.setText(" ");
     }
 }
