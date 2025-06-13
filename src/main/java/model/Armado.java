@@ -10,6 +10,10 @@ public class Armado implements IEstadoPartido {
         System.out.println("¡Partido cancelado!");
         contexto.cambiarEstado(new Cancelado());
     }
+    
+    public void armar(Partido contexto) {
+        System.out.println("El partido ya está armado.");
+    }
 
     public void iniciar(Partido contexto) {
         System.out.println("No puede iniciarse. El partido no está confirmado.");

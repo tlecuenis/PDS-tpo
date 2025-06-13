@@ -13,6 +13,10 @@ public class EnJuego implements IEstadoPartido {
     public void iniciar(Partido contexto) {
         System.out.println("No puede iniciarse. El partido ya está en juego.");
     }
+    
+    public void armar(Partido contexto) {
+        System.out.println("No se puede armar. El partido ya está en juego.");
+    }
 
     public void finalizar(Partido contexto) {
         System.out.println("¡Partido finalizado!");

@@ -24,7 +24,7 @@ public class MongoPartidoRepository implements PartidoDAO {
         Document d = new Document();
         d.append("_id", p.getIdPartido());
         Document deporte = new Document();
-        deporte.append("nombre", p.getDeporte().getNombre());
+        deporte.append("nombre", p.getDeporte();
         deporte.append("nivelDeJuego", p.getDeporte().getNivelJuego().toString());
         d.append("deporte", deporte);
         d.append("cantJugadores", p.getCantJugadores());

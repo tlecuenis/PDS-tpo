@@ -4,6 +4,7 @@ package model;
 public interface IEstadoPartido {
 	   void confirmar(Partido contexto);
 	   void cancelar(Partido contexto);
+	   void armar(Partido contexto);
 	   void iniciar(Partido contexto);
 	   void finalizar(Partido contexto);
 	   void necesitamosJugadores(Partido contexto);

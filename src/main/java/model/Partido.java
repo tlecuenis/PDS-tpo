@@ -2,8 +2,8 @@ package model;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.sql.Date;
 import DTO.PartidoDTO;
+import java.time.LocalDateTime;
 
 public class Partido {
 	private String idPartido;
@@ -11,7 +11,7 @@ public class Partido {
 	private int cantJugadores;
 	private double duracion;
 	private Geolocalizacion ubicacion;
-	private java.util.Date horario;
+	private LocalDateTime fecha;
 	private List<Equipo> equipos;
 	private IEstadoPartido estadoActual;
 	private IEstrategiaPartido estrategiaActual;
@@ -20,11 +20,11 @@ public class Partido {
 	private ObserverPartido observador;
 	private int nivelMaximo;
 	private int nivelMinimo;
-
+	private Usuario Creador;
+	
 	public Partido() {
 		this.equipos = new ArrayList<>();
 	}
-
 
 	public void cambiarEstado(IEstadoPartido estado) {
 		this.estadoActual = estado;
@@ -68,7 +68,7 @@ public class Partido {
 		this.cantJugadores = partido.getCantJugadores();
 		this.duracion = partido.getDuracion();
 		this.ubicacion = partido.getUbicacion();
-		this.horario = partido.getHorario();
+		this.fecha = partido.getFecha();
 		this.nivelMaximo = partido.getNivelJugadorMaximo();
 		this.nivelMinimo = partido.getNivelJugadorMinimo();
 	}
@@ -93,6 +93,10 @@ public class Partido {
 		this.estadoActual.iniciar(this);
 	}
 
+	public void armar() {
+		this.estadoActual.armar(this);
+	}
+	
 	public void necesitamosJugadores() {
 		this.estadoActual.necesitamosJugadores(this);
 	}
@@ -121,6 +125,41 @@ public class Partido {
 	}
 
 
+	
+	// CAMBIOS DE ESTADO AUTOMÁTICOS
+	
+	public void validarArmado() { 		// Se ejecuta cada vez que un usuario se une al partido
+		if (this.getCantJugadores() == this.cantidadJugadoresActual()) {
+			this.armar();
+		}
+	}
+	
+	public void validarNecesitamosJugadores() { 			// Se ejecuta cuando un usuario abandona el partido
+		if(this.getCantJugadores() > this.cantidadJugadoresActual()) {
+			this.necesitamosJugadores();
+		}
+	}
+	
+	public void validarEnJuego() {  		// Se debe de ejecutar en todos los partidos de la base de datos al seleccionar algún botón en opcionesMenu que valide los cambios a EnJuego en todos los partidos
+		if (LocalDateTime.now().isAfter(fecha) || LocalDateTime.now().isEqual(fecha)) {
+			this.iniciar();
+		}
+	}
+	
+	
+	// Los cambios a Cancelado, Confirmado y Finalizado se deben de hacer
+	// manualmente desde la vista, solo validando si el creador del Partido es el mismo al
+	// usuario logeado, para mostrarle los botones respectivos dentro la vista de ese partido.
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public int cantidadJugadoresActual() {
+	    return equipos.stream()
+	                  .mapToInt(equipo -> equipo.getJugadores().size())
+	                  .sum();
+	}
+	
 	public int getCantJugadores() {
 		return cantJugadores;
 	}
@@ -139,11 +178,11 @@ public class Partido {
 	public void setUbicacion(Geolocalizacion ubicacion) {
 		this.ubicacion = ubicacion;
 	}
-	public java.util.Date getHorario() {
-		return horario;
+	public LocalDateTime getFecha() {
+		return fecha;
 	}
-	public void setHorario(Date horario) {
-		this.horario = horario;
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
 	}
 	public List<Equipo> getEquipos() {
 		return equipos;
@@ -178,6 +217,36 @@ public class Partido {
 	}
 	public int getNivelJugadorMaximo() {
 		return nivelMaximo;
+	}
+	public IEstadoPartido getEstadoActual() {
+		return estadoActual;
+	}
+	public void setEstadoActual(IEstadoPartido estadoActual) {
+		this.estadoActual = estadoActual;
+	}
+	public IEstrategiaPartido getEstrategiaActual() {
+		return estrategiaActual;
+	}
+	public void setEstrategiaActual(IEstrategiaPartido estrategiaActual) {
+		this.estrategiaActual = estrategiaActual;
+	}
+	public int getNivelMaximo() {
+		return nivelMaximo;
+	}
+	public void setNivelMaximo(int nivelMaximo) {
+		this.nivelMaximo = nivelMaximo;
+	}
+	public int getNivelMinimo() {
+		return nivelMinimo;
+	}
+	public void setNivelMinimo(int nivelMinimo) {
+		this.nivelMinimo = nivelMinimo;
+	}
+	public Usuario getCreador() {
+		return Creador;
+	}
+	public void setCreador(Usuario creador) {
+		Creador = creador;
 	}
 	
 }

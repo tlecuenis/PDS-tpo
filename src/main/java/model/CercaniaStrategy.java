@@ -34,7 +34,7 @@ public class CercaniaStrategy implements IEmparejamientoStrategy {
 		for (Usuario jugador : jugadoresBBDD) {
 			for (Deporte deporte : jugador.getDeportes()) {
 				// if(jugador.getDeportes().equals(partido.getDeporte())) {
-				if(deporte == partido.getDeporte()) {
+				if(deporte.getNombre() == partido.getDeporte()) {
                     //if(jugador.getUbicacion().getCiudad().equals(ubicacionPartido)){
 					if(jugador.getUbicacion().getCiudad() == ubicacionPartido){
 						// notificar al jugador

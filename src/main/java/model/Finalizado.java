@@ -13,6 +13,10 @@ public class Finalizado implements IEstadoPartido {
         System.out.println("No se puede iniciar. El partido ya terminó.");
     }
 
+    public void armar(Partido contexto) {
+        System.out.println("No se puede armar. El partido ya finalizó.");
+    }
+    
     public void finalizar(Partido contexto) {
         System.out.println("No se puede finalizar. El partido ya está finalizado");
     }
