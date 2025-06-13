@@ -140,11 +140,14 @@ public class Partido {
 		}
 	}
 	
-	public void validarEnJuego() {  		// Se debe de ejecutar en todos los partidos de la base de datos al seleccionar algún botón en opcionesMenu que valide los cambios a EnJuego en todos los partidos
-		if (LocalDateTime.now().isAfter(fecha) || LocalDateTime.now().isEqual(fecha)) {
-			this.iniciar();
-		}
+	public boolean validarEnJuego() {
+	    if (LocalDateTime.now().isAfter(fecha) || LocalDateTime.now().isEqual(fecha)) {
+	        this.iniciar();
+	        return true;
+	    }
+	    return false;
 	}
+
 	
 	
 	// Los cambios a Cancelado, Confirmado y Finalizado se deben de hacer

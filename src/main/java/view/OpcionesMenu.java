@@ -35,10 +35,11 @@ public class OpcionesMenu extends JPanel {
         JButton btnCrearPartido = new JButton("Crear Partido");
         JButton btnMisDeportes = new JButton("Mis Deportes");
         JButton btnPerfil = new JButton("Ver Perfil");
+        JButton btnMisPartidos = new JButton("Ver mis partidos");
         JButton btnNotificaciones = new JButton("Notificaciones");
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 
-        for (JButton btn : new JButton[]{btnVerPartidos, btnCrearPartido, btnMisDeportes, btnPerfil, btnNotificaciones, btnCerrarSesion}) {
+        for (JButton btn : new JButton[]{btnVerPartidos, btnCrearPartido, btnMisDeportes, btnPerfil,btnMisPartidos, btnNotificaciones, btnCerrarSesion}) {
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setMaximumSize(new Dimension(220, 30));
             btn.setPreferredSize(new Dimension(220, 30));
@@ -52,6 +53,10 @@ public class OpcionesMenu extends JPanel {
         btnCrearPartido.addActionListener(e -> parent.showPanel("crearPartido"));
         btnMisDeportes.addActionListener(e -> parent.showPanel("Deporte"));
         btnPerfil.addActionListener(e -> parent.showPanel("perfil"));
+        
+        btnMisPartidos.addActionListener(e -> parent.showPanel("misPartidos"));
+
+        
         btnNotificaciones.addActionListener(e -> parent.showPanel("notificaciones"));
         btnCerrarSesion.addActionListener(e -> {
             LoginPanel loginPanel = parent.getLoginPanel();
