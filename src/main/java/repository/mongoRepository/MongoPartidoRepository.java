@@ -9,6 +9,7 @@ import model.Usuario;
 import org.bson.Document;
 import repository.PartidoDAO;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,14 +74,23 @@ public class MongoPartidoRepository implements PartidoDAO {
     @Override
     public void save(Partido p) {
         Document doc = partidoToDocument(p);
-        try{
-            partidos.insertOne(doc);
-            System.out.println("partido agregado");
-        }
-        catch(Exception e){
-            System.out.println("Error agregando el partido " + e.getMessage());
+
+        try {
+            Document filtro = new Document("_id", p.getIdPartido());
+            Document existente = partidos.find(filtro).first();
+
+            if (existente != null) {
+                partidos.replaceOne(filtro, doc); // Actualiza el existente
+                System.out.println("Partido actualizado");
+            } else {
+                partidos.insertOne(doc); // Nuevo
+                System.out.println("Partido insertado");
+            }
+        } catch (Exception e) {
+            System.out.println("Error guardando el partido: " + e.getMessage());
         }
     }
+
 
     @Override
     public void deleteById(String id) {
@@ -94,8 +104,53 @@ public class MongoPartidoRepository implements PartidoDAO {
 
     @Override
     public List<Partido> findAll() {
-        return null;
+        List<Partido> partidosList = new ArrayList<>();
+
+        for (Document doc : partidos.find()) {
+            Partido partido = new Partido();
+            partido.setIdPartido(doc.getString("_id"));
+            partido.setDeporte(doc.getString("deporte")); // simplificado, adaptar si es objeto
+            partido.setCantJugadores(doc.getInteger("cantJugadores"));
+            partido.setDuracion(doc.getDouble("duracion"));
+
+            // Geolocalización
+            Document geoDoc = (Document) doc.get("Geolocalizacion");
+            Geolocalizacion geo = new Geolocalizacion(
+                    geoDoc.getString("ciudad"),
+                    geoDoc.getDouble("latitud"),
+                    geoDoc.getDouble("longitud"),
+                    geoDoc.getDouble("varianza")
+            );
+            
+            partido.setUbicacion(geo);
+
+            // Fecha
+            partido.setFecha(LocalDateTime.parse(doc.getString("horario")));
+
+            // Equipos y jugadores
+            List<Document> equiposDoc = (List<Document>) doc.get("equipos");
+            for (Document equipoDoc : equiposDoc) {
+                Equipo equipo = new Equipo();
+                equipo.setNombre(equipoDoc.getString("nombre"));
+                List<Document> jugadoresDoc = (List<Document>) equipoDoc.get("jugadores");
+                for (Document jugadorDoc : jugadoresDoc) {
+                    Usuario jugador = new Usuario();
+                    jugador.setIdUsuario(jugadorDoc.getString("id"));
+                    jugador.setNombre(jugadorDoc.getString("nombre"));
+                    equipo.agregarJugador(jugador);
+                }
+                partido.crearEquipo(equipo);
+            }
+
+            // Creador (opcional: adaptar si lo guardás en la base)
+            // Estado, observador, etc. pueden agregarse si están serializados también
+
+            partidosList.add(partido);
+        }
+
+        return partidosList;
     }
+
 
     @Override
     public Partido findByField(String field, String value) {

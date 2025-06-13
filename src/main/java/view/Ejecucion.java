@@ -51,7 +51,7 @@ public class Ejecucion extends JFrame {
         contentPane.add(listaPartidosPanel, "listaPartidos");
         contentPane.add(crearPartidoPanel, "crearPartido");
         contentPane.add(notificacionesPanel, "notificaciones");
-
+        
         showPanel("login");
     }
 
@@ -116,6 +116,18 @@ public class Ejecucion extends JFrame {
             contentPane.add(registrarDeporte, "Deporte");
         }
 
+        if ("misPartidos".equals(name)) {
+            for (int i = 0; i < contentPane.getComponentCount(); i++) {
+                if ("misPartidos".equals(contentPane.getComponent(i).getName())) {
+                    contentPane.remove(i);
+                    break;
+                }
+            }
+            MisPartidosPanel misPartidos = new MisPartidosPanel(this, nicknameActual); // o pasale el objeto `Usuario` si lo tenés
+            misPartidos.setName("misPartidos");
+            contentPane.add(misPartidos, "misPartidos");
+        }
+
         if ("menuPrincipal".equals(name)) {
             for (Component comp : contentPane.getComponents()) {
                 if (comp instanceof OpcionesMenu) {
@@ -127,6 +139,7 @@ public class Ejecucion extends JFrame {
 
         cardLayout.show(contentPane, name);
     }
+
 
     public String getNicknameActual() {
         return nicknameActual;
