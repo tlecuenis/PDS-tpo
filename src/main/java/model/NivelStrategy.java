@@ -35,7 +35,7 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 		for (Usuario jugador : jugadoresBBDD) {
 			for (Deporte deporte : jugador.getDeportes()) {
 				// if(jugador.getDeportes().equals(partido.getDeporte())) {
-				if(deporte == partido.getDeporte()) {
+				if(deporte.getNombre()== partido.getDeporte()) {
 					if(deporte.getNivelJuego().getValor() >= nivelMinimo && deporte.getNivelJuego().getValor() <= nivelMaximo){
 						// notificar al jugador
 					}

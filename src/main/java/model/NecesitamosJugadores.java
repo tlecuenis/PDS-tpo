@@ -14,6 +14,11 @@ public class NecesitamosJugadores implements IEstadoPartido {
     public void iniciar(Partido contexto) {
         System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
+    
+    public void armar(Partido contexto) {
+        System.out.println("¡Partido armado!.");
+        contexto.cambiarEstado(new Armado());
+    }
 
     public void finalizar(Partido contexto) {
         System.out.println("No se puede finalizar. El partido no está en juego.");

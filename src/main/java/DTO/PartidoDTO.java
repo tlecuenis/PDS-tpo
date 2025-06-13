@@ -1,5 +1,6 @@
 package DTO;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import model.Geolocalizacion;
 import model.Deporte;
@@ -10,7 +11,7 @@ public class PartidoDTO {
 	private int cantJugadores;
 	private double duracion;
 	private Geolocalizacion ubicacion;
-	private Date horario;
+	private LocalDateTime fecha;
 	private int nivelMaximo;
 	private int nivelMinimo;
 	
@@ -45,11 +46,11 @@ public class PartidoDTO {
 	public void setUbicacion(Geolocalizacion ubicacion) {
 		this.ubicacion = ubicacion;
 	}
-	public java.util.Date getHorario() {
-		return horario;
+	public LocalDateTime getFecha() {
+		return fecha;
 	}
-	public void setHorario(Date horario) {
-		this.horario = horario;
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
 	}
 	public int getNivelJugadorMaximo(){
 		return nivelMaximo;

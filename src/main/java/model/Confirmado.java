@@ -14,6 +14,10 @@ public class Confirmado implements IEstadoPartido {
         contexto.cambiarEstado(new EnJuego());
     }
     
+    public void armar(Partido contexto) {
+        System.out.println("No se puede armar. El partido ya está confirmado.");
+    }
+    
     public void finalizar(Partido contexto) {
         System.out.println("No puede finalizarse. El partido no ha iniciado.");
     }
