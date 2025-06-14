@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.notificaciones.Notificacion;
+import model.notificaciones.NotificacionDispatcher;
 import repository.UserRepository;
 
 public class NivelStrategy implements IEmparejamientoStrategy {
@@ -24,6 +25,7 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 			return;
 		}
 		Notificacion notificacion = new Notificacion(partido, "Te estamos buscando, unite al partido!");
+		NotificacionDispatcher notificacionDispatcher = new NotificacionDispatcher();
 		for (Usuario jugador : jugadoresBBDD) {
 			for (Deporte deporte : jugador.getDeportes()) {
 				if(deporte.getNombre().toLowerCase().contains(partido.getDeporte().toLowerCase())) {
@@ -40,7 +42,7 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 							}
 						}
 						if(estaEnPartido == false) {
-							jugador.serNotificado(notificacion);
+							notificacionDispatcher.enviar(notificacion, jugador);
 						}
 					}
 				}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.notificaciones.Notificacion;
+import model.notificaciones.NotificacionDispatcher;
 import repository.UserRepository;
 
 public class HistorialStrategy implements IEmparejamientoStrategy {
@@ -35,6 +36,7 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 			return;
 		}
 		Notificacion notificacion = new Notificacion(partido, "Te estamos buscando, unite al partido!");
+		NotificacionDispatcher notificacionDispatcher = new NotificacionDispatcher();
 		// Historial del jugador
 		int historialJugador;
 		int cantPartidosJugador = 0;
@@ -60,7 +62,7 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 					}
 				}
 				if(estaEnPartido == false) {
-					jugador.serNotificado(notificacion);
+					notificacionDispatcher.enviar(notificacion, jugador);
 				}
 			}
 		}
