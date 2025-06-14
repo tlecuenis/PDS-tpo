@@ -3,19 +3,29 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.notificaciones.Notificacion;
 import repository.UserRepository;
 
 public class HistorialStrategy implements IEmparejamientoStrategy {
 	@Override
 	public void emparejar(List<Equipo> equipos, Partido partido) {
-		int historialRequerido = 2; //falta definir el valor de historial en Partido
-
+		// Historial del creador, se deja en int para truncar decimales
+		List<Deporte> deportesCreador = partido.getCreador().getDeportes();
+		int historialRequerido;
+		int cantPartidos = 0;
+		int score = 0;
+		for (Deporte deporte : deportesCreador) {
+			if (deporte.getNombre().toLowerCase().contains(partido.getDeporte().toLowerCase())) {
+//			if (deporte.getNombre().toLowerCase() == partido.getDeporte().toLowerCase()) {
+				score = deporte.getScore();
+				cantPartidos = deporte.getCantPartidos();
+			}
+		}
+		historialRequerido = score / cantPartidos;
+		
 		List<Usuario> jugadoresBBDD = new ArrayList<>();
 		try {
-			// despues de probar que funcione la base de datos, en reemplazar el findAll por findByField y buscar por deporte
-			// jugadoresBBDD = new UserRepository().findByField("deporte", partido.getDeporte().getNombre());
 			jugadoresBBDD =  new UserRepository().findAll();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error al obtener los jugadores de la base de datos: " + e.getMessage());
@@ -24,46 +34,36 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 			System.out.println("No hay jugadores disponibles en la base de datos.");
 			return;
 		}
-		//probar que se imprima correctamente
+		Notificacion notificacion = new Notificacion(partido, "Te estamos buscando, unite al partido!");
+		// Historial del jugador
+		int historialJugador;
+		int cantPartidosJugador = 0;
+		int scoreJugador = 0;
 		for (Usuario jugador : jugadoresBBDD) {
-			System.out.println(jugador.getNombre());
 			for (Deporte deporte : jugador.getDeportes()) {
-				System.out.println("Deporte: " + deporte.getNombre() + " - Nivel: " + deporte.getNivelJuego());
+				if (deporte.getNombre().toLowerCase().contains(partido.getDeporte().toLowerCase())) {
+//				if (deporte.getNombre().toLowerCase() == partido.getDeporte().toLowerCase()) {
+					scoreJugador = deporte.getScore();
+					cantPartidosJugador = deporte.getCantPartidos();
+				}
+			}
+			historialJugador = scoreJugador / cantPartidosJugador;
+			if (historialJugador == historialRequerido) {
+				// si ya está en el partido no notificar
+				boolean estaEnPartido = false;
+				for (Equipo equipo : partido.getEquipos()) {
+					for (Usuario integrante : equipo.getJugadores()) {
+//						if (integrante.equals(jugador)) {
+						if (integrante == jugador) {
+							estaEnPartido = true;
+						}
+					}
+				}
+				if(estaEnPartido == false) {
+					jugador.serNotificado(notificacion);
+				}
 			}
 		}
-		// DESCOMENTAR CUANDO SE TENGA EL HISTORIAL EN DEPORTE
-		// List<Integer> historialJugador = new ArrayList<Integer>();
-		// for (Usuario jugador : jugadoresBBDD) {
-		// 	for (Deporte deporte : jugador.getDeportes()) {
-		// 		// if(jugador.getDeportes().equals(partido.getDeporte())) {
-		// 		if(deporte == partido.getDeporte()) {
-		// 			for (Partido partidoHistorico : deporte.getHistorial()) {
-		// 				// obtener el equipo del que formó parte el jugador
-		// 				partidoHistorico.getEquipos().forEach(equipo -> {
-		// 					if (equipo.getJugadores().contains(jugador)) {
-								// DESCOMENTAR CUANDO SE TENGA EL GANADOR EN PARTIDO
-
-								// if (partidoHistorico.getEstadistica().getGanador().equals(equipo.getNombre())) {
-								// 	historialJugador.add(3);
-								// } else if (partidoHistorico.getEstadistica().getGanador() == null) {
-								// 	historialJugador.add(1);
-								// } else {
-								// 	historialJugador.add(0);
-								// }
-
-								// Promedio de los resultados del historial
-								// int suma = historialJugador.stream().mapToInt(Integer::intValue).sum();
-								// int promedio = suma / historialJugador.size();
-								// if (promedio >= historialRequerido) {
-								// 	// notificar al jugador
-								// }
-		// 					}
-		// 				});
-		// 			}
-		// 		}
-		// 	}
-		// }
 	}
-
 }
 

@@ -3,19 +3,17 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.notificaciones.Notificacion;
 import repository.UserRepository;
 
 public class CercaniaStrategy implements IEmparejamientoStrategy {
-	@Override
+    @Override
 	public void emparejar(List<Equipo> equipos, Partido partido) {
-		String ubicacionPartido = partido.getUbicacion().getCiudad();
+        String ubicacionPartido = partido.getUbicacion().getCiudad();
 
 		List<Usuario> jugadoresBBDD = new ArrayList<>();
 		try {
-			// despues de probar que funcione la base de datos, en reemplazar el findAll por findByField y buscar por deporte
-			// jugadoresBBDD = new UserRepository().findByField("deporte", partido.getDeporte().getNombre());
 			jugadoresBBDD =  new UserRepository().findAll();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error al obtener los jugadores de la base de datos: " + e.getMessage());
@@ -24,20 +22,26 @@ public class CercaniaStrategy implements IEmparejamientoStrategy {
 			System.out.println("No hay jugadores disponibles en la base de datos.");
 			return;
 		}
-		//probar que se imprima correctamente
-		for (Usuario jugador : jugadoresBBDD) {
-			System.out.println(jugador.getNombre());
-			for (Deporte deporte : jugador.getDeportes()) {
-				System.out.println("Deporte: " + deporte.getNombre() + " - Geolocalización: " + jugador.getUbicacion().getCiudad());
-			}
-		}
+		Notificacion notificacion = new Notificacion(partido, "Te estamos buscando, unite al partido!");
 		for (Usuario jugador : jugadoresBBDD) {
 			for (Deporte deporte : jugador.getDeportes()) {
-				// if(jugador.getDeportes().equals(partido.getDeporte())) {
-				if(deporte.getNombre() == partido.getDeporte()) {
-					//if(jugador.getUbicacion().getCiudad().equals(ubicacionPartido)){
-					if(jugador.getUbicacion().getCiudad() == ubicacionPartido){
-						// notificar al jugador
+				if(deporte.getNombre().toLowerCase().contains(partido.getDeporte().toLowerCase())) {
+//				if(deporte.getNombre().toLowerCase() == partido.getDeporte().toLowerCase()) {
+					if(jugador.getUbicacion().getCiudad().toLowerCase().contains(ubicacionPartido.toLowerCase())){
+//					if(jugador.getUbicacion().getCiudad().toLowerCase() == ubicacionPartido.toLowerCase()){
+						// si ya está en el partido no notificar
+						boolean estaEnPartido = false;
+						for (Equipo equipo : partido.getEquipos()) {
+							for (Usuario integrante : equipo.getJugadores()) {
+//								if (integrante.equals(jugador)) {
+								if (integrante == jugador) {
+									estaEnPartido = true;
+								}
+							}
+						}
+						if(estaEnPartido == false) {
+							jugador.serNotificado(notificacion);
+						}
 					}
 				}
 			}
