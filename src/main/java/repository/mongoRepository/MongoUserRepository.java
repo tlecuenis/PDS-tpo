@@ -74,6 +74,12 @@ deportes:Array (3)
             }
             doc.append("deportes", deportes);
         }
+
+        List<Document> notificaciones = new ArrayList<>();
+        notificaciones.add(new Document("mensaje", "Bienvenido a la app!!"));
+
+        doc.append("notificaciones", notificaciones);
+
         return doc;
     }
 
@@ -203,6 +209,20 @@ deportes:Array (3)
         return usuarios;
     }
 
+    @Override
+    public void notificarUsuario(String userID, String notificacion) {
+        Bson filter = eq("_id",userID);
+        Document notiDoc = new Document("mensaje", notificacion);
+        Document update = new Document("$push", new Document("notificaciones", notiDoc));
+
+        try{
+            users.updateOne(filter, update);
+            System.out.println("Usuario notificado");
+        }
+        catch (Exception e) {
+            System.out.println("Error notificando usuario: " + e.getMessage());
+        }
+    }
 
 
     @Override

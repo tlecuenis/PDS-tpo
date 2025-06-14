@@ -1,5 +1,7 @@
 package model;
 
+import model.notificaciones.Notificacion;
+
 public class NecesitamosJugadores implements IEstadoPartido {
     public void confirmar(Partido contexto) {
         System.out.println("¡Partido confirmado!");
@@ -7,6 +9,8 @@ public class NecesitamosJugadores implements IEstadoPartido {
     }
 
     public void cancelar(Partido contexto) {
+        Notificacion notificacion = new Notificacion(contexto, "El partido fue cancelado");
+        contexto.notificar(notificacion);
         System.out.println("Partido cancelado");
         contexto.cambiarEstado(new Cancelado());
     }

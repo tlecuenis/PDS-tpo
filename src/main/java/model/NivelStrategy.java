@@ -16,7 +16,7 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 			// despues de probar que funcione la base de datos, en reemplazar el findAll por findByField y buscar por deporte
 			// jugadoresBBDD = new UserRepository().findByField("deporte", partido.getDeporte().getNombre());
 			jugadoresBBDD =  new UserRepository().findAll();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error al obtener los jugadores de la base de datos: " + e.getMessage());
@@ -44,4 +44,3 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 		}
 	}
 }
-

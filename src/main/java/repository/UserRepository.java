@@ -55,4 +55,9 @@ public class UserRepository implements UserDAO {
     public List<Usuario> findByDeporte(String deporte) {
         return repo.findByDeporte(deporte);
     }
+
+    @Override
+    public void notificarUsuario(String userID, String notificacion) {
+        repo.notificarUsuario(userID, notificacion);
+    }
 }

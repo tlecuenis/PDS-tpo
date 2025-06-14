@@ -1,3 +1,5 @@
+package controller;
+
 import repository.PartidoDAO;
 import repository.mongoRepository.MongoPartidoRepository;
 import java.util.List;

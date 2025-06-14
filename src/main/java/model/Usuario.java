@@ -2,15 +2,20 @@ package model;
 
 import java.util.List;
 import DTO.UsuarioDTO;
+import model.notificaciones.IObserver;
+import model.notificaciones.Notificacion;
+import model.notificaciones.PreferenciaNotificacion;
 
 
-public class Usuario {
+public class Usuario implements IObserver {
 	private String idUsuario;
 	private String nombre;
 	private String email;
 	private String contraseña;
 	private List<Deporte> deportes;
 	private Geolocalizacion ubicacion;
+	private PreferenciaNotificacion preferenciaNotificacion;
+
 
 	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion) {
 		this.idUsuario = idUsuario;
@@ -19,6 +24,7 @@ public class Usuario {
 		this.contraseña = contraseña;
 		this.deportes = deportes;
 		this.ubicacion = ubicacion;
+		this.preferenciaNotificacion = PreferenciaNotificacion.FIREBASE_PREFERENCE;
 	}
 
 	public void registrarse(UsuarioDTO usuario) {
@@ -66,5 +72,16 @@ public class Usuario {
 	public void setUbicacion(Geolocalizacion ubicacion) {
 		this.ubicacion = ubicacion;
 	}
-	
+	public void setPreferenciaNotificacion(PreferenciaNotificacion preferenciaNotificacion) {
+		this.preferenciaNotificacion = preferenciaNotificacion;
+	}
+	public PreferenciaNotificacion getPreferenciaNotificacion() {
+		return preferenciaNotificacion;
+	}
+
+	@Override
+	public void serNotificado(Notificacion notificacion) {
+		System.out.println("["+nombre+"]" + " siendo notificado: Partido id:"+notificacion.getPartido().getIdPartido() +" -> " + notificacion.getMensaje());
+		//Implementar lógica para que por ej le salga un mensaje en la UI si está conectado
+	}
 }

@@ -15,12 +15,12 @@ public class PartidoRepository implements PartidoDAO{
 
     @Override
     public void deleteById(String id) {
-
+        repo.deleteById(id);
     }
 
     @Override
     public Partido findById(String id) {
-        return null;
+        return repo.findById(id);
     }
 
     @Override

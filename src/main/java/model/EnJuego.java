@@ -1,5 +1,7 @@
 package model;
 
+import model.notificaciones.Notificacion;
+
 public class EnJuego implements IEstadoPartido {
 	
     public void confirmar(Partido contexto) {
@@ -19,6 +21,8 @@ public class EnJuego implements IEstadoPartido {
     }
 
     public void finalizar(Partido contexto) {
+        Notificacion notificacion = new Notificacion(contexto, "El partido ha finalizado");
+        contexto.notificar(notificacion);
         System.out.println("¡Partido finalizado!");
         contexto.cambiarEstado(new Finalizado());
     }
