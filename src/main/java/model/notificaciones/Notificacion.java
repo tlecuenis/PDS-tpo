@@ -1,6 +1,9 @@
 package model.notificaciones;
 
+import java.util.List;
+
 import model.Partido;
+import model.Usuario;
 
 public class Notificacion {
     private String mensaje;

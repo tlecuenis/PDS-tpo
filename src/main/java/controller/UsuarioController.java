@@ -60,7 +60,7 @@ public class UsuarioController {
 				&& dto.getNivel() != null && !dto.getNivel().isEmpty()) {
 			try {
 				Nivel nivel = Nivel.valueOf(dto.getNivel().toUpperCase());
-				deportes.add(new Deporte(dto.getDeporte(), nivel));
+				deportes.add(new Deporte(dto.getDeporte(), nivel,0,0));
 			} catch (IllegalArgumentException e) {
 				System.out.println("Nivel inválido, se omite deporte.");
 			}
@@ -108,7 +108,7 @@ public class UsuarioController {
 	    try {
 	        Nivel nivel = Nivel.valueOf(dto.getNivel().toUpperCase());
 	        List<Deporte> deportes = new ArrayList<>();
-	        deportes.add(new Deporte(dto.getDeporte(), nivel));
+	        deportes.add(new Deporte(dto.getDeporte(), nivel,0,0));
 	        usuarioExistente.setDeportes(deportes);
 	    } catch (IllegalArgumentException e) {
 	        System.out.println("Nivel inválido, no se actualiza deporte.");
@@ -145,7 +145,7 @@ public class UsuarioController {
 	    }
 
 	    try {
-	        deportes.add(new Deporte(deporte, Nivel.valueOf(nivel.toUpperCase())));
+	        deportes.add(new Deporte(deporte, Nivel.valueOf(nivel.toUpperCase()),0,0));
 	        usuario.setDeportes(deportes);
 	        userDAO.update(usuario);
 	        return true;

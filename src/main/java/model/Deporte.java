@@ -6,12 +6,14 @@ public class Deporte {
 
 	private String nombre;
 	private Nivel nivelJuego;
-	private List<Partido> historial;
-
-	public Deporte(String nombre, Nivel nivelJuego) {
+	private int cantPartidos;
+	private int score;
+	
+	public Deporte(String nombre, Nivel nivelJuego, int score, int cantPartidos) {
 		this.nombre = nombre;
 		this.nivelJuego = nivelJuego;
-		// this.historial = historial;
+		this.score = score;
+		this.cantPartidos = cantPartidos;
 	}
 	public String getNombre() {
 		return nombre;
@@ -25,10 +27,16 @@ public class Deporte {
 	public void setNivelJuego(Nivel nivelJuego) {
 		this.nivelJuego = nivelJuego;
 	}
-	// public List<Partido> getHistorial() {
-	// 	return historial;
-	// }
-	// public void setHistorial(List<Partido> historial) {
-	// 	this.historial = historial;
-	// }
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public int getCantPartidos() {
+		return cantPartidos;
+	}
+	public void setCantPartidos(int cantPartidos) {
+	 	this.cantPartidos = cantPartidos;
+	}
 }

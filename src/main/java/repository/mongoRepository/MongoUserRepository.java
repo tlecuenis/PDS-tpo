@@ -102,7 +102,7 @@ deportes:Array (3)
             String nombreDeporte = doc.getString("nombre");
             String nivelString = doc.getString("nivelDeJuego");
             Nivel nivel = Nivel.valueOf(nivelString);
-            Deporte d = new Deporte(nombreDeporte, nivel);
+            Deporte d = new Deporte(nombreDeporte, nivel,0,0);
             deportes.add(d);
         }
 

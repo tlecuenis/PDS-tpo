@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.notificaciones.Notificacion;
 import repository.UserRepository;
 
 public class NivelStrategy implements IEmparejamientoStrategy {
@@ -13,10 +14,7 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 
 		List<Usuario> jugadoresBBDD = new ArrayList<>();
 		try {
-			// despues de probar que funcione la base de datos, en reemplazar el findAll por findByField y buscar por deporte
-			// jugadoresBBDD = new UserRepository().findByField("deporte", partido.getDeporte().getNombre());
 			jugadoresBBDD =  new UserRepository().findAll();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error al obtener los jugadores de la base de datos: " + e.getMessage());
@@ -25,22 +23,28 @@ public class NivelStrategy implements IEmparejamientoStrategy {
 			System.out.println("No hay jugadores disponibles en la base de datos.");
 			return;
 		}
-		//probar que se imprima correctamente
-		for (Usuario jugador : jugadoresBBDD) {
-			System.out.println(jugador.getNombre());
-			for (Deporte deporte : jugador.getDeportes()) {
-				System.out.println("Deporte: " + deporte.getNombre() + " - Nivel: " + deporte.getNivelJuego());
-			}
-		}
+		Notificacion notificacion = new Notificacion(partido, "Te estamos buscando, unite al partido!");
 		for (Usuario jugador : jugadoresBBDD) {
 			for (Deporte deporte : jugador.getDeportes()) {
-				// if(jugador.getDeportes().equals(partido.getDeporte())) {
-				if(deporte.getNombre()== partido.getDeporte()) {
+				if(deporte.getNombre().toLowerCase().contains(partido.getDeporte().toLowerCase())) {
+//				if(deporte.getNombre().toLowerCase() == partido.getDeporte().toLowerCase()) {
 					if(deporte.getNivelJuego().getValor() >= nivelMinimo && deporte.getNivelJuego().getValor() <= nivelMaximo){
-						// notificar al jugador
+						// si ya está en el partido no notificar
+						boolean estaEnPartido = false;
+						for (Equipo equipo : partido.getEquipos()) {
+							for (Usuario integrante : equipo.getJugadores()) {
+//								if (integrante.equals(jugador)) {
+								if (integrante == jugador) {
+									estaEnPartido = true;
+								}
+							}
+						}
+						if(estaEnPartido == false) {
+							jugador.serNotificado(notificacion);
+						}
 					}
 				}
-			}
+			}	
 		}
 	}
 }
