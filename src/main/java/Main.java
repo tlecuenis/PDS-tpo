@@ -37,11 +37,13 @@ public class Main {
         UserRepository ur = new UserRepository();
         List<Usuario> usuarios = ur.findAll();
         Notificacion notificacion = new Notificacion(p2, "Te estamos buscando! Queremos jugadores que jueguen al fútbol y vivan en avellaneda!");
+		NotificacionDispatcher notificacionDispatcher = new NotificacionDispatcher();
+
         for (Usuario usuario: usuarios) {
         	for (Deporte deporte : usuario.getDeportes()) {
         		if(deporte.getNombre().toLowerCase().contains("fútbol") && usuario.getUbicacion().getCiudad().contains("Avellaneda")) {
         			System.out.println(usuario.getNombre());
-                	usuario.serNotificado(notificacion);
+                	notificacionDispatcher.enviar(notificacion, usuario);
         		}
         	}
         }
