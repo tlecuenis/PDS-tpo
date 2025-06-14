@@ -11,7 +11,6 @@ Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la ma
 - [🧠 Patrones de Diseño](#-patrones-de-diseño)
 - [🧱 Arquitectura](#-arquitectura)
 - [📌 Requisitos Técnicos](#-requisitos-técnicos)
-- [🚀 Cómo Ejecutar](#-cómo-ejecutar)
 - [👥 Integrantes](#-integrantes)
 
 ---
@@ -43,7 +42,7 @@ Se aplican al menos 4 de los siguientes patrones:
 | `Strategy` | Estrategias de emparejamiento de jugadores              |
 | `State`    | Transición de estados de los partidos                   |
 | `Observer` | Notificaciones ante cambios de estado                   |
-| `Factory`  | Creación flexible de objetos (partidos, usuarios, etc.) |
+| `Adapter`  | Selección de proveedor de notificaciones                |
 
 ---
 
@@ -66,27 +65,6 @@ Se aplican al menos 4 de los siguientes patrones:
 
 ---
 
-## 📎 Estructura del Proyecto
-
----
-
----
-
-## 🚀 Cómo Ejecutar
-
---- bash ---
-# 1. Clonar el repositorio
-git clone https://github.com/usuario/uno-mas.git
-cd uno-mas
-
-# 2. Compilar el proyecto (con Gradle por ejemplo)
-./gradlew build
-
-# 3. Ejecutar
-java -jar build/libs/uno-mas.jar
-
----
-
 ## 👥 Integrantes
 
 - Gianfranco Mazzei
@@ -96,7 +74,7 @@ java -jar build/libs/uno-mas.jar
 - Theo Ruschanoff
 - Valen Fernandez
 
-📚 Materia: Análisis y Diseño Orientado a Objetos
-📆 Cuatrimestre: 1C 2025
-🏫 Trabajo Práctico Obligatorio: Uno Más
+- 📚 Materia: Análisis y Diseño Orientado a Objetos
+- 📆 Cuatrimestre: 1C 2025
+- 🏫 Trabajo Práctico Obligatorio: Uno Más
 
