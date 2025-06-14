@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.ArrayList;
 import DTO.PartidoDTO;
 import java.time.LocalDateTime;
+import model.notificaciones.IObserver;
+import model.notificaciones.NotificacionDispatcher;
+import model.notificaciones.ObserverPartido;
 
-public class Partido {
+public class Partido extends ObserverPartido {
 	private String idPartido;
 	private String deporte;
 	private int cantJugadores;
@@ -15,15 +18,15 @@ public class Partido {
 	private List<Equipo> equipos;
 	private IEstadoPartido estadoActual;
 	private IEstrategiaPartido estrategiaActual;
-	private String estadistica;
-	private String comentario;
-	private ObserverPartido observador;
+	private String estadistica = "";
+	private String comentario = "";
 	private int nivelMaximo;
 	private int nivelMinimo;
 	private Usuario Creador;
 	
 	public Partido() {
-		this.equipos = new ArrayList<>();
+        super(new NotificacionDispatcher());
+        this.equipos = new ArrayList<>();
 	}
 
 	public void cambiarEstado(IEstadoPartido estado) {
@@ -72,6 +75,25 @@ public class Partido {
 		this.nivelMaximo = partido.getNivelJugadorMaximo();
 		this.nivelMinimo = partido.getNivelJugadorMinimo();
 	}
+
+	//Constructor necesario para la db
+	//IMPORTANTE --> PASAR A DTO
+	public Partido(String id, String deporte, double duracion, int cantJugadores, Geolocalizacion geolocalizacion, LocalDateTime horario, IEstadoPartido estado, String estadistica, String comentario, List<IObserver> observers, int nivelMinimo, int nivelMaximo ) {
+        super(new NotificacionDispatcher());
+		this.idPartido = id;
+		this.deporte = deporte;
+		this.cantJugadores = cantJugadores;
+		this.duracion = duracion;
+		this.ubicacion = geolocalizacion;
+		this.fecha = horario;
+		this.estadoActual = estado;
+		this.estadistica = estadistica;
+		this.comentario = comentario;
+		this.observers = observers;
+		this.nivelMaximo = nivelMaximo;
+		this.nivelMinimo = nivelMinimo;
+		this.equipos = new ArrayList<>();
+    }
 
 	public void buscarPartido(PartidoDTO partido) {
 		// Implementación a definir según lógica del sistema.
@@ -122,6 +144,10 @@ public class Partido {
 
 	public void setDeporte(String deporte) {
 		this.deporte = deporte;
+	}
+
+	public void setObservers(List<IObserver> observers) {
+		this.observers = observers;
 	}
 
 
@@ -190,7 +216,9 @@ public class Partido {
 	public List<Equipo> getEquipos() {
 		return equipos;
 	}
-
+	public List<IObserver> getObservador(){
+		return observers;
+	}
 	public IEstadoPartido getEstado() {
 		return estadoActual;
 	}
@@ -202,12 +230,6 @@ public class Partido {
 	}
 	public String getComentario() {
 		return comentario;
-	}
-	public ObserverPartido getObservador() {
-		return observador;
-	}
-	public void setObservador(ObserverPartido observador) {
-		this.observador = observador;
 	}
 	public void setNivelJugadorMinimo(int nivelMinimo) {
 		this.nivelMinimo = nivelMinimo;
@@ -221,6 +243,7 @@ public class Partido {
 	public int getNivelJugadorMaximo() {
 		return nivelMaximo;
 	}
+
 	public IEstadoPartido getEstadoActual() {
 		return estadoActual;
 	}
@@ -251,5 +274,5 @@ public class Partido {
 	public void setCreador(Usuario creador) {
 		Creador = creador;
 	}
-	
+
 }

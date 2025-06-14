@@ -86,6 +86,10 @@ public class UsuarioController {
 	    return userDAO.findById(id);
 	}
 
+	public void notificarUsuario(){
+
+	}
+
 	public boolean actualizarUsuario(UsuarioDTO dto) {
 	    Usuario usuarioExistente = userDAO.findById(dto.getNombre());
 	    if (usuarioExistente == null) {

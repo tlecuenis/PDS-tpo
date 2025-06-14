@@ -1,5 +1,7 @@
 package model;
 
+import model.notificaciones.Notificacion;
+
 public class Armado implements IEstadoPartido {
     public void confirmar(Partido contexto) {
         System.out.println("¡Partido confirmado!");
@@ -8,6 +10,8 @@ public class Armado implements IEstadoPartido {
 
     public void cancelar(Partido contexto) {
         System.out.println("¡Partido cancelado!");
+        Notificacion notificacion = new Notificacion(contexto, "El partido fue cancelado");
+        contexto.notificar(notificacion);
         contexto.cambiarEstado(new Cancelado());
     }
     

@@ -1,5 +1,7 @@
 package model;
 
+import model.notificaciones.Notificacion;
+
 public class Confirmado implements IEstadoPartido {
     public void confirmar(Partido contexto) {
         System.out.println("No puede confirmarse. El partido ya está en ese estado.");
@@ -10,6 +12,8 @@ public class Confirmado implements IEstadoPartido {
     }
 
     public void iniciar(Partido contexto) {
+        Notificacion notificacion = new Notificacion(contexto, "El partido está en juego");
+        contexto.notificar(notificacion);
         System.out.println("¡Partido en juego!");
         contexto.cambiarEstado(new EnJuego());
     }

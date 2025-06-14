@@ -10,4 +10,5 @@ public interface UserDAO extends DAO<Usuario>{
     void eliminarDeporteFavorito(Deporte d);
     void update(Usuario usuario);
     List<Usuario> findByDeporte(String deporte);
+    void notificarUsuario(String userID, String notificacion);
 }
