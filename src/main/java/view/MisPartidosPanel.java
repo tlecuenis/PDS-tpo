@@ -15,9 +15,20 @@ public class MisPartidosPanel extends JPanel {
 
     public MisPartidosPanel(Usuario usuarioLogeado) {
         this.usuarioLogeado = usuarioLogeado;
+        inicializarVista();
+        cargarMisPartidos();
+    }
+
+    public MisPartidosPanel(Ejecucion ejecucion, String nicknameActual) {
+        this.usuarioLogeado = UsuarioController.getInstancia().getUserById(nicknameActual);
+        inicializarVista();
+        cargarMisPartidos();
+    }
+
+    private void inicializarVista() {
         setLayout(new BorderLayout());
 
-        JLabel titulo = new JLabel("Partidos en los que estás inscripto", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Mis Partidos creados", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
         add(titulo, BorderLayout.NORTH);
 
@@ -25,20 +36,26 @@ public class MisPartidosPanel extends JPanel {
         listaPanel.setLayout(new BoxLayout(listaPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(listaPanel);
         add(scrollPane, BorderLayout.CENTER);
-
-        cargarMisPartidos();
     }
 
-    public MisPartidosPanel(Ejecucion ejecucion, String nicknameActual) {
-		// TODO Auto-generated constructor stub
-	}
-
-	private void cargarMisPartidos() {
+    private void cargarMisPartidos() {
         listaPanel.removeAll();
+
         List<Partido> partidos = PartidoController.getInstancia().obtenerTodosLosPartidos();
+
+        if (partidos == null || partidos.isEmpty()) {
+            listaPanel.add(new JLabel("No has creado ningún partido."));
+            revalidate();
+            repaint();
+            return;
+        }
+
+        boolean hayPartidos = false;
 
         for (Partido p : partidos) {
             if (estaUsuarioEnPartido(p, usuarioLogeado)) {
+                hayPartidos = true;
+
                 JPanel partidoPanel = new JPanel(new BorderLayout());
                 partidoPanel.setBorder(BorderFactory.createTitledBorder(p.getDeporte() + " - " + p.getFecha()));
 
@@ -80,6 +97,10 @@ public class MisPartidosPanel extends JPanel {
             }
         }
 
+        if (!hayPartidos) {
+            listaPanel.add(new JLabel("No estás inscripto en ningún partido."));
+        }
+
         revalidate();
         repaint();
     }
@@ -90,3 +111,5 @@ public class MisPartidosPanel extends JPanel {
                 .anyMatch(j -> j.getIdUsuario().equals(usuario.getIdUsuario()));
     }
 }
+
+
