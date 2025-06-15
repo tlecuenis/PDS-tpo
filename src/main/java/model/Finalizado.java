@@ -34,4 +34,9 @@ public class Finalizado implements IEstadoPartido {
         System.out.println("Estadística post partido registrada.");
         contexto.agregarEstadistica(estadistica);
     }
+
+    @Override
+    public String getNombreEstado() {
+        return "Finalizado";
+    }
 }

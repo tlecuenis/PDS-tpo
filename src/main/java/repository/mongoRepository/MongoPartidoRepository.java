@@ -60,7 +60,7 @@ public class MongoPartidoRepository implements PartidoDAO {
             equipos.add(equipo);
         }
         d.append("equipos", equipos);
-        d.append("estado", p.getEstado());
+        d.append("estado", p.getEstado().getNombreEstado());
         d.append("estadistica", p.getEstadistica());
         d.append("comentario", p.getComentario());
 
@@ -78,6 +78,7 @@ public class MongoPartidoRepository implements PartidoDAO {
 
         d.append("nivelMinimo", p.getNivelJugadorMinimo());
         d.append("nivelMaximo", p.getNivelJugadorMaximo());
+        d.append("creadorID", p.getCreador().getIdUsuario());
 
         return d;
     }
@@ -103,10 +104,7 @@ public class MongoPartidoRepository implements PartidoDAO {
 
         // Horario
         String fechaStr = d.getString("horario");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(fechaStr, formatter);
-        LocalDateTime horario = zonedDateTime.toLocalDateTime();
+        LocalDateTime horario = LocalDateTime.parse(fechaStr);
 
 
         // Observadores
@@ -134,11 +132,17 @@ public class MongoPartidoRepository implements PartidoDAO {
                 case "Armado":
                     state = new Armado();
                     break;
+                case "EnJuego":
+                    state = new EnJuego();
+                    break;
                 case "Cancelado":
                     state =  new Cancelado();
                     break;
                 case "NecesitamosJugadores":
                     state =  new NecesitamosJugadores();
+                    break;
+                case "Finalizado":
+                    state =  new Finalizado();
                     break;
                 default:
                     break;
@@ -149,7 +153,10 @@ public class MongoPartidoRepository implements PartidoDAO {
         int nivelMinimo = d.getInteger("nivelMinimo");
         int nivelMaximo = d.getInteger("nivelMaximo");
 
-        Partido partido = new Partido(idPartido, deporte, duracion, cantidadJugadores, geoLoc, horario, state, estadistica, comentario, observadores, nivelMinimo, nivelMaximo);
+        //Creador
+        Usuario creador = userRepository.findById(d.getString("creadorID"));
+
+        Partido partido = new Partido(idPartido, deporte, duracion, cantidadJugadores, geoLoc, horario, state, estadistica, comentario, observadores, nivelMinimo, nivelMaximo, creador);
 
         // Equipos
         List<Equipo> equipos = new ArrayList<>();
@@ -222,6 +229,13 @@ public class MongoPartidoRepository implements PartidoDAO {
 
     @Override
     public Partido findByField(String field, String value) {
+        try {
+            Document partido = partidos.find(eq(field, value)).first();
+            return documentToPartido(partido);
+        }
+        catch (Exception e) {
+            System.out.println("Usuario no encontrado: "+e.getMessage());
+        }
         return null;
     }
 
