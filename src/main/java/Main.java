@@ -52,11 +52,27 @@ public class Main {
         p2.confirmar();
         p2.iniciar();
          */
+        UserRepository ur = new UserRepository();
+        /*
+        Deporte d = new Deporte("Fútbol", Nivel.INTERMEDIO, 0, 0);
+        Deporte d2 = new Deporte("Tenis", Nivel.PRINCIPIANTE, 0, 0);
+        List<Deporte> deportes = new ArrayList<>();
+        deportes.add(d);
+        deportes.add(d2);
+        Geolocalizacion g = new Geolocalizacion(19.5, 1.5, 8.2, "San Telmo");
 
-        UserRepository user = new UserRepository();
-        user.actualizarCantPartidos("testdb", "Fútbol");
-        user.actualizarScore("testdb", "Fútbol", 6);
+        for(int i=1; i<=30; i++){
+            String id = "user"+String.valueOf(i);
+            String nombre = "Usuario  "+String.valueOf(i);
+            String email = "user"+String.valueOf(i) + "@email.com";
+            String contrasenia = "user"+String.valueOf(i) + "contraseña";
+            Usuario usuario = new Usuario(id, nombre, email, contrasenia, deportes, g);
+            user.save(usuario);
+         */
 
-        
+        Partido p = pr.findById("1");
+        p.confirmar();
+        p.iniciar();
+
     }
 }
