@@ -41,6 +41,7 @@ public class Partido extends ObserverPartido {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
 				equipo.agregarJugador(jugador);
+				agregarDestinatario(jugador);
 				return;
 			}
 		}
@@ -51,6 +52,7 @@ public class Partido extends ObserverPartido {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
 				equipo.eliminarJugador(jugador);
+				eliminarDestinatario(jugador);
 				return;
 			}
 		}

@@ -1,5 +1,9 @@
 package repository.mongoRepository;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import model.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -11,6 +15,7 @@ import org.bson.conversions.Bson;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,7 +175,7 @@ public class MongoPartidoRepository implements PartidoDAO {
     public void save(Partido p) {
         Document doc = partidoToDocument(p);
         try{
-            partidos.insertOne(doc);
+            partidos.replaceOne(Filters.eq("_id", p.getIdPartido()), doc, new ReplaceOptions().upsert(true));
             System.out.println("partido agregado");
         }
         catch(Exception e){
@@ -220,8 +225,80 @@ public class MongoPartidoRepository implements PartidoDAO {
         return null;
     }
 
-    @Override
-    public void pendientehaceresto() {
 
+    @Override
+    public void agregarJugador(String partidoID, String equipo, Usuario usuario) {
+        Document jugadorDoc = new Document()
+                .append("playerID", usuario.getIdUsuario())
+                .append("nombre", usuario.getNombre());
+        try {
+            partidos.updateOne(
+                    Filters.and(
+                            Filters.eq("_id", partidoID),
+                            Filters.eq("equipos.nombre", equipo)
+                    ),
+                    Updates.push("equipos.$.jugadores", jugadorDoc)
+            );
+            System.out.println("Jugador agregado al equipo " + equipo);
+        } catch (Exception e) {
+            System.out.println("Error al agregar jugador: " + e.getMessage());
+        }
     }
+
+    @Override
+    public void eliminarJugador(String partidoID, String equipo, Usuario usuario) {
+        try {
+            Bson filter = Filters.eq("_id", partidoID);
+
+            Bson update = Updates.pull("equipos.$[eq].jugadores",
+                    new Document("playerID", usuario.getIdUsuario()));
+
+            UpdateOptions options = new UpdateOptions().arrayFilters(
+                    Arrays.asList(Filters.eq("eq.nombre", equipo))
+            );
+
+            partidos.updateOne(filter, update, options);
+            System.out.println("Jugador eliminado del equipo " + equipo);
+        } catch (Exception e) {
+            System.out.println("Error al eliminar jugador: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void agregarObserver(String partidoID, IObserver observer) {
+        Usuario user = (Usuario) observer;
+        Bson filter = eq("_id", partidoID);
+        Document obsDoc = new Document()
+                .append("id", user.getIdUsuario())
+                .append("nombre", user.getNombre());
+        Document update = new Document("$push", new Document("observadores", obsDoc));
+
+        try{
+            partidos.updateOne(filter, update);
+            System.out.println("observer agregado al partido");
+        }
+        catch (Exception e) {
+            System.out.println("Error agregando observer al partido: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void eliminarObserver(String partidoID, IObserver observer) {
+        Usuario user = (Usuario) observer;
+        Bson filter = eq("_id", partidoID);
+
+        Document obsDoc = new Document()
+                .append("id", user.getIdUsuario())
+                .append("nombre", user.getNombre());
+
+        Document update = new Document("$pull", new Document("observadores", obsDoc));
+
+        try {
+            partidos.updateOne(filter, update);
+            System.out.println("Observer eliminado del partido");
+        } catch (Exception e) {
+            System.out.println("Error eliminando observer del partido: " + e.getMessage());
+        }
+    }
+
 }

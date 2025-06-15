@@ -33,6 +33,7 @@ public class Main {
 //        p2.iniciar();
 
         PartidoRepository pr = new PartidoRepository();
+        /*
         Partido p2 = pr.findById("1");
         UserRepository ur = new UserRepository();
         List<Usuario> usuarios = ur.findAll();
@@ -48,7 +49,12 @@ public class Main {
         p2.setEstadoActual(new Armado());
         p2.confirmar();
         p2.iniciar();
-        
+         */
+
+        UserRepository user = new UserRepository();
+        user.actualizarCantPartidos("testdb", "Fútbol");
+        user.actualizarScore("testdb", "Fútbol", 6);
+
         
     }
 }

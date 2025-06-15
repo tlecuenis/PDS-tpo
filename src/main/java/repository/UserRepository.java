@@ -1,6 +1,7 @@
 package repository;
 import model.Deporte;
 import model.Usuario;
+import model.notificaciones.Notificacion;
 import repository.mongoRepository.MongoUserRepository;
 import java.util.List;
 
@@ -59,5 +60,20 @@ public class UserRepository implements UserDAO {
     @Override
     public void notificarUsuario(String userID, String notificacion) {
         repo.notificarUsuario(userID, notificacion);
+    }
+
+    @Override
+    public List<Notificacion> getNotificaciones(String userID) {
+        return repo.getNotificaciones(userID);
+    }
+
+    @Override
+    public void actualizarScore(String userID, String deporte, int score) {
+        repo.actualizarScore(userID, deporte, score);
+    }
+
+    @Override
+    public void actualizarCantPartidos(String userID, String deporte) {
+        repo.actualizarCantPartidos(userID, deporte);
     }
 }
