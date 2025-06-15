@@ -1,12 +1,14 @@
 package repository;
 
 import model.Partido;
+import model.Usuario;
+import model.notificaciones.IObserver;
 import repository.mongoRepository.MongoPartidoRepository;
 
 import java.util.List;
 
 public class PartidoRepository implements PartidoDAO{
-    DAO<Partido> repo = new MongoPartidoRepository();
+    PartidoDAO repo = new MongoPartidoRepository();
 
     @Override
     public void save(Partido partido) {
@@ -33,8 +35,24 @@ public class PartidoRepository implements PartidoDAO{
         return null;
     }
 
-    @Override
-    public void pendientehaceresto() {
 
+    @Override
+    public void agregarJugador(String partidoID, String equipo, Usuario usuario) {
+        repo.agregarJugador(partidoID, equipo, usuario);
+    }
+
+    @Override
+    public void eliminarJugador(String partidoID, String equipo, Usuario usuario) {
+        repo.eliminarJugador(partidoID, equipo, usuario);
+    }
+
+    @Override
+    public void agregarObserver(String partidoID, IObserver observer) {
+        repo.agregarObserver(partidoID, observer);
+    }
+
+    @Override
+    public void eliminarObserver(String partidoID, IObserver observer) {
+        repo.eliminarObserver(partidoID, observer);
     }
 }
