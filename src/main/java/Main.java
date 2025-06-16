@@ -2,6 +2,7 @@ import DTO.PartidoDTO;
 import model.*;
 import model.notificaciones.Notificacion;
 import model.notificaciones.NotificacionDispatcher;
+import model.notificaciones.PreferenciaNotificacion;
 import repository.PartidoRepository;
 import repository.UserRepository;
 
@@ -70,9 +71,7 @@ public class Main {
             user.save(usuario);
          */
 
-        Partido p = pr.findById("1");
-        p.confirmar();
-        p.iniciar();
+        
 
     }
 }

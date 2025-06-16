@@ -9,7 +9,8 @@ public class EmailStrategy implements INotificacionStrategy {
 
     @Override
     public void enviarNotificacion(IObserver observer, Notificacion notificacion) {
-        adapter.enviarNotificacion(observer, notificacion);
+        Notificacion nuevaNoti = new Notificacion(notificacion.getPartido(), "[Envíada vía Email] "+notificacion.getMensaje());
+        adapter.enviarNotificacion(observer, nuevaNoti);
     }
 }
 

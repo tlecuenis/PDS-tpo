@@ -23,7 +23,7 @@ public class NotificacionDispatcher {
         //guardar la notificacion en la db
         String userID = userToNotify.getIdUsuario();
         String mensaje = "Partido "+notificacion.getPartido().getIdPartido()+" --> "+notificacion.getMensaje();
-        userRpository.notificarUsuario(userID, mensaje);
+        userRpository.notificarUsuario(userID, notificacion);
         estrategia.enviarNotificacion(observer, notificacion);
     }
 }

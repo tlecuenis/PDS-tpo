@@ -58,7 +58,7 @@ public class UserRepository implements UserDAO {
     }
 
     @Override
-    public void notificarUsuario(String userID, String notificacion) {
+    public void notificarUsuario(String userID, Notificacion notificacion) {
         repo.notificarUsuario(userID, notificacion);
     }
 

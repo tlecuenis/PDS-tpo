@@ -17,14 +17,14 @@ public class Usuario implements IObserver {
 	private PreferenciaNotificacion preferenciaNotificacion;
 
 
-	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion) {
+	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion, PreferenciaNotificacion preferencia) {
 		this.idUsuario = idUsuario;
 		this.nombre = nombre;
 		this.email = email;
 		this.contraseña = contraseña;
 		this.deportes = deportes;
 		this.ubicacion = ubicacion;
-		this.preferenciaNotificacion = PreferenciaNotificacion.FIREBASE_PREFERENCE;
+		this.preferenciaNotificacion = preferencia;
 	}
 
 	public void registrarse(UsuarioDTO usuario) {

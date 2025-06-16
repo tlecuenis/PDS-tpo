@@ -8,8 +8,10 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import model.*;
 import model.notificaciones.Notificacion;
+import model.notificaciones.PreferenciaNotificacion;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import repository.PartidoRepository;
 import repository.UserDAO;
 
 import java.util.ArrayList;
@@ -62,6 +64,9 @@ public class MongoUserRepository implements UserDAO {
 
         doc.append("notificaciones", notificaciones);
 
+        String preferenciaNoti = user.getPreferenciaNotificacion().name();
+        doc.append("preferenciaNotificacion", preferenciaNoti);
+
         return doc;
     }
 
@@ -92,8 +97,16 @@ public class MongoUserRepository implements UserDAO {
                 deportes.add(d);
             }
         }
+        //se asigna por defecto
+        PreferenciaNotificacion preferencia = PreferenciaNotificacion.EMAIL_PREFERENCE;
+        try {
+            String notificacionPref = document.getString("preferenciaNotificacion");
+            preferencia = PreferenciaNotificacion.valueOf(notificacionPref);
+        }catch (Exception e){
+            System.out.println("Error buscando las preferencias de notificación: "+e.getMessage());
+        }
 
-        return new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl);
+        return new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl, preferencia);
     }
 
     @Override
@@ -179,14 +192,13 @@ public class MongoUserRepository implements UserDAO {
     }
 
     @Override
-    public void notificarUsuario(String userID, String notificacion) {
+    public void notificarUsuario(String userID, Notificacion notificacion) {
         Bson filter = eq("_id", userID);
-        Document notiDoc = new Document("mensaje", notificacion);
+        Document notiDoc = new Document().append("mensaje", notificacion.getMensaje()).append("partidoID", notificacion.getPartido().getIdPartido());
         Document update = new Document("$push", new Document("notificaciones", notiDoc));
 
         try {
             users.updateOne(filter, update);
-            System.out.println("Usuario notificado");
         } catch (Exception e) {
             System.out.println("Error notificando usuario: " + e.getMessage());
         }
@@ -194,6 +206,7 @@ public class MongoUserRepository implements UserDAO {
 
     @Override
     public List<Notificacion> getNotificaciones(String userID) {
+        PartidoRepository partidoRepository = new PartidoRepository();
         List<Notificacion> notificaciones = new ArrayList<>();
         Bson filter = eq("_id", userID);
         try {
@@ -202,12 +215,14 @@ public class MongoUserRepository implements UserDAO {
                 List<Document> notificacionesDoc = userDoc.getList("notificaciones", Document.class);
                 for (Document doc : notificacionesDoc) {
                     String mensaje = doc.getString("mensaje");
-                    Notificacion n = new Notificacion(null, mensaje);
+                    Partido partido = partidoRepository.findById(doc.getString("partidoID"));
+                    Notificacion n = new Notificacion(partido, mensaje);
                     notificaciones.add(n);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error buscando notificaciones: " + e.getMessage());
+            System.out.println("Error buscando notificaciones: ");
+            e.printStackTrace();
         }
         return notificaciones;
     }

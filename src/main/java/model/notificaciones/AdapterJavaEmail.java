@@ -9,7 +9,8 @@ public class AdapterJavaEmail implements IAdapterEmail {
         Usuario userToNotify = (Usuario) observer;
         String email = userToNotify.getEmail();
         //hacer algo usando la API de JavaMail (?
-        observer.serNotificado(notificacion);
+        Notificacion nuevaNoti = new Notificacion(notificacion.getPartido(), "["+email+"] "+notificacion.getMensaje());
+        observer.serNotificado(nuevaNoti);
     }
 }
 

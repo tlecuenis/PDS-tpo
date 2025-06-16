@@ -24,10 +24,11 @@ import static com.mongodb.client.model.Filters.eq;
 public class MongoPartidoRepository implements PartidoDAO {
     private final MongoDatabase db = DBConnection.getDBConnection();
     private final MongoCollection<Document> partidos;
-    private final UserRepository userRepository = new UserRepository();
+    private final UserRepository userRepository;
 
     public MongoPartidoRepository() {
         partidos = db.getCollection("Partidos");
+        this.userRepository = new UserRepository();
     }
 
     private Document partidoToDocument(Partido p){
