@@ -50,27 +50,6 @@ public class PerfilUsuario extends JPanel {
         txtCiudad.setEditable(false);
         panelContenido.add(crearFila("Ciudad:", txtCiudad));
 
-        comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
-        comboDeporte.setEnabled(false);
-        panelContenido.add(crearFila("Deporte favorito:", comboDeporte));
-
-        comboDeporte.addActionListener(e -> {
-            if ("Otro".equals(comboDeporte.getSelectedItem()) && comboDeporte.isEnabled()) {
-                String nuevoDeporte = JOptionPane.showInputDialog(
-                        PerfilUsuario.this, "Ingrese su deporte favorito:");
-                if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
-                    comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
-                    comboDeporte.setSelectedItem(nuevoDeporte.trim());
-                } else {
-                    comboDeporte.setSelectedIndex(0);
-                }
-            }
-        });
-
-        comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
-        comboNivel.setEnabled(false);
-        panelContenido.add(crearFila("Nivel:", comboNivel));
-
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         btnEditar = new JButton("Editar");
         btnGuardar = new JButton("Guardar");
@@ -94,8 +73,6 @@ public class PerfilUsuario extends JPanel {
             txtNombre.setEditable(true);
             txtEmail.setEditable(true);
             txtCiudad.setEditable(true);
-            comboDeporte.setEnabled(true);
-            comboNivel.setEnabled(true);
             btnGuardar.setEnabled(true);
             lblMensaje.setText("");
         });
@@ -104,10 +81,8 @@ public class PerfilUsuario extends JPanel {
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
             String ciudad = txtCiudad.getText().trim();
-            String deporte = (String) comboDeporte.getSelectedItem();
-            String nivel = (String) comboNivel.getSelectedItem();
 
-            UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", ciudad, deporte, nivel);
+            UsuarioDTO dto = new UsuarioDTO(nickname, nombre, email, "", ciudad, null, null);
 
             boolean exito = usuarioController.actualizarUsuario(dto);
 
@@ -115,8 +90,6 @@ public class PerfilUsuario extends JPanel {
                 txtNombre.setEditable(false);
                 txtEmail.setEditable(false);
                 txtCiudad.setEditable(false);
-                comboDeporte.setEnabled(false);
-                comboNivel.setEnabled(false);
                 btnGuardar.setEnabled(false);
 
                 lblMensaje.setForeground(new Color(0, 128, 0));
@@ -150,25 +123,6 @@ public class PerfilUsuario extends JPanel {
             txtEmail.setText(usuario.getEmail());
             txtCiudad.setText(usuario.getUbicacion().getCiudad());
 
-            if (!usuario.getDeportes().isEmpty()) {
-                Nivel nivelEnum = usuario.getDeportes().get(0).getNivelJuego();
-                String nivelNormalizado = nivelEnum.name().toLowerCase();
-
-                switch (nivelNormalizado) {
-                    case "principiante":
-                        comboNivel.setSelectedItem("Principiante");
-                        break;
-                    case "intermedio":
-                        comboNivel.setSelectedItem("Intermedio");
-                        break;
-                    case "avanzado":
-                        comboNivel.setSelectedItem("Avanzado");
-                        break;
-                    default:
-                        comboNivel.setSelectedIndex(0);
-                        break;
-                }
-            }
         } else {
             lblMensaje.setForeground(Color.RED);
             lblMensaje.setText("Usuario no encontrado.");

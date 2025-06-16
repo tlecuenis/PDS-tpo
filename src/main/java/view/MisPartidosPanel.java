@@ -70,7 +70,7 @@ public class MisPartidosPanel extends JPanel {
             JPanel partidoPanel = new JPanel();
             partidoPanel.setLayout(new BoxLayout(partidoPanel, BoxLayout.Y_AXIS));
             partidoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), 
-                p.getIdPartido() + " - " + p.getFecha()));
+                p.getIdPartido() + " - " + p.getFecha() + " - " + p.getEstado()));
 
             // Compactar el panel
             partidoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));

@@ -25,10 +25,10 @@ public class CrearPartido extends JPanel {
     private JComboBox<String> comboNivel;
     private JButton btnCrear;
     private JButton btnVolver;
-    private String nicknameActual; // <- agregado
+    private String nicknameActual; 
 
     public CrearPartido(Ejecucion parent, String nicknameActual) {
-        this.nicknameActual = nicknameActual; // <- guardamos el nickname
+        this.nicknameActual = nicknameActual; 
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

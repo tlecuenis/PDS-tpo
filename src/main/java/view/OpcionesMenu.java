@@ -17,7 +17,6 @@ public class OpcionesMenu extends JPanel {
         panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
         panelContenido.setOpaque(false);
 
-        // ✅ Título con nombre dinámico (lo agregaste pero lo habías quitado)
         lblTitulo = new JLabel("Bienvenido");
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
@@ -31,15 +30,15 @@ public class OpcionesMenu extends JPanel {
         panelContenido.add(lblSubtitulo);
 
         // Botones
-        JButton btnVerPartidos = new JButton("Ver Partidos Disponibles");
         JButton btnCrearPartido = new JButton("Crear Partido");
+        JButton btnVerPartidos = new JButton("Ver Partidos Disponibles");
+        JButton btnMisPartidos = new JButton("Ver Mis Partidos");
         JButton btnMisDeportes = new JButton("Mis Deportes");
         JButton btnPerfil = new JButton("Ver Perfil");
-        JButton btnMisPartidos = new JButton("Ver mis partidos");
         JButton btnNotificaciones = new JButton("Notificaciones");
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 
-        for (JButton btn : new JButton[]{btnVerPartidos, btnCrearPartido, btnMisDeportes, btnPerfil,btnMisPartidos, btnNotificaciones, btnCerrarSesion}) {
+        for (JButton btn : new JButton[]{btnCrearPartido, btnVerPartidos, btnMisPartidos, btnMisDeportes,btnPerfil, btnNotificaciones, btnCerrarSesion}) {
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setMaximumSize(new Dimension(220, 30));
             btn.setPreferredSize(new Dimension(220, 30));
@@ -67,7 +66,6 @@ public class OpcionesMenu extends JPanel {
         add(panelContenido);
     }
 
-    // ✅ Este método debe llamarse cada vez que se entra al menú
     public void actualizarUsuario(String nickname) {
         this.nicknameActual = nickname;
         Usuario user = UsuarioController.getInstancia().getUserById(nickname);
