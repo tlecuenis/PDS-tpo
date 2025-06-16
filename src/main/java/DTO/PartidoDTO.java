@@ -14,6 +14,7 @@ public class PartidoDTO {
 	private LocalDateTime fecha;
 	private int nivelMaximo;
 	private int nivelMinimo;
+	private String creadorId;
 	
 	public String getIdPartido() {
 		return idPartido;
@@ -63,6 +64,12 @@ public class PartidoDTO {
 	}
 	public void setNivelJugadorMinimo(int nivelMinimo) {
 		this.nivelMinimo = nivelMinimo;
+	}
+	public String getCreador() {
+		return creadorId;
+	}
+	public void setCreador(String creadorId) {
+		this.creadorId = creadorId;
 	}
 }
 
