@@ -3,6 +3,8 @@ package model;
 import java.util.List;
 import java.util.ArrayList;
 import DTO.PartidoDTO;
+import controller.UsuarioController;
+import model.Usuario;
 import java.time.LocalDateTime;
 import model.notificaciones.IObserver;
 import model.notificaciones.NotificacionDispatcher;
@@ -72,8 +74,12 @@ public class Partido extends ObserverPartido {
 		this.duracion = partido.getDuracion();
 		this.ubicacion = partido.getUbicacion();
 		this.fecha = partido.getFecha();
+		this.estadoActual = new NecesitamosJugadores();
 		this.nivelMaximo = partido.getNivelJugadorMaximo();
 		this.nivelMinimo = partido.getNivelJugadorMinimo();
+		
+		Usuario creadorUsuario = UsuarioController.getInstancia().getUserById(partido.getCreador());
+        this.setCreador(creadorUsuario);
 	}
 
 	//Constructor necesario para la db

@@ -1,6 +1,5 @@
 package model;
 
-
 public interface IEstadoPartido {
 	   void confirmar(Partido contexto);
 	   void cancelar(Partido contexto);
