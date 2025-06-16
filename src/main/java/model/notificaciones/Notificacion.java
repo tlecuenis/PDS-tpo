@@ -21,5 +21,9 @@ public class Notificacion {
     public Partido getPartido() {
         return partido;
     }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
 }
 
