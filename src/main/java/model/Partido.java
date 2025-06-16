@@ -1,10 +1,11 @@
 package model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import DTO.PartidoDTO;
 import controller.UsuarioController;
-import model.Usuario;
+
 import java.time.LocalDateTime;
 import model.notificaciones.IObserver;
 import model.notificaciones.NotificacionDispatcher;
@@ -43,6 +44,7 @@ public class Partido extends ObserverPartido {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
 				equipo.agregarJugador(jugador);
+				agregarDestinatario(jugador);
 				return;
 			}
 		}
@@ -53,6 +55,7 @@ public class Partido extends ObserverPartido {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
 				equipo.eliminarJugador(jugador);
+				eliminarDestinatario(jugador);
 				return;
 			}
 		}
@@ -84,7 +87,7 @@ public class Partido extends ObserverPartido {
 
 	//Constructor necesario para la db
 	//IMPORTANTE --> PASAR A DTO
-	public Partido(String id, String deporte, double duracion, int cantJugadores, Geolocalizacion geolocalizacion, LocalDateTime horario, IEstadoPartido estado, String estadistica, String comentario, List<IObserver> observers, int nivelMinimo, int nivelMaximo ) {
+	public Partido(String id, String deporte, double duracion, int cantJugadores, Geolocalizacion geolocalizacion, LocalDateTime horario, IEstadoPartido estado, String estadistica, String comentario, List<IObserver> observers, int nivelMinimo, int nivelMaximo, Usuario creador) {
         super(new NotificacionDispatcher());
 		this.idPartido = id;
 		this.deporte = deporte;
@@ -95,10 +98,11 @@ public class Partido extends ObserverPartido {
 		this.estadoActual = estado;
 		this.estadistica = estadistica;
 		this.comentario = comentario;
-		this.observers = observers;
+		this.observers = new HashSet<>(observers);
 		this.nivelMaximo = nivelMaximo;
 		this.nivelMinimo = nivelMinimo;
 		this.equipos = new ArrayList<>();
+		this.Creador = creador;
     }
 
 	public void buscarPartido(PartidoDTO partido) {
@@ -153,7 +157,7 @@ public class Partido extends ObserverPartido {
 	}
 
 	public void setObservers(List<IObserver> observers) {
-		this.observers = observers;
+		this.observers = new HashSet<>(observers);
 	}
 
 
@@ -223,7 +227,7 @@ public class Partido extends ObserverPartido {
 		return equipos;
 	}
 	public List<IObserver> getObservador(){
-		return observers;
+		return new ArrayList<>(observers);
 	}
 	public IEstadoPartido getEstado() {
 		return estadoActual;

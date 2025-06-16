@@ -1,5 +1,6 @@
 package model;
 
+
 public interface IEstadoPartido {
 	   void confirmar(Partido contexto);
 	   void cancelar(Partido contexto);
@@ -9,6 +10,7 @@ public interface IEstadoPartido {
 	   void necesitamosJugadores(Partido contexto);
 	   void agregarComentario(Partido contexto, String comentario);
 	   void agregarEstadistica(Partido contexto, String estadistica);
+	   String getNombreEstado();
 }
 
 
