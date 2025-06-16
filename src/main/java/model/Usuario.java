@@ -17,14 +17,14 @@ public class Usuario implements IObserver {
 	private PreferenciaNotificacion preferenciaNotificacion;
 
 
-	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion, PreferenciaNotificacion preferencia) {
+	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion) {
 		this.idUsuario = idUsuario;
 		this.nombre = nombre;
 		this.email = email;
 		this.contraseña = contraseña;
 		this.deportes = deportes;
 		this.ubicacion = ubicacion;
-		this.preferenciaNotificacion = preferencia;
+		this.preferenciaNotificacion = PreferenciaNotificacion.FIREBASE_PREFERENCE;
 	}
 
 	public void registrarse(UsuarioDTO usuario) {
@@ -84,20 +84,4 @@ public class Usuario implements IObserver {
 		System.out.println("["+nombre+"]" + " siendo notificado: Partido id:"+notificacion.getPartido().getIdPartido() +" -> " + notificacion.getMensaje());
 		//Implementar lógica para que por ej le salga un mensaje en la UI si está conectado
 	}
-
-	//Estos métodos sirven para que un mismo Usuario no pueda ser agregado 2 veces a la lista de observers del mismo Partido
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Usuario usuario = (Usuario) o;
-		return this.getEmail().equals(usuario.getEmail()); // O el atributo que los identifica
-	}
-
-	@Override
-	public int hashCode() {
-		return this.getEmail().hashCode(); // Igual que en equals
-	}
 }
-
-

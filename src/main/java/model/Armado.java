@@ -40,11 +40,6 @@ public class Armado implements IEstadoPartido {
         System.out.println("No se pueden agregar estadísticas, el partido no ha finalizado.");
     }
 
-    @Override
-    public String getNombreEstado() {
-        return "Armado";
-    }
-
 
 }
 

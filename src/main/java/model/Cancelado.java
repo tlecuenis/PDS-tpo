@@ -31,10 +31,5 @@ public class Cancelado implements IEstadoPartido {
     public void agregarEstadistica(Partido contexto, String comentario) {
         System.out.println("No se puede agregar comentarios, el partido está cancelado.");
     }
-
-    @Override
-    public String getNombreEstado() {
-        return "Cancelado";
-    }
 }
 
