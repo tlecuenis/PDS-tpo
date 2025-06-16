@@ -125,6 +125,8 @@ public class CrearPartido extends JPanel {
         btnVolver.setBounds(250, 220, 100, 30);
         add(btnVolver, gbc);
 
+        btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+        
         btnCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
