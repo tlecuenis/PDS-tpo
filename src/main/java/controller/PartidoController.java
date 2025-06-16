@@ -43,9 +43,11 @@ public class PartidoController {
 
     public List<Partido> obtenerPartidosCreadosPorUsuario() {
         List<Partido> todos = partidoRepository.findAll();
-        return todos.stream()
-                .filter(p -> p.getCreador().getIdUsuario().equals(usuarioLogueado.getIdUsuario()))
-                .collect(Collectors.toList());
+        List<Partido> filtrados = todos.stream()
+            .filter(p -> p.getCreador() != null && p.getCreador().getIdUsuario().equals(usuarioLogueado.getIdUsuario()))
+            .collect(Collectors.toList());
+        System.out.println("Partidos creados por usuario " + usuarioLogueado.getIdUsuario() + ": " + filtrados.size());
+        return filtrados;
     }
 
     public void actualizarPartido(Partido partido) {
@@ -61,42 +63,92 @@ public class PartidoController {
         }
     }
     
-	public void crearPartido(PartidoDTO partido) {
-		
+    public void crearPartido(PartidoDTO partidoDTO) {
+        Partido partido = new Partido();
+        partido.crearPartido(partidoDTO);
+
+        if (usuarioLogueado == null) {
+            System.out.println("ERROR: usuarioLogueado es null al crear el partido");
+        } else {
+            System.out.println("Seteando creador: " + usuarioLogueado.getIdUsuario());
+            partido.setCreador(usuarioLogueado);
+        }
+
+        partidoRepository.save(partido);
+        System.out.println("Partido creado: " + partido.getIdPartido());
+    }
+
+	public void buscarPartido(PartidoDTO partidoDTO) {
+		Partido partido = partidoRepository.findById(partidoDTO.getIdPartido());
+		if (partido == null) {
+			System.out.println("Partido no encontrado.");
+		} else {
+			System.out.println("Partido encontrado: " + partido.getIdPartido());
+		}
 	}
-	
-	public void buscarPartido(PartidoDTO partido) {
-		
+
+	public void confirmar(String idPartido) {
+		Partido partido = partidoRepository.findById(idPartido);
+		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
+			System.out.println("No tienes permiso para confirmar este partido.");
+			return;
+		}
+		partido.confirmar();
+		partidoRepository.save(partido);
+		System.out.println("Partido confirmado.");
 	}
-	
-	public void confirmar() {
-		
+
+	public void cancelar(String idPartido) {
+		Partido partido = partidoRepository.findById(idPartido);
+		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
+			System.out.println("No tienes permiso para cancelar este partido.");
+			return;
+		}
+		partido.cancelar();
+		partidoRepository.save(partido);
+		System.out.println("Partido cancelado.");
 	}
-	
-	public void cancelar() {
-		
+
+	public void finalizar(String idPartido) {
+		Partido partido = partidoRepository.findById(idPartido);
+		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
+			System.out.println("No tienes permiso para finalizar este partido.");
+			return;
+		}
+		partido.finalizar();
+		partidoRepository.save(partido);
+		System.out.println("Partido finalizado.");
 	}
-	
-	public void finalizar() {
-		
+
+	public void iniciar(String idPartido) {
+		Partido partido = partidoRepository.findById(idPartido);
+		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
+			System.out.println("No tienes permiso para iniciar este partido.");
+			return;
+		}
+		partido.iniciar();
+		partidoRepository.save(partido);
+		System.out.println("Partido iniciado.");
 	}
-	
-	public void iniciar() {
-		
-	}
-	
-	public void elegirEstrategia(IEstrategiaPartido estrategia) {
-		
+
+	public void elegirEstrategia(String idPartido, IEstrategiaPartido estrategia) {
+		Partido partido = partidoRepository.findById(idPartido);
+		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
+			System.out.println("No tienes permiso para elegir una estrategia para este partido.");
+			return;
+		}
+		partido.elegirEstrategia(estrategia);
+		partidoRepository.save(partido);
+		System.out.println("Estrategia asignada al partido.");
 	}
 
 	public List<Partido> obtenerTodosLosPartidos() {
-		// TODO Auto-generated method stub
-		return null;
+		return partidoRepository.findAll();
 	}
 
-	public void guardarPartido(Partido p) {
-		// TODO Auto-generated method stub
-		
+	public void guardarPartido(Partido partido) {
+		partidoRepository.save(partido);
+		System.out.println("Partido guardado: " + partido.getIdPartido());
 	}
 	
 }
