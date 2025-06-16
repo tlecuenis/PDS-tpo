@@ -42,14 +42,12 @@ public class Ejecucion extends JFrame {
         RegisterPanel registerPanel = new RegisterPanel(this);
         OpcionesMenu dashboardPanel = new OpcionesMenu(this);
         PartidosDisponibles listaPartidosPanel = new PartidosDisponibles(this);
-        CrearPartido crearPartidoPanel = new CrearPartido(this);
         NotificacionesUsuario notificacionesPanel = new NotificacionesUsuario(this);
 
         contentPane.add(loginPanel, "login");
         contentPane.add(registerPanel, "register");
         contentPane.add(dashboardPanel, "menuPrincipal");
         contentPane.add(listaPartidosPanel, "listaPartidos");
-        contentPane.add(crearPartidoPanel, "crearPartido");
         contentPane.add(notificacionesPanel, "notificaciones");
         
         showPanel("login");
@@ -135,6 +133,18 @@ public class Ejecucion extends JFrame {
                     break;
                 }
             }
+        }
+        
+        if ("crearPartido".equals(name)) {
+            for (int i = 0; i < contentPane.getComponentCount(); i++) {
+                if ("crearPartido".equals(contentPane.getComponent(i).getName())) {
+                    contentPane.remove(i);
+                    break;
+                }
+            }
+            CrearPartido crearPartidoPanel = new CrearPartido(this, nicknameActual);
+            crearPartidoPanel.setName("crearPartido");
+            contentPane.add(crearPartidoPanel, "crearPartido");
         }
 
         cardLayout.show(contentPane, name);
