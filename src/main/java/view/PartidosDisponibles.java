@@ -1,8 +1,12 @@
 package view;
 
+import controller.PartidoController;
+import model.Partido;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class PartidosDisponibles extends JPanel {
 
@@ -15,22 +19,26 @@ public class PartidosDisponibles extends JPanel {
     private JPanel panelFiltros;
     private JScrollPane scrollTabla;
 
+    private JPanel panelCentro;
+    private final static String PANTALLA_TABLA = "tabla";
+    private final static String PANTALLA_FILTROS = "filtros";
+
     public PartidosDisponibles(Ejecucion parent) {
         setLayout(new BorderLayout());
 
-        // Título
+        // Título con más espacio inferior
         JLabel lblTitulo = new JLabel("Partidos Disponibles", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 30, 10));
         add(lblTitulo, BorderLayout.NORTH);
 
-        // Panel de tabla
+        // Tabla de partidos
         String[] columnas = {"Deporte", "Ubicación", "Fecha", "Nivel"};
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaPartidos = new JTable(modeloTabla);
         scrollTabla = new JScrollPane(tablaPartidos);
-        add(scrollTabla, BorderLayout.CENTER);
 
-        // Panel de filtros (inicialmente oculto)
+        // Panel de filtros
         panelFiltros = new JPanel();
         panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
         panelFiltros.setBorder(BorderFactory.createTitledBorder("Filtros de búsqueda"));
@@ -41,20 +49,25 @@ public class PartidosDisponibles extends JPanel {
         txtUbicacion = new JTextField();
         comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
 
+        panelFiltros.add(Box.createVerticalStrut(10));
         panelFiltros.add(crearFila("Forma de filtrado:", comboFormaFiltrado));
         panelFiltros.add(crearFila("Deporte:", comboDeporte));
         panelFiltros.add(crearFila("Ubicación:", txtUbicacion));
         panelFiltros.add(crearFila("Nivel:", comboNivel));
+        panelFiltros.add(Box.createVerticalStrut(10));
 
-        // Botón de aplicar filtros
         JButton btnAplicarFiltros = new JButton("Aplicar Filtros");
         btnAplicarFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelFiltros.add(Box.createVerticalStrut(10));
         panelFiltros.add(btnAplicarFiltros);
+        panelFiltros.add(Box.createVerticalStrut(10));
 
-        add(panelFiltros, BorderLayout.CENTER);
+        // Panel central con CardLayout
+        panelCentro = new JPanel(new CardLayout());
+        panelCentro.add(scrollTabla, PANTALLA_TABLA);
+        panelCentro.add(panelFiltros, PANTALLA_FILTROS);
+        add(panelCentro, BorderLayout.CENTER);
 
-        // Panel inferior con botones
+        // Panel inferior
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnFiltrar = new JButton("🔍 Filtrar");
         JButton btnVolver = new JButton("Volver");
@@ -62,38 +75,26 @@ public class PartidosDisponibles extends JPanel {
         panelBotones.add(btnFiltrar);
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Acción de "Filtrar" - muestra el panel de filtros y oculta la tabla
+        // Mostrar filtros
         btnFiltrar.addActionListener(e -> {
-            scrollTabla.setVisible(false);
-            panelFiltros.setVisible(true);
-            revalidate();
-            repaint();
+            CardLayout cl = (CardLayout) (panelCentro.getLayout());
+            cl.show(panelCentro, PANTALLA_FILTROS);
         });
 
-        // Acción de "Aplicar filtros" - simula filtrado y vuelve a la tabla
+        // Aplicar filtros
         btnAplicarFiltros.addActionListener(e -> {
             String forma = (String) comboFormaFiltrado.getSelectedItem();
             String deporte = (String) comboDeporte.getSelectedItem();
             String ubicacion = txtUbicacion.getText().trim();
             String nivel = (String) comboNivel.getSelectedItem();
 
-            // Limpiar y simular resultado
-            modeloTabla.setRowCount(0);
-            modeloTabla.addRow(new Object[]{
-                    deporte,
-                    ubicacion.isEmpty() ? "Córdoba" : ubicacion,
-                    "12/06/2025",
-                    nivel
-            });
+            cargarPartidosEnSegundoPlano(forma, deporte, ubicacion, nivel);
 
-            // Ocultar filtros, mostrar tabla
-            panelFiltros.setVisible(false);
-            scrollTabla.setVisible(true);
-            revalidate();
-            repaint();
+            CardLayout cl = (CardLayout) (panelCentro.getLayout());
+            cl.show(panelCentro, PANTALLA_TABLA);
         });
 
-        // Acción de "Otro" en deporte
+        // Nuevo deporte
         comboDeporte.addActionListener(e -> {
             if ("Otro".equals(comboDeporte.getSelectedItem())) {
                 String nuevoDeporte = JOptionPane.showInputDialog(this, "Ingrese el deporte:");
@@ -106,8 +107,11 @@ public class PartidosDisponibles extends JPanel {
             }
         });
 
-        // Acción de "Volver"
+        // Volver
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+
+        // Carga inicial sin filtros
+        cargarPartidosEnSegundoPlano("Todos", "", "", "");
     }
 
     private JPanel crearFila(String etiqueta, JComponent campo) {
@@ -119,5 +123,50 @@ public class PartidosDisponibles extends JPanel {
         fila.add(lbl);
         fila.add(campo);
         return fila;
+    }
+
+    private void cargarPartidosEnSegundoPlano(String forma, String deporte, String ubicacion, String nivel) {
+        modeloTabla.setRowCount(0);
+
+        SwingWorker<Void, Partido> worker = new SwingWorker<Void, Partido>() {
+            @Override
+            protected Void doInBackground() {
+                List<Partido> partidos = PartidoController.getInstancia().obtenerTodosLosPartidos();
+
+                for (Partido p : partidos) {
+                    boolean coincide = false;
+
+                    if ("Por deporte".equals(forma)) {
+                        coincide = p.getDeporte() != null && p.getDeporte().equalsIgnoreCase(deporte);
+                    } else if ("Por ubicación".equals(forma)) {
+                        coincide = p.getUbicacion() != null && p.getUbicacion().getCiudad() != null &&
+                                   p.getUbicacion().getCiudad().toLowerCase().contains(ubicacion.toLowerCase());
+                    } else if ("Por nivel".equals(forma)) {
+                        //coincide = p.getNivel() != null && p.getNivel().equalsIgnoreCase(nivel);
+                    } else if ("Todos".equals(forma)) {
+                        coincide = true;
+                    }
+
+                    if (coincide) {
+                        publish(p);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(List<Partido> chunks) {
+                for (Partido p : chunks) {
+                    modeloTabla.addRow(new Object[]{
+                        p.getDeporte(),
+                        p.getUbicacion() != null ? p.getUbicacion().getCiudad() : "Desconocida",
+                        p.getFecha(),
+                        //p.getNivel() != null ? p.getNivel() : "Desconocido"
+                    });
+                }
+            }
+        };
+
+        worker.execute();
     }
 }

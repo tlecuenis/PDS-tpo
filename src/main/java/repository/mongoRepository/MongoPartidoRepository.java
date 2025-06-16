@@ -44,7 +44,9 @@ public class MongoPartidoRepository implements PartidoDAO {
                 .append("longitud", g.getLongitud())
                 .append("varianza", g.getVarianza());
         d.append("Geolocalizacion", geoLocation);
-        d.append("horario", p.getFecha().toString());
+        if (p.getFecha() != null) {
+            d.append("horario", p.getFecha().toString());
+        }
 
         List<Document> equipos = new ArrayList<>();
         for(Equipo e : p.getEquipos()){
@@ -79,29 +81,34 @@ public class MongoPartidoRepository implements PartidoDAO {
 
         d.append("nivelMinimo", p.getNivelJugadorMinimo());
         d.append("nivelMaximo", p.getNivelJugadorMaximo());
-        d.append("creadorID", p.getCreador().getIdUsuario());
+        // Validación para creador no nulo
+        if (p.getCreador() != null) {
+            //System.out.println("Guardando creadorId: " + p.getCreador().getIdUsuario());
+            d.append("creadorId", p.getCreador().getIdUsuario());
+        } else {
+            //System.out.println("Creador es null al guardar Partido");
+        }
 
         return d;
     }
 
     private Partido documentToPartido(Document d) {
+        if (d == null) return null;
+
         String idPartido = d.getString("_id");
-
-        // Deporte
         String deporte = d.getString("deporte");
+        int cantidadJugadores = d.getInteger("cantJugadores", 0);
+        double duracion = d.getDouble("duracion") != null ? d.getDouble("duracion") : 0.0;
 
-        // Cantidad jugadores
-        int cantidadJugadores = d.getInteger("cantJugadores");
-        //Duración
-        double duracion = d.getDouble("duracion");
-
-        // Geolocalización
+        Geolocalizacion geoLoc = null;
         Document geoDoc = (Document) d.get("Geolocalizacion");
-        String ciudad = geoDoc.getString("ciudad");
-        double latitud = geoDoc.getDouble("latitud");
-        double longitud = geoDoc.getDouble("longitud");
-        double varianza = geoDoc.getDouble("varianza");
-        Geolocalizacion geoLoc = new Geolocalizacion(latitud, longitud, varianza, ciudad);
+        if (geoDoc != null) {
+            String ciudad = geoDoc.getString("ciudad");
+            double latitud = geoDoc.getDouble("latitud") != null ? geoDoc.getDouble("latitud") : 0.0;
+            double longitud = geoDoc.getDouble("longitud") != null ? geoDoc.getDouble("longitud") : 0.0;
+            double varianza = geoDoc.getDouble("varianza") != null ? geoDoc.getDouble("varianza") : 0.0;
+            geoLoc = new Geolocalizacion(latitud, longitud, varianza, ciudad);
+        }
 
         // Horario
         String fechaStr = d.getString("horario");
@@ -154,11 +161,20 @@ public class MongoPartidoRepository implements PartidoDAO {
         int nivelMinimo = d.getInteger("nivelMinimo");
         int nivelMaximo = d.getInteger("nivelMaximo");
 
+        Partido partido = new Partido(idPartido, deporte, duracion, cantidadJugadores, geoLoc, horario, state, estadistica, comentario, observadores, nivelMinimo, nivelMaximo, null);
+        
         //Creador
-        Usuario creador = userRepository.findById(d.getString("creadorID"));
-
-        Partido partido = new Partido(idPartido, deporte, duracion, cantidadJugadores, geoLoc, horario, state, estadistica, comentario, observadores, nivelMinimo, nivelMaximo, creador);
-
+        String creadorId = d.getString("creadorId");
+        //System.out.println("creadorId leído de la DB: " + creadorId);
+        if (creadorId != null) {
+            Usuario creador = userRepository.findById(creadorId);
+            if (creador == null) {
+                //System.out.println("No se encontró usuario con creadorId: " + creadorId);
+            }
+            partido.setCreador(creador);
+        } else {
+            //System.out.println("No existe campo creadorId en el documento");
+        }
         // Equipos
         List<Equipo> equipos = new ArrayList<>();
         List<Document> equiposDoc = (List<Document>) d.get("equipos");

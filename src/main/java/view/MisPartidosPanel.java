@@ -1,7 +1,7 @@
 package view;
 
-import controller.UsuarioController;
 import controller.PartidoController;
+import controller.UsuarioController;
 import model.Partido;
 import model.Usuario;
 
@@ -13,103 +13,119 @@ public class MisPartidosPanel extends JPanel {
     private Usuario usuarioLogeado;
     private JPanel listaPanel;
 
-    public MisPartidosPanel(Usuario usuarioLogeado) {
-        this.usuarioLogeado = usuarioLogeado;
-        inicializarVista();
-        cargarMisPartidos();
-    }
+    public MisPartidosPanel(Ejecucion ejecucion, String nicknameUsuario) {
+        this.usuarioLogeado = UsuarioController.getInstancia().getUserById(nicknameUsuario);
 
-    public MisPartidosPanel(Ejecucion ejecucion, String nicknameActual) {
-        this.usuarioLogeado = UsuarioController.getInstancia().getUserById(nicknameActual);
-        inicializarVista();
-        cargarMisPartidos();
-    }
+        if (this.usuarioLogeado == null) {
+            System.err.println("No se encontró el usuario con nickname: " + nicknameUsuario);
+            return;
+        }
 
-    private void inicializarVista() {
+        // Seteo el usuario logueado en el controlador para filtrar partidos correctamente
+        PartidoController.getInstancia().setUsuarioLogueado(usuarioLogeado);
+
         setLayout(new BorderLayout());
 
-        JLabel titulo = new JLabel("Mis Partidos creados", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Partidos creados por ti", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        titulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         add(titulo, BorderLayout.NORTH);
 
         listaPanel = new JPanel();
         listaPanel.setLayout(new BoxLayout(listaPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(listaPanel);
         add(scrollPane, BorderLayout.CENTER);
+
+        cargarMisPartidos();
+
+        // --- Botón volver al menú ---
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton btnVolver = new JButton("Volver");
+        panelBotones.add(btnVolver);
+
+        btnVolver.addActionListener(e -> ejecucion.showPanel("menuPrincipal"));
+
+        add(panelBotones, BorderLayout.SOUTH);
     }
 
     private void cargarMisPartidos() {
         listaPanel.removeAll();
 
-        List<Partido> partidos = PartidoController.getInstancia().obtenerTodosLosPartidos();
+        List<Partido> partidos = PartidoController.getInstancia().obtenerPartidosCreadosPorUsuario();
 
-        if (partidos == null || partidos.isEmpty()) {
-            listaPanel.add(new JLabel("No has creado ningún partido."));
+        if (partidos.isEmpty()) {
+            JLabel sinPartidos = new JLabel("No has creado ningún partido aún.");
+            sinPartidos.setFont(new Font("Arial", Font.ITALIC, 14));
+            sinPartidos.setForeground(Color.GRAY);
+            sinPartidos.setAlignmentX(Component.CENTER_ALIGNMENT);
+            listaPanel.add(Box.createVerticalStrut(20));
+            listaPanel.add(sinPartidos);
+
             revalidate();
             repaint();
-            return;
+            return; // Salir del método para no seguir procesando
         }
-
-        boolean hayPartidos = false;
-
+        
         for (Partido p : partidos) {
-            if (estaUsuarioEnPartido(p, usuarioLogeado)) {
-                hayPartidos = true;
+            JPanel partidoPanel = new JPanel();
+            partidoPanel.setLayout(new BoxLayout(partidoPanel, BoxLayout.Y_AXIS));
+            partidoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), 
+                p.getIdPartido() + " - " + p.getFecha()));
 
-                JPanel partidoPanel = new JPanel(new BorderLayout());
-                partidoPanel.setBorder(BorderFactory.createTitledBorder(p.getDeporte() + " - " + p.getFecha()));
+            // Compactar el panel
+            partidoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+            partidoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                JLabel info = new JLabel("ID: " + p.getIdPartido() + " | Jugadores: " + p.cantidadJugadoresActual());
-                partidoPanel.add(info, BorderLayout.CENTER);
+            JLabel info = new JLabel(
+            	    "Deporte: " + p.getDeporte() + 
+            	    " | Jugadores: " + p.cantidadJugadoresActual() + 
+            	    " | Duración: " + p.getDuracion(),
+            	    SwingConstants.CENTER // Centra el texto dentro del JLabel
+            	);
+            	info.setFont(new Font("Arial", Font.PLAIN, 12));
+            	info.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            	info.setAlignmentX(Component.CENTER_ALIGNMENT); // Centra el JLabel en el BoxLayout
 
-                if (p.getCreador() != null && p.getCreador().getIdUsuario().equals(usuarioLogeado.getIdUsuario())) {
-                    JPanel botones = new JPanel();
-                    JButton btnConfirmar = new JButton("Confirmar");
-                    JButton btnCancelar = new JButton("Cancelar");
-                    JButton btnFinalizar = new JButton("Finalizar");
+            	partidoPanel.add(info); // No uses BorderLayout.CENTER aquí porque estás con BoxLayout
 
-                    btnConfirmar.addActionListener(e -> {
-                        p.confirmar();
-                        PartidoController.getInstancia().guardarPartido(p);
-                        JOptionPane.showMessageDialog(this, "Partido confirmado.");
-                    });
+            JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            JButton btnConfirmar = new JButton("Confirmar");
+            JButton btnCancelar = new JButton("Cancelar");
+            JButton btnFinalizar = new JButton("Finalizar");
 
-                    btnCancelar.addActionListener(e -> {
-                        p.cancelar();
-                        PartidoController.getInstancia().guardarPartido(p);
-                        JOptionPane.showMessageDialog(this, "Partido cancelado.");
-                    });
+            btnConfirmar.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnCancelar.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnFinalizar.setFont(new Font("Arial", Font.PLAIN, 11));
 
-                    btnFinalizar.addActionListener(e -> {
-                        p.finalizar();
-                        PartidoController.getInstancia().guardarPartido(p);
-                        JOptionPane.showMessageDialog(this, "Partido finalizado.");
-                    });
+            btnConfirmar.addActionListener(e -> {
+                p.confirmar();
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Partido confirmado.");
+            });
 
-                    botones.add(btnConfirmar);
-                    botones.add(btnCancelar);
-                    botones.add(btnFinalizar);
+            btnCancelar.addActionListener(e -> {
+                p.cancelar();
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Partido cancelado.");
+            });
 
-                    partidoPanel.add(botones, BorderLayout.SOUTH);
-                }
+            btnFinalizar.addActionListener(e -> {
+                p.finalizar();
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Partido finalizado.");
+            });
 
-                listaPanel.add(partidoPanel);
-            }
-        }
+            botones.add(btnConfirmar);
+            botones.add(btnCancelar);
+            botones.add(btnFinalizar);
+            partidoPanel.add(botones);
 
-        if (!hayPartidos) {
-            listaPanel.add(new JLabel("No estás inscripto en ningún partido."));
+            listaPanel.add(Box.createVerticalStrut(5)); // Espacio entre partidos
+            listaPanel.add(partidoPanel);
         }
 
         revalidate();
         repaint();
     }
-
-    private boolean estaUsuarioEnPartido(Partido partido, Usuario usuario) {
-        return partido.getEquipos().stream()
-                .flatMap(eq -> eq.getJugadores().stream())
-                .anyMatch(j -> j.getIdUsuario().equals(usuario.getIdUsuario()));
-    }
 }
-
 
