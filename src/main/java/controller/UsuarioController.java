@@ -2,6 +2,7 @@ package controller;
 
 import DTO.UsuarioDTO;
 import model.*;
+import model.notificaciones.PreferenciaNotificacion;
 import repository.UserDAO;
 import repository.mongoRepository.MongoUserRepository;
 
@@ -70,7 +71,7 @@ public class UsuarioController {
 		Geolocalizacion geo = new Geolocalizacion(0.0, 0.0, 0.0, dto.getCiudad());
 
 		Usuario nuevoUsuario = new Usuario(dto.getNickname(), dto.getNombre(), dto.getEmail(),
-				dto.getContrasena(), deportes, geo);
+				dto.getContrasena(), deportes, geo, PreferenciaNotificacion.EMAIL_PREFERENCE);
 
 		userDAO.save(nuevoUsuario);
 		return true;
