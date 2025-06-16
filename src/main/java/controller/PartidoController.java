@@ -43,9 +43,11 @@ public class PartidoController {
 
     public List<Partido> obtenerPartidosCreadosPorUsuario() {
         List<Partido> todos = partidoRepository.findAll();
-        return todos.stream()
-                .filter(p -> p.getCreador().getIdUsuario().equals(usuarioLogueado.getIdUsuario()))
-                .collect(Collectors.toList());
+        List<Partido> filtrados = todos.stream()
+            .filter(p -> p.getCreador() != null && p.getCreador().getIdUsuario().equals(usuarioLogueado.getIdUsuario()))
+            .collect(Collectors.toList());
+        System.out.println("Partidos creados por usuario " + usuarioLogueado.getIdUsuario() + ": " + filtrados.size());
+        return filtrados;
     }
 
     public void actualizarPartido(Partido partido) {
@@ -61,13 +63,20 @@ public class PartidoController {
         }
     }
     
-	public void crearPartido(PartidoDTO partidoDTO) {
-		Partido partido = new Partido();
-		partido.crearPartido(partidoDTO);
-		partido.setCreador(usuarioLogueado);
-		partidoRepository.save(partido);
-		System.out.println("Partido creado: " + partido.getIdPartido());
-	}
+    public void crearPartido(PartidoDTO partidoDTO) {
+        Partido partido = new Partido();
+        partido.crearPartido(partidoDTO);
+
+        if (usuarioLogueado == null) {
+            System.out.println("ERROR: usuarioLogueado es null al crear el partido");
+        } else {
+            System.out.println("Seteando creador: " + usuarioLogueado.getIdUsuario());
+            partido.setCreador(usuarioLogueado);
+        }
+
+        partidoRepository.save(partido);
+        System.out.println("Partido creado: " + partido.getIdPartido());
+    }
 
 	public void buscarPartido(PartidoDTO partidoDTO) {
 		Partido partido = partidoRepository.findById(partidoDTO.getIdPartido());
