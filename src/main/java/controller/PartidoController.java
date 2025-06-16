@@ -65,6 +65,7 @@ public class PartidoController {
 		Partido partido = new Partido();
 		partido.crearPartido(partidoDTO);
 		partido.setCreador(usuarioLogueado);
+		partido.setEstado("NecesitamosJugadores"); 
 		partidoRepository.save(partido);
 		System.out.println("Partido creado: " + partido.getIdPartido());
 	}
@@ -100,15 +101,40 @@ public class PartidoController {
 		System.out.println("Partido cancelado.");
 	}
 
-	public void finalizar(String idPartido) {
+	public void actualizarEstadisticasUsuarios(Partido partido) {
+		Equipo ganador = partido.getGanador();
+		if (ganador == null) {
+			System.out.println("No se puede actualizar estadísticas, el partido no tiene un equipo ganador.");
+			return;
+		}
+
+		ganador.getJugadores().forEach(jugador -> {
+			jugador.setScore(jugador.getScore() + 10); 
+			jugador.setCantPartidos(jugador.getCantPartidos() + 1); 
+		});
+
+		partido.getEquipos().stream()
+			.flatMap(e -> e.getJugadores().stream())
+			.filter(jugador -> !ganador.getJugadores().contains(jugador))
+			.forEach(jugador -> {
+				jugador.setScore(jugador.getScore() + 5);
+				jugador.setCantPartidos(jugador.getCantPartidos() + 1); 
+			});
+
+		System.out.println("Estadísticas actualizadas para los jugadores del partido: " + partido.getIdPartido());
+	}
+
+	public void finalizar(String idPartido, Equipo ganador) {
 		Partido partido = partidoRepository.findById(idPartido);
 		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
 			System.out.println("No tienes permiso para finalizar este partido.");
 			return;
 		}
+		partido.setGanador(ganador); 
 		partido.finalizar();
+		actualizarEstadisticasUsuarios(partido); 
 		partidoRepository.save(partido);
-		System.out.println("Partido finalizado.");
+		System.out.println("Partido finalizado con ganador: " + ganador.getNombre());
 	}
 
 	public void iniciar(String idPartido) {

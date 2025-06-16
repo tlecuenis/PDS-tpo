@@ -15,6 +15,8 @@ public class Usuario implements IObserver {
 	private List<Deporte> deportes;
 	private Geolocalizacion ubicacion;
 	private PreferenciaNotificacion preferenciaNotificacion;
+	private int score; 
+	private int cantPartidos; 
 
 
 	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion) {
@@ -77,6 +79,22 @@ public class Usuario implements IObserver {
 	}
 	public PreferenciaNotificacion getPreferenciaNotificacion() {
 		return preferenciaNotificacion;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public int getCantPartidos() {
+		return cantPartidos;
+	}
+
+	public void setCantPartidos(int cantPartidos) {
+		this.cantPartidos = cantPartidos;
 	}
 
 	@Override

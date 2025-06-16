@@ -23,6 +23,7 @@ public class Partido extends ObserverPartido {
 	private int nivelMaximo;
 	private int nivelMinimo;
 	private Usuario Creador;
+	private Equipo ganador; 
 	
 	public Partido() {
         super(new NotificacionDispatcher());
@@ -273,6 +274,13 @@ public class Partido extends ObserverPartido {
 	}
 	public void setCreador(Usuario creador) {
 		Creador = creador;
+	}
+	public Equipo getGanador() {
+		return ganador;
+	}
+
+	public void setGanador(Equipo ganador) {
+		this.ganador = ganador;
 	}
 
 }
