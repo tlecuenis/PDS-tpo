@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import controller.PartidoController;
+
 public class CrearPartido extends JPanel {
 
     private JComboBox<String> comboDeporte;
@@ -16,7 +18,7 @@ public class CrearPartido extends JPanel {
     private JButton btnCrear;
     private JButton btnVolver;
 
-    public CrearPartido(Ejecucion parent) {
+    public CrearPartido(Ejecucion parent, PartidoController partidoController) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -122,6 +124,21 @@ public class CrearPartido extends JPanel {
     			parent.showPanel("menuPrincipal");
     		}
     	});
+    	
+    	btnCrear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                partidoController.crearPartido(
+                    getDeporte(),
+                    getCantidadJugadores(),
+                    getDuracion(),
+                    getUbicacion(),
+                    getHorario(),
+                    getNivel()
+                );
+                JOptionPane.showMessageDialog(CrearPartido.this, "Partido creado exitosamente.");
+            }
+        });
     }
 
     // Getters para el controlador

@@ -29,11 +29,26 @@ public class MisPartidosPanel extends JPanel {
         cargarMisPartidos();
     }
 
-    public MisPartidosPanel(Ejecucion ejecucion, String nicknameActual) {
-		// TODO Auto-generated constructor stub
-	}
+    public MisPartidosPanel(Ejecucion ejecucion, PartidoController partidoController) {
+        setLayout(new BorderLayout());
 
-	private void cargarMisPartidos() {
+        JLabel titulo = new JLabel("Mis Partidos", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        add(titulo, BorderLayout.NORTH);
+
+        listaPanel = new JPanel();
+        listaPanel.setLayout(new BoxLayout(listaPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(listaPanel);
+        add(scrollPane, BorderLayout.CENTER);
+
+        List<Partido> misPartidos = partidoController.obtenerMisPartidos();
+        for (Partido partido : misPartidos) {
+            // Display each partido in the panel
+            add(new JLabel(partido.toString()));
+        }
+    }
+
+    private void cargarMisPartidos() {
         listaPanel.removeAll();
         List<Partido> partidos = PartidoController.getInstancia().obtenerTodosLosPartidos();
 
