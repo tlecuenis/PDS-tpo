@@ -4,13 +4,18 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.Updates;
 import model.*;
+import model.notificaciones.Notificacion;
+import model.notificaciones.PreferenciaNotificacion;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import repository.PartidoRepository;
 import repository.UserDAO;
 
-import javax.print.Doc;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -22,29 +27,6 @@ public class MongoUserRepository implements UserDAO {
     public MongoUserRepository(){
         users = db.getCollection("Users");
     }
-
-    /*  ESQUEMA EN LA DB POR SI QUIEREN CAMBIAR/IMPLEMENTAR ALGO
-_id: "1"
-nombre: "juan"
-email: "juan@mail.com"
-contrasenia: "juan1234"
-ubicacion: Object
-    ciudad: "San Miguel
-    latitud: -34.31
-    longitud: -58.21
-    varianza: 0.02
-deportes:Array (3)
-    0: Object
-    nombre:"fútbol"
-    nivelDeJuego:"INTERMEDIO"
-    1:Object
-    nombre:"Basquet"
-    nivelDeJuego:"INTERMEDIO"
-    2:Object
-    nombre:"boxeo"
-    nivelDeJuego:"INTERMEDIO"
-*/
-
 
     private Document userToDocument(Usuario user){
         Document doc = new Document();
@@ -60,16 +42,18 @@ deportes:Array (3)
                 append("contrasenia", user.getContraseña()).
                 append("ubicacion", gl);
 
-
-        //Se puede mejorar usando programacion funcional con streams
         if(user.getDeportes() != null) {
-            List<Document> deportes = new ArrayList<Document>();
+            List<Document> deportes = new ArrayList<>();
             for (Deporte deporte : user.getDeportes()) {
                 Document deporteDoc = new Document();
                 String nombre = deporte.getNombre();
                 String nivelDeJuego = deporte.getNivelJuego().toString();
-                deporteDoc.append("nombre",nombre).
-                        append("nivelDeJuego", nivelDeJuego);
+                int score = deporte.getScore();
+                int cantPartidos = deporte.getCantPartidos();
+                deporteDoc.append("nombre", nombre)
+                          .append("nivelDeJuego", nivelDeJuego)
+                          .append("score", score)
+                          .append("cantPartidos", cantPartidos);
                 deportes.add(deporteDoc);
             }
             doc.append("deportes", deportes);
@@ -80,6 +64,9 @@ deportes:Array (3)
 
         doc.append("notificaciones", notificaciones);
 
+        String preferenciaNoti = user.getPreferenciaNotificacion().name();
+        doc.append("preferenciaNotificacion", preferenciaNoti);
+
         return doc;
     }
 
@@ -88,6 +75,7 @@ deportes:Array (3)
         String nombre = document.getString("nombre");
         String email = document.getString("email");
         String contrasenia = document.getString("contrasenia");
+
         Document GeoLoc = (Document) document.get("ubicacion");
         String ciudad = GeoLoc.getString("ciudad");
         Double latitud = GeoLoc.getDouble("latitud");
@@ -98,15 +86,27 @@ deportes:Array (3)
         List<Deporte> deportes = new ArrayList<>();
         List<Document> deportesDoc = (List<Document>) document.get("deportes");
 
-        for(Document doc : deportesDoc){
-            String nombreDeporte = doc.getString("nombre");
-            String nivelString = doc.getString("nivelDeJuego");
-            Nivel nivel = Nivel.valueOf(nivelString);
-            Deporte d = new Deporte(nombreDeporte, nivel,0,0);
-            deportes.add(d);
+        if (deportesDoc != null) {
+            for (Document doc : deportesDoc) {
+                String nombreDeporte = doc.getString("nombre");
+                String nivelString = doc.getString("nivelDeJuego");
+                Nivel nivel = Nivel.valueOf(nivelString);
+                int score = doc.getInteger("score", 0);
+                int cantPartidos = doc.getInteger("cantPartidos", 0);
+                Deporte d = new Deporte(nombreDeporte, nivel, score, cantPartidos);
+                deportes.add(d);
+            }
+        }
+        //se asigna por defecto
+        PreferenciaNotificacion preferencia = PreferenciaNotificacion.EMAIL_PREFERENCE;
+        try {
+            String notificacionPref = document.getString("preferenciaNotificacion");
+            preferencia = PreferenciaNotificacion.valueOf(notificacionPref);
+        }catch (Exception e){
+            System.out.println("Error buscando las preferencias de notificación: "+e.getMessage());
         }
 
-        return new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl);
+        return new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl, preferencia);
     }
 
     @Override
@@ -116,40 +116,28 @@ deportes:Array (3)
         try {
             users.insertOne(doc);
             System.out.println("Usuario guardado");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error guardando el usuario: " + e.getMessage());
         }
     }
 
     @Override
     public void deleteById(String id) {
-        Bson filter = eq("_id",id);
-        try{
+        Bson filter = eq("_id", id);
+        try {
             users.deleteOne(filter);
             System.out.println("Usuario eliminado");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error eliminando el usuario: " + e.getMessage());
         }
     }
 
-
-    //Si necesitan usar los datos para alguna vista y no quieren mostrar la contraseña por ejemplo
-    //Pueden excluirla del resultado de la query para manejarlo directamente acá y no en la vista
-    //Se hace con los projections fields, les dejo ejemplo
     public Usuario findById(String idUsuario) {
-        /*
-        Bson projection_fields = Projections.fields(
-                Projections.exclude("_id", "contrasenia"));
-        Document user = users.find(eq("_id",idUsuario)).projection(projection_fields).first();
-        */
-        Document user = users.find(eq("_id",idUsuario)).first();
+        Document user = users.find(eq("_id", idUsuario)).first();
 
         if(user != null) {
             return DocumentToUser(user);
-        }
-        else {
+        } else {
             System.out.println("Usuario no encontrado");
         }
 
@@ -167,14 +155,12 @@ deportes:Array (3)
     }
 
     @Override
-    //Pensar cómo hacer que funcione para deportes, que son un array de objetos
     public Usuario findByField(String field, String value) {
         try {
             Document user = users.find(eq(field, value)).first();
             return DocumentToUser(user);
-        }
-        catch (Exception e) {
-            System.out.println("Usuario no encontrado: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Usuario no encontrado: " + e.getMessage());
         }
         return null;
     }
@@ -190,13 +176,9 @@ deportes:Array (3)
             System.out.println("Error actualizando usuario: " + e.getMessage());
         }
     }
-    
-    
 
-    public List<Usuario> findByDeporte(String deporte) { //Después hacer que reciba una instancia Deporte?
+    public List<Usuario> findByDeporte(String deporte) {
         List<Usuario> usuarios = new ArrayList<>();
-
-        //Pensar como hacer para que NO sea case sensitive, hay registros "futbol" y otros registros "Futbol"
         Bson filtro = Filters.elemMatch("deportes", Filters.eq("nombre", deporte));
 
         try (MongoCursor<Document> cursor = users.find(filtro).iterator()) {
@@ -210,20 +192,72 @@ deportes:Array (3)
     }
 
     @Override
-    public void notificarUsuario(String userID, String notificacion) {
-        Bson filter = eq("_id",userID);
-        Document notiDoc = new Document("mensaje", notificacion);
+    public void notificarUsuario(String userID, Notificacion notificacion) {
+        Bson filter = eq("_id", userID);
+        Document notiDoc = new Document().append("mensaje", notificacion.getMensaje()).append("partidoID", notificacion.getPartido().getIdPartido());
         Document update = new Document("$push", new Document("notificaciones", notiDoc));
 
-        try{
+        try {
             users.updateOne(filter, update);
-            System.out.println("Usuario notificado");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error notificando usuario: " + e.getMessage());
         }
     }
 
+    @Override
+    public List<Notificacion> getNotificaciones(String userID) {
+        PartidoRepository partidoRepository = new PartidoRepository();
+        List<Notificacion> notificaciones = new ArrayList<>();
+        Bson filter = eq("_id", userID);
+        try {
+            Document userDoc = users.find(filter).first();
+            if (userDoc != null && userDoc.containsKey("notificaciones")) {
+                List<Document> notificacionesDoc = userDoc.getList("notificaciones", Document.class);
+                for (Document doc : notificacionesDoc) {
+                    String mensaje = doc.getString("mensaje");
+                    Partido partido = partidoRepository.findById(doc.getString("partidoID"));
+                    Notificacion n = new Notificacion(partido, mensaje);
+                    notificaciones.add(n);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error buscando notificaciones: ");
+            e.printStackTrace();
+        }
+        return notificaciones;
+    }
+
+    @Override
+    public void actualizarScore(String userID, String deporte, int score) {
+        Bson filter = eq("_id", userID);
+        Bson update = Updates.inc("deportes.$[dep].score", score);
+        UpdateOptions options = new UpdateOptions().arrayFilters(
+                Arrays.asList(Filters.eq("dep.nombre", deporte))
+        );
+
+        try {
+            users.updateOne(filter, update, options);
+            System.out.println("score actualizado");
+        } catch (Exception e) {
+            System.out.println("Error actualizando score: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void actualizarCantPartidos(String userID, String deporte) {
+        Bson filter = eq("_id", userID);
+        Bson update = Updates.inc("deportes.$[dep].cantPartidos", 1);
+        UpdateOptions options = new UpdateOptions().arrayFilters(
+                Arrays.asList(Filters.eq("dep.nombre", deporte))
+        );
+
+        try {
+            users.updateOne(filter, update, options);
+            System.out.println("Cantidad de partidos incrementada correctamente.");
+        } catch (Exception e) {
+            System.err.println("Error al incrementar cantidad de partidos: " + e.getMessage());
+        }
+    }
 
     @Override
     public void agregarDeporteFavorito(Deporte d) {
