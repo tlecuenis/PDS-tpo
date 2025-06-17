@@ -22,7 +22,7 @@ public class Confirmado implements IEstadoPartido {
         System.out.println("No se puede armar. El partido ya está confirmado.");
     }
 
-    public void finalizar(Partido contexto) {
+    public void finalizar(Partido contexto, Equipo equipo) {
         System.out.println("No puede finalizarse. El partido no ha iniciado.");
     }
 

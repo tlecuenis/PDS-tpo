@@ -23,7 +23,7 @@ public class Armado implements IEstadoPartido {
         System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
 
-    public void finalizar(Partido contexto) {
+    public void finalizar(Partido contexto, Equipo equipo) {
         System.out.println("No se puede finalizar. El partido no está en juego.");
     }
 

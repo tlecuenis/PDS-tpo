@@ -16,7 +16,7 @@ public class Cancelado implements IEstadoPartido {
         System.out.println("No se puede armar. El partido está cancelado.");
     }
 
-    public void finalizar(Partido contexto) {
+    public void finalizar(Partido contexto, Equipo equipo) {
         System.out.println("No se puede finalizar. El partido está cancelado.");
     }
 

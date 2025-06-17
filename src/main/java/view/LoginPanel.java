@@ -4,7 +4,9 @@ import javax.swing.*;
 
 import DTO.UsuarioDTO;
 import controller.UsuarioController;
-
+import model.Partido;
+import repository.mongoRepository.MongoPartidoRepository;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -91,6 +93,11 @@ public class LoginPanel extends JPanel {
                     Timer timer = new Timer(1000, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
                             parent.setNicknameActual(usuario);
+                            MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
+                            List<Partido> obtenerPartidos = mongoPartidoRepository.findAll();
+                            for (Partido partido : obtenerPartidos){
+                                partido.validarEnJuego();
+                            }
                             parent.showPanel("menuPrincipal");
                         }
                     });

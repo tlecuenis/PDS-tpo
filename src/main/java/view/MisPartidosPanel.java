@@ -2,11 +2,8 @@ package view;
 
 import controller.PartidoController;
 import controller.UsuarioController;
-import model.Partido;
-import model.Usuario;
-import model.CercaniaStrategy;
-import model.NivelStrategy;
-import model.HistorialStrategy;
+import model.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -152,10 +149,37 @@ public class MisPartidosPanel extends JPanel {
             });
 
             btnFinalizar.addActionListener(e -> {
-                p.finalizar();
-                PartidoController.getInstancia().guardarPartido(p);
-                JOptionPane.showMessageDialog(this, "Partido finalizado.");
-                cargarMisPartidos();
+                List<Equipo> equipos = p.getEquipos();
+                if (equipos == null || equipos.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No hay equipos para seleccionar.");
+                    return;
+                }
+
+                String[] nombresEquipos = equipos.stream()
+                        .map(Equipo::getNombre)
+                        .toArray(String[]::new);
+
+                String seleccionado = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Seleccioná el equipo ganador:",
+                        "Finalizar Partido",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        nombresEquipos,
+                        nombresEquipos[0]
+                );
+
+                if (seleccionado != null) {
+                    for (Equipo eq : equipos) {
+                        if (eq.getNombre().equals(seleccionado)) {
+                            p.finalizar(eq);
+                            PartidoController.getInstancia().guardarPartido(p);
+                            JOptionPane.showMessageDialog(this, "Partido finalizado.");
+                            cargarMisPartidos();
+                            break;
+                        }
+                    }
+                }
             });
 
             botones.add(btnConfirmar);

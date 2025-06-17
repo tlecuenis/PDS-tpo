@@ -6,7 +6,7 @@ public interface IEstadoPartido {
 	void cancelar(Partido contexto);
 	void armar(Partido contexto);
 	void iniciar(Partido contexto);
-	void finalizar(Partido contexto);
+	void finalizar(Partido contexto, Equipo equipo);
 	void necesitamosJugadores(Partido contexto);
 	void agregarComentario(Partido contexto, String comentario);
 	void agregarEstadistica(Partido contexto, String estadistica);
