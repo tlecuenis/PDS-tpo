@@ -31,10 +31,10 @@ public class OpcionesMenu extends JPanel {
 
         // Botones
         JButton btnCrearPartido = new JButton("Crear Partido");
-        JButton btnVerPartidos = new JButton("Ver Partidos Disponibles");
-        JButton btnMisPartidos = new JButton("Ver Mis Partidos");
+        JButton btnVerPartidos = new JButton("Partidos Disponibles");
+        JButton btnMisPartidos = new JButton("Mis Partidos");
         JButton btnMisDeportes = new JButton("Mis Deportes");
-        JButton btnPerfil = new JButton("Ver Perfil");
+        JButton btnPerfil = new JButton("Mi Perfil");
         JButton btnNotificaciones = new JButton("Notificaciones");
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 

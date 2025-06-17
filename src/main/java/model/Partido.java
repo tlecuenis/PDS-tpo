@@ -20,12 +20,13 @@ public class Partido extends ObserverPartido {
 	private LocalDateTime fecha;
 	private List<Equipo> equipos;
 	private IEstadoPartido estadoActual;
-	private IEstrategiaPartido estrategiaActual;
+	private IEmparejamientoStrategy estrategiaActual;
 	private String estadistica = "";
 	private String comentario = "";
 	private int nivelMaximo;
 	private int nivelMinimo;
 	private Usuario Creador;
+	private Equipo ganador;
 	
 	public Partido() {
         super(new NotificacionDispatcher());
@@ -39,13 +40,19 @@ public class Partido extends ObserverPartido {
 	public void crearEquipo(Equipo equipo) {
 		this.equipos.add(equipo);
 	}
-	
+
 	public void añadirAlEquipo(Usuario jugador, String nombreEquipo) {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
-				equipo.agregarJugador(jugador);
-				agregarDestinatario(jugador);
-				return;
+				if (this.validarEntrada(jugador, equipo)) {
+					equipo.agregarJugador(jugador);
+					this.validarArmado();
+					return;
+				} else {
+					System.out.println("El usuario ya está en el equipo.");
+					return;
+				}
+
 			}
 		}
 		System.out.println("No se encontró el equipo");
@@ -56,18 +63,19 @@ public class Partido extends ObserverPartido {
 			if (equipo.getNombre().equals(nombreEquipo)){
 				equipo.eliminarJugador(jugador);
 				eliminarDestinatario(jugador);
+				this.validarNecesitamosJugadores();
 				return;
 			}
 		}
 		System.out.println("No se encontró el equipo");
 	}
 
-	public void elegirEstrategia(IEstrategiaPartido estrategia) {
+	public void elegirEstrategia(IEmparejamientoStrategy estrategia) {
 		this.estrategiaActual = estrategia;
 	}
 	
-	public void emparejar() {
-		this.estrategiaActual.emparejar();
+	public void emparejar(Partido p) {
+		this.estrategiaActual.emparejar(this);
 	}
 
 	public void crearPartido(PartidoDTO partido) {
@@ -152,6 +160,12 @@ public class Partido extends ObserverPartido {
 		return deporte;
 	}
 
+	public Equipo getGanador() {
+		return this.ganador;
+	}
+
+	//public void setGanador(Equipo ganador) {this.estadoActual.agregarGanador(ganador);}
+
 	public void setDeporte(String deporte) {
 		this.deporte = deporte;
 	}
@@ -183,6 +197,24 @@ public class Partido extends ObserverPartido {
 	    }
 	    return false;
 	}
+	public Equipo getEquipo(String nombreEquipo) {
+		for (Equipo equipo : equipos) {
+			if (equipo.getNombre().toLowerCase().equals(nombreEquipo.toLowerCase())) {
+				return equipo;
+			}
+		}
+		return null;
+	}
+
+	public boolean validarEntrada(Usuario jugadorNuevo, Equipo equipo) {
+		for (Usuario jugador : equipo.getJugadores()) {
+			if (jugadorNuevo.equals(jugador)) {
+				return false;
+			}
+		} return true;
+	}
+
+
 
 	
 	
@@ -232,9 +264,6 @@ public class Partido extends ObserverPartido {
 	public IEstadoPartido getEstado() {
 		return estadoActual;
 	}
-	public IEstrategiaPartido getEstrategia() {
-		return estrategiaActual;
-	}
 	public String getEstadistica() {
 		return estadistica;
 	}
@@ -260,10 +289,10 @@ public class Partido extends ObserverPartido {
 	public void setEstadoActual(IEstadoPartido estadoActual) {
 		this.estadoActual = estadoActual;
 	}
-	public IEstrategiaPartido getEstrategiaActual() {
+	public IEmparejamientoStrategy getEstrategiaActual() {
 		return estrategiaActual;
 	}
-	public void setEstrategiaActual(IEstrategiaPartido estrategiaActual) {
+	public void setEstrategiaActual(IEmparejamientoStrategy estrategiaActual) {
 		this.estrategiaActual = estrategiaActual;
 	}
 	public int getNivelMaximo() {

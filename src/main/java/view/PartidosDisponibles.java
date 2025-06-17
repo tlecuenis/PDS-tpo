@@ -1,172 +1,205 @@
 package view;
 
+import controller.UsuarioController;
 import controller.PartidoController;
+import model.Equipo;
 import model.Partido;
+import model.Usuario;
+import repository.UserRepository;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 
 public class PartidosDisponibles extends JPanel {
 
-    private JComboBox<String> comboFormaFiltrado;
-    private JComboBox<String> comboDeporte;
-    private JTextField txtUbicacion;
-    private JComboBox<String> comboNivel;
     private DefaultTableModel modeloTabla;
     private JTable tablaPartidos;
-    private JPanel panelFiltros;
     private JScrollPane scrollTabla;
 
-    private JPanel panelCentro;
-    private final static String PANTALLA_TABLA = "tabla";
-    private final static String PANTALLA_FILTROS = "filtros";
-
-    public PartidosDisponibles(Ejecucion parent) {
+    public PartidosDisponibles(Ejecucion parent, String nickname) {
         setLayout(new BorderLayout());
 
-        // Título con más espacio inferior
         JLabel lblTitulo = new JLabel("Partidos Disponibles", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 30, 10));
         add(lblTitulo, BorderLayout.NORTH);
 
-        // Tabla de partidos
-        String[] columnas = {"Deporte", "Ubicación", "Fecha", "Nivel"};
-        modeloTabla = new DefaultTableModel(columnas, 0);
-        tablaPartidos = new JTable(modeloTabla);
-        scrollTabla = new JScrollPane(tablaPartidos);
-
-        // Panel de filtros
-        panelFiltros = new JPanel();
-        panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
-        panelFiltros.setBorder(BorderFactory.createTitledBorder("Filtros de búsqueda"));
-        panelFiltros.setVisible(false);
-
-        comboFormaFiltrado = new JComboBox<>(new String[]{"Por ubicación", "Por nivel", "Por deporte", "Todos"});
-        comboDeporte = new JComboBox<>(new String[]{"Fútbol", "Básquet", "Tenis", "Padel", "Otro"});
-        txtUbicacion = new JTextField();
-        comboNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
-
-        panelFiltros.add(Box.createVerticalStrut(10));
-        panelFiltros.add(crearFila("Forma de filtrado:", comboFormaFiltrado));
-        panelFiltros.add(crearFila("Deporte:", comboDeporte));
-        panelFiltros.add(crearFila("Ubicación:", txtUbicacion));
-        panelFiltros.add(crearFila("Nivel:", comboNivel));
-        panelFiltros.add(Box.createVerticalStrut(10));
-
-        JButton btnAplicarFiltros = new JButton("Aplicar Filtros");
-        btnAplicarFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelFiltros.add(btnAplicarFiltros);
-        panelFiltros.add(Box.createVerticalStrut(10));
-
-        // Panel central con CardLayout
-        panelCentro = new JPanel(new CardLayout());
-        panelCentro.add(scrollTabla, PANTALLA_TABLA);
-        panelCentro.add(panelFiltros, PANTALLA_FILTROS);
-        add(panelCentro, BorderLayout.CENTER);
-
-        // Panel inferior
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton btnFiltrar = new JButton("🔍 Filtrar");
-        JButton btnVolver = new JButton("Volver");
-        panelBotones.add(btnVolver);
-        panelBotones.add(btnFiltrar);
-        add(panelBotones, BorderLayout.SOUTH);
-
-        // Mostrar filtros
-        btnFiltrar.addActionListener(e -> {
-            CardLayout cl = (CardLayout) (panelCentro.getLayout());
-            cl.show(panelCentro, PANTALLA_FILTROS);
-        });
-
-        // Aplicar filtros
-        btnAplicarFiltros.addActionListener(e -> {
-            String forma = (String) comboFormaFiltrado.getSelectedItem();
-            String deporte = (String) comboDeporte.getSelectedItem();
-            String ubicacion = txtUbicacion.getText().trim();
-            String nivel = (String) comboNivel.getSelectedItem();
-
-            cargarPartidosEnSegundoPlano(forma, deporte, ubicacion, nivel);
-
-            CardLayout cl = (CardLayout) (panelCentro.getLayout());
-            cl.show(panelCentro, PANTALLA_TABLA);
-        });
-
-        // Nuevo deporte
-        comboDeporte.addActionListener(e -> {
-            if ("Otro".equals(comboDeporte.getSelectedItem())) {
-                String nuevoDeporte = JOptionPane.showInputDialog(this, "Ingrese el deporte:");
-                if (nuevoDeporte != null && !nuevoDeporte.trim().isEmpty()) {
-                    comboDeporte.insertItemAt(nuevoDeporte.trim(), comboDeporte.getItemCount() - 1);
-                    comboDeporte.setSelectedItem(nuevoDeporte.trim());
-                } else {
-                    comboDeporte.setSelectedIndex(0);
-                }
+        String[] columnas = {"Deporte", "Ubicación", "Fecha", "Unirse"};
+        modeloTabla = new DefaultTableModel(null, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 3; // Solo columna "Unirse"
             }
-        });
+        };
 
-        // Volver
+        tablaPartidos = new JTable(modeloTabla);
+        tablaPartidos.getColumn("Unirse").setCellRenderer(new BotonRenderer());
+        tablaPartidos.getColumn("Unirse").setCellEditor(new BotonEditor(new JCheckBox(), parent, nickname));
+
+        scrollTabla = new JScrollPane(tablaPartidos);
+        add(scrollTabla, BorderLayout.CENTER);
+
+        JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
 
-        // Carga inicial sin filtros
-        cargarPartidosEnSegundoPlano("Todos", "", "", "");
+        JPanel panelBotones = new JPanel();
+        panelBotones.add(btnVolver);
+        add(panelBotones, BorderLayout.SOUTH);
+
+        cargarPartidos(nickname);
     }
 
-    private JPanel crearFila(String etiqueta, JComponent campo) {
-        JPanel fila = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        fila.setMaximumSize(new Dimension(450, 40));
-        JLabel lbl = new JLabel(etiqueta);
-        lbl.setPreferredSize(new Dimension(180, 25));
-        campo.setPreferredSize(new Dimension(200, 25));
-        fila.add(lbl);
-        fila.add(campo);
-        return fila;
-    }
-
-    private void cargarPartidosEnSegundoPlano(String forma, String deporte, String ubicacion, String nivel) {
+    private void cargarPartidos(String nickname) {
         modeloTabla.setRowCount(0);
 
         SwingWorker<Void, Partido> worker = new SwingWorker<Void, Partido>() {
             @Override
             protected Void doInBackground() {
-                List<Partido> partidos = PartidoController.getInstancia().obtenerTodosLosPartidos();
+                UserRepository userRepo = new UserRepository();
+                Usuario temp = userRepo.findByField("_id", nickname);
+                List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
 
                 for (Partido p : partidos) {
-                    boolean coincide = false;
-
-                    if ("Por deporte".equals(forma)) {
-                        coincide = p.getDeporte() != null && p.getDeporte().equalsIgnoreCase(deporte);
-                    } else if ("Por ubicación".equals(forma)) {
-                        coincide = p.getUbicacion() != null && p.getUbicacion().getCiudad() != null &&
-                                   p.getUbicacion().getCiudad().toLowerCase().contains(ubicacion.toLowerCase());
-                    } else if ("Por nivel".equals(forma)) {
-                        //coincide = p.getNivel() != null && p.getNivel().equalsIgnoreCase(nivel);
-                    } else if ("Todos".equals(forma)) {
-                        coincide = true;
-                    }
-
-                    if (coincide) {
-                        publish(p);
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            protected void process(List<Partido> chunks) {
-                for (Partido p : chunks) {
                     modeloTabla.addRow(new Object[]{
                         p.getDeporte(),
                         p.getUbicacion() != null ? p.getUbicacion().getCiudad() : "Desconocida",
                         p.getFecha(),
-                        //p.getNivel() != null ? p.getNivel() : "Desconocido"
+                        "Unirse" // botón
                     });
                 }
+                return null;
             }
         };
-
         worker.execute();
+    }
+
+    // ---------- Renderer del botón ----------
+    class BotonRenderer extends JButton implements TableCellRenderer {
+        public BotonRenderer() {
+            setText("Unirse");
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            return this;
+        }
+    }
+
+    // ---------- Editor del botón ----------
+    class BotonEditor extends DefaultCellEditor {
+        private JButton button;
+        private String nickname;
+        private boolean clicked;
+        private int row;
+        private Ejecucion parent;
+
+        public BotonEditor(JCheckBox checkBox, Ejecucion parent, String nickname) {
+            super(checkBox);
+            this.parent = parent;
+            this.nickname = nickname;
+            button = new JButton("Unirse");
+            button.setOpaque(true);
+
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            this.row = row;
+            clicked = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (clicked) {
+                String deporte = (String) modeloTabla.getValueAt(row, 0);
+                String ciudad = (String) modeloTabla.getValueAt(row, 1);
+                String fecha = modeloTabla.getValueAt(row, 2).toString();
+
+                // Obtener partido desde los datos de la fila
+                UserRepository userRepo = new UserRepository();
+                Usuario temp = userRepo.findByField("_id", nickname);
+                List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
+
+                Partido partidoSeleccionado = null;
+                for (Partido p : partidos) {
+                    if (p.getDeporte().equals(deporte)
+                            && (p.getUbicacion() != null && ciudad.equals(p.getUbicacion().getCiudad()))
+                            && fecha.equals(p.getFecha().toString())) {
+                        partidoSeleccionado = p;
+                        break;
+                    }
+                }
+
+                if (partidoSeleccionado != null) {
+                    Equipo equipo1 = partidoSeleccionado.getEquipo("Equipo 1");
+                    Equipo equipo2 = partidoSeleccionado.getEquipo("Equipo 2");
+
+                    StringBuilder mensaje = new StringBuilder();
+
+                    mensaje.append("Equipo 1:\n");
+
+                    if (equipo1 != null && equipo1.getJugadores() != null && !equipo1.getJugadores().isEmpty()) {
+
+                        for (Usuario jugador : equipo1.getJugadores()) {
+                            mensaje.append("- ").append(jugador.getNombre()).append("\n");
+                        }
+                    } else {
+                        mensaje.append("(sin jugadores)\n");
+                    }
+
+                    mensaje.append("\nEquipo 2:\n");
+
+                    if (equipo2 != null && equipo2.getJugadores() != null && !equipo2.getJugadores().isEmpty()) {
+
+                        for (Usuario jugador : equipo2.getJugadores()) {
+                            mensaje.append("- ").append(jugador.getNombre()).append("\n");
+                        }
+                    } else {
+                        mensaje.append("(sin jugadores)\n");
+                    }
+
+                    String[] opciones = {"Unirse al Equipo 1", "Unirse al Equipo 2"};
+                    int seleccion = JOptionPane.showOptionDialog(
+                            button,
+                            mensaje.toString(),
+                            "Unirse al Partido",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            opciones,
+                            opciones[0]
+                    );
+
+                    if (seleccion == 0 || seleccion == 1) {
+                        String nombreEquipo = seleccion == 0 ? "Equipo 1" : "Equipo 2";
+                        Usuario jugador = temp; // El usuario logueado
+
+                        partidoSeleccionado.añadirAlEquipo(jugador, nombreEquipo);
+                        PartidoController.getInstancia().guardarPartido(partidoSeleccionado);
+
+                        JOptionPane.showMessageDialog(button,
+                            "Te has unido al " + nombreEquipo + " del partido de " + deporte,
+                            "Confirmación",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+            clicked = false;
+            return "Unirse";
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            clicked = false;
+            return super.stopCellEditing();
+        }
     }
 }

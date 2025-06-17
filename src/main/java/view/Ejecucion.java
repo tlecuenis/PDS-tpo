@@ -13,8 +13,6 @@ public class Ejecucion extends JFrame {
     private JPanel contentPane;
     private CardLayout cardLayout;
     private String nicknameActual;
-
-    // Guardar referencias a los paneles
     private LoginPanel loginPanel;
     private OpcionesMenu dashboardPanel;
 
@@ -41,14 +39,14 @@ public class Ejecucion extends JFrame {
         dashboardPanel = new OpcionesMenu(this);
         RegisterPanel registerPanel = new RegisterPanel(this);
         OpcionesMenu dashboardPanel = new OpcionesMenu(this);
-        PartidosDisponibles listaPartidosPanel = new PartidosDisponibles(this);
-        NotificacionesUsuario notificacionesPanel = new NotificacionesUsuario(this);
+        //PartidosDisponibles listaPartidosPanel = new PartidosDisponibles(this);
+        //NotificacionesUsuario notificacionesPanel = new NotificacionesUsuario(this);
 
         contentPane.add(loginPanel, "login");
         contentPane.add(registerPanel, "register");
         contentPane.add(dashboardPanel, "menuPrincipal");
-        contentPane.add(listaPartidosPanel, "listaPartidos");
-        contentPane.add(notificacionesPanel, "notificaciones");
+        //contentPane.add(listaPartidosPanel, "listaPartidos");
+        //contentPane.add(notificacionesPanel, "notificaciones");
         
         showPanel("login");
     }
@@ -121,9 +119,33 @@ public class Ejecucion extends JFrame {
                     break;
                 }
             }
-            MisPartidosPanel misPartidos = new MisPartidosPanel(this, nicknameActual); // o pasale el objeto `Usuario` si lo tenés
+            MisPartidosPanel misPartidos = new MisPartidosPanel(this, nicknameActual); 
             misPartidos.setName("misPartidos");
             contentPane.add(misPartidos, "misPartidos");
+        }
+        
+        if ("listaPartidos".equals(name)) {
+            for (int i = 0; i < contentPane.getComponentCount(); i++) {
+                if ("listaPartidos".equals(contentPane.getComponent(i).getName())) {
+                    contentPane.remove(i);
+                    break;
+                }
+            }
+            PartidosDisponibles partidosDisponibles = new PartidosDisponibles(this, nicknameActual);
+            partidosDisponibles.setName("listaPartidos");
+            contentPane.add(partidosDisponibles, "listaPartidos");
+        }
+        
+        if ("notificaciones".equals(name)) {
+            for (int i = 0; i < contentPane.getComponentCount(); i++) {
+                if ("notificaciones".equals(contentPane.getComponent(i).getName())) {
+                    contentPane.remove(i);
+                    break;
+                }
+            }
+            NotificacionesUsuario notificacionesUser = new NotificacionesUsuario(this, nicknameActual);
+            notificacionesUser.setName("notificaciones");
+            contentPane.add(notificacionesUser, "notificaciones");
         }
 
         if ("menuPrincipal".equals(name)) {

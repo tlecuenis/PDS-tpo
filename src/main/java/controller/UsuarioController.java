@@ -5,7 +5,7 @@ import model.*;
 import model.notificaciones.PreferenciaNotificacion;
 import repository.UserDAO;
 import repository.mongoRepository.MongoUserRepository;
-
+import model.notificaciones.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class UsuarioController {
 			}
 		}
 
-		// Ubicación dummy
+		// Ubicación con geolocalizacion dummy
 		Geolocalizacion geo = new Geolocalizacion(0.0, 0.0, 0.0, dto.getCiudad());
 
 		Usuario nuevoUsuario = new Usuario(dto.getNickname(), dto.getNombre(), dto.getEmail(),
@@ -209,6 +209,42 @@ public class UsuarioController {
 
 	    return resultados;
 	}
+	
+	public List<Partido> getInvitaciones(String nickname) {
+        List<Notificacion> notificaciones = new ArrayList<>();
+        notificaciones = userDAO.getNotificaciones(nickname);
+        
+        List<Partido> partidos = new ArrayList<>();
+        for (Notificacion notificacion : notificaciones) {
+            partidos.add(notificacion.getPartido());
+            System.out.println(notificacion.getPartido().getDeporte());
+        }
+        return partidos;
+    }
+	
+	public List<String> getMensaje(String nickname) {
+        List<Notificacion> notificaciones = new ArrayList<>();
+        notificaciones = userDAO.getNotificaciones(nickname);
+        
+        String mensajePartido = "";
+        List<String> mensajes = new ArrayList<>();
+        for (Notificacion notificacion : notificaciones) {
+        	mensajePartido = notificacion.getMensaje() + "\n" +
+        		    "| Identificador del partido: " +
+        		    String.format("%02d/%02d/%04d - %02d:%02d",
+        		        notificacion.getPartido().getFecha().getDayOfMonth(),
+        		        notificacion.getPartido().getFecha().getMonthValue(),
+        		        notificacion.getPartido().getFecha().getYear(),
+        		        notificacion.getPartido().getFecha().getHour(),
+        		        notificacion.getPartido().getFecha().getMinute()
+        		    ) +
+        		    " - " + notificacion.getPartido().getDeporte() +
+        		    " - " + notificacion.getPartido().getUbicacion().getCiudad();
+            mensajes.add(mensajePartido);
+
+        }
+        return mensajes;
+    }
 	
 }
 
