@@ -11,6 +11,7 @@ public interface IEstadoPartido {
 	   void agregarComentario(Partido contexto, String comentario);
 	   void agregarEstadistica(Partido contexto, String estadistica);
 	   String getNombreEstado();
+	   void declararGanador(Partido contexto, Equipo ganador);
 }
 
 

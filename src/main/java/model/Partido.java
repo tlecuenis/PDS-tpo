@@ -44,7 +44,7 @@ public class Partido extends ObserverPartido {
 	public void añadirAlEquipo(Usuario jugador, String nombreEquipo) {
 		for(Equipo equipo : equipos) {
 			if (equipo.getNombre().equals(nombreEquipo)){
-				if (this.validarEntrada(jugador, equipo)) {
+				if (this.validarEntrada(jugador)) {
 					equipo.agregarJugador(jugador);
 					this.validarArmado();
 					return;
@@ -163,9 +163,10 @@ public class Partido extends ObserverPartido {
 	public Equipo getGanador() {
 		return this.ganador;
 	}
-
-	//public void setGanador(Equipo ganador) {this.estadoActual.agregarGanador(ganador);}
-
+    public void declararGanador(Equipo ganador) {
+    	this.estadoActual.declararGanador(this, ganador);
+    }
+    
 	public void setDeporte(String deporte) {
 		this.deporte = deporte;
 	}
@@ -174,6 +175,9 @@ public class Partido extends ObserverPartido {
 		this.observers = new HashSet<>(observers);
 	}
 
+	public void setGanador(Equipo ganador) {
+		this.ganador = ganador;
+	}
 
 	
 	// CAMBIOS DE ESTADO AUTOMÁTICOS
@@ -206,12 +210,13 @@ public class Partido extends ObserverPartido {
 		return null;
 	}
 
-	public boolean validarEntrada(Usuario jugadorNuevo, Equipo equipo) {
-		for (Usuario jugador : equipo.getJugadores()) {
-			if (jugadorNuevo.equals(jugador)) {
-				return false;
+	public boolean validarEntrada(Usuario jugadorNuevo) {
+		for (Equipo equipo : equipos) {
+			if (equipo.getJugadores().contains(jugadorNuevo)) {
+				return true;
 			}
-		} return true;
+		}
+		return false;
 	}
 
 

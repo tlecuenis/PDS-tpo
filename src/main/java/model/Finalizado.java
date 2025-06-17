@@ -34,6 +34,10 @@ public class Finalizado implements IEstadoPartido {
         System.out.println("Estadística post partido registrada.");
         contexto.agregarEstadistica(estadistica);
     }
+    public void declararGanador(Partido contexto, Equipo ganador) {
+    	System.out.printf("¡Felicidades, el ganador es: ", ganador.getNombre());
+    	contexto.setGanador(ganador);
+    }
 
     @Override
     public String getNombreEstado() {
