@@ -1,12 +1,14 @@
 package controller;
 
+import model.Equipo;
+import model.notificaciones.NotificacionDispatcher;
 import repository.PartidoDAO;
 import repository.mongoRepository.MongoPartidoRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import DTO.PartidoDTO;
-import model.IEstrategiaPartido;
+import model.IEmparejamientoStrategy;
 import model.Partido;
 import model.Usuario;
 
@@ -62,21 +64,36 @@ public class PartidoController {
             }
         }
     }
-    
-    public void crearPartido(PartidoDTO partidoDTO) {
-        Partido partido = new Partido();
-        partido.crearPartido(partidoDTO);
 
-        if (usuarioLogueado == null) {
-            System.out.println("ERROR: usuarioLogueado es null al crear el partido");
-        } else {
-            System.out.println("Seteando creador: " + usuarioLogueado.getIdUsuario());
-            partido.setCreador(usuarioLogueado);
-        }
+	public void crearPartido(PartidoDTO partidoDTO) {
+		NotificacionDispatcher nd = new NotificacionDispatcher();
+		Partido partido = new Partido();
+		partido.crearPartido(partidoDTO);
+		Equipo e1 = new Equipo();
+		e1.setNombre("Equipo 1");
+		Equipo e2 = new Equipo();
+		e2.setNombre("Equipo 2");
+		partido.crearEquipo(e1);
+		partido.crearEquipo(e2);
 
-        partidoRepository.save(partido);
-        System.out.println("Partido creado: " + partido.getIdPartido());
-    }
+		if (usuarioLogueado == null) {
+			System.out.println("ERROR: usuarioLogueado es null al crear el partido");
+		} else {
+			System.out.println("Seteando creador: " + usuarioLogueado.getIdUsuario());
+			partido.setCreador(usuarioLogueado);
+		}
+
+		partidoRepository.save(partido);
+        /*
+        //Notificar a todos los usuarios que tengan el deporte marcado como favorito
+        Notificacion notificacion = new Notificacion(partido, "¡Se creó un partido de tu deporte favorito, unite antes de que se llene!");
+        for(Usuario usuarioANotificar : userRepository.findByDeporte(partido.getDeporte())){
+            nd.enviar(notificacion, usuarioANotificar);
+        } //validar que no se mande al mismo creador
+         */
+
+		System.out.println("Partido creado: " + partido.getIdPartido());
+	}
 
 	public void buscarPartido(PartidoDTO partidoDTO) {
 		Partido partido = partidoRepository.findById(partidoDTO.getIdPartido());
@@ -131,7 +148,7 @@ public class PartidoController {
 		System.out.println("Partido iniciado.");
 	}
 
-	public void elegirEstrategia(String idPartido, IEstrategiaPartido estrategia) {
+	public void elegirEstrategia(String idPartido, IEmparejamientoStrategy estrategia) {
 		Partido partido = partidoRepository.findById(idPartido);
 		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
 			System.out.println("No tienes permiso para elegir una estrategia para este partido.");
@@ -141,6 +158,29 @@ public class PartidoController {
 		partidoRepository.save(partido);
 		System.out.println("Estrategia asignada al partido.");
 	}
+
+//	public void actualizarEstadisticasUsuarios(Partido partido) {
+//		Equipo ganador = partido.getGanador();
+//		if (ganador == null) {
+//			System.out.println("No se puede actualizar estadísticas, el partido no tiene un equipo ganador.");
+//			return;
+//		}
+//
+//		ganador.getJugadores().forEach(jugador -> {
+//			jugador.setScore(jugador.getScore() + 3);
+//			jugador.setCantPartidos(jugador.getCantPartidos() + 1);
+//		});
+//
+//		partido.getEquipos().stream()
+//				.flatMap(e -> e.getJugadores().stream())
+//				.filter(jugador -> !ganador.getJugadores().contains(jugador))
+//				.forEach(jugador -> {
+//					jugador.setScore(jugador.getScore() + 0);
+//					jugador.setCantPartidos(jugador.getCantPartidos() + 1);
+//				});
+//
+//		System.out.println("Estadísticas actualizadas para los jugadores del partido: " + partido.getIdPartido());
+//	}
 
 	public List<Partido> obtenerTodosLosPartidos() {
 		return partidoRepository.findAll();

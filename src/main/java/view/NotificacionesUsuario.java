@@ -1,31 +1,48 @@
 package view;
 
-import java.awt.GridBagConstraints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import controller.UsuarioController;
+import model.Usuario;
+import repository.UserRepository;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 
 public class NotificacionesUsuario extends JPanel {
 
-	public NotificacionesUsuario(Ejecucion parent) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		setLayout(null);
+    public NotificacionesUsuario(Ejecucion parent, String nickname) {
+        setLayout(new BorderLayout());
 
-		JLabel lbl = new JLabel("Notificaciones recientes (simulado)");
-		lbl.setBounds(80, 100, 250, 30);
-		add(lbl);
-		
-        // Boton volver
-        gbc.gridx = 1;
+        // Título
+        JLabel titulo = new JLabel("Notificaciones recientes", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        titulo.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+        add(titulo, BorderLayout.NORTH);
+
+        // Obtener mensajes desde controlador
+        UserRepository userRepo = new UserRepository();
+        Usuario temp = userRepo.findByField("_id", parent.getNicknameActual());
+
+        List<String> mensajes = UsuarioController.getInstancia().getMensaje(temp.getIdUsuario());
+
+        // Crear lista visual de mensajes
+        DefaultListModel<String> listaModel = new DefaultListModel<>();
+        for (String m : mensajes) {
+            listaModel.addElement(m);
+        }
+
+        JList<String> listaMensajes = new JList<>(listaModel);
+        listaMensajes.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(listaMensajes);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Mensajes"));
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Botón Volver
+        JPanel panelInferior = new JPanel();
         JButton btnVolver = new JButton("Volver");
-		btnVolver.setBounds(250, 220, 100, 30);
-		add(btnVolver, gbc);
-        
-    	btnVolver.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			parent.showPanel("menuPrincipal");
-    		}
-    	});
-	}
+        panelInferior.add(btnVolver);
+        add(panelInferior, BorderLayout.SOUTH);
+
+        btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+    }
 }

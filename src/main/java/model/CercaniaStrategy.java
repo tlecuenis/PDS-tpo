@@ -9,7 +9,7 @@ import repository.UserRepository;
 
 public class CercaniaStrategy implements IEmparejamientoStrategy {
     @Override
-	public void emparejar(List<Equipo> equipos, Partido partido) {
+	public void emparejar(Partido partido) {
         String ubicacionPartido = partido.getUbicacion().getCiudad();
 
 		List<Usuario> jugadoresBBDD = new ArrayList<>();

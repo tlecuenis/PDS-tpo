@@ -9,7 +9,7 @@ import repository.UserRepository;
 
 public class NivelStrategy implements IEmparejamientoStrategy {
 	@Override
-	public void emparejar(List<Equipo> equipos, Partido partido) {
+	public void emparejar(Partido partido) {
 		int nivelMinimo = partido.getNivelJugadorMinimo();
 		int nivelMaximo = partido.getNivelJugadorMaximo();
 

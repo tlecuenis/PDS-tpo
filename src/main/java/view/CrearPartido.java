@@ -22,7 +22,8 @@ public class CrearPartido extends JPanel {
     private JSpinner spinnerDuracion;
     private JTextField txtUbicacion;
     private JTextField txtHorario;
-    private JComboBox<String> comboNivel;
+    private JComboBox<String> comboNivelMin;
+    private JComboBox<String> comboNivelMax;
     private JButton btnCrear;
     private JButton btnVolver;
     private String nicknameActual; 
@@ -105,13 +106,21 @@ public class CrearPartido extends JPanel {
         txtHorario = new JTextField("Ej: 2025-06-04 18:30");
         add(txtHorario, gbc);
 
-        // Nivel
+        // Nivel Mínimo
         gbc.gridy++;
         gbc.gridx = 0;
-        add(new JLabel("Nivel:"), gbc);
+        add(new JLabel("Nivel Mínimo:"), gbc);
         gbc.gridx = 1;
-        comboNivel = new JComboBox<>(new String[] { "", "Principiante", "Intermedio", "Avanzado" });
-        add(comboNivel, gbc);
+        comboNivelMin = new JComboBox<>(new String[] { "", "Principiante", "Intermedio", "Avanzado" });
+        add(comboNivelMin, gbc);
+        
+        // Nivel Maximo
+        gbc.gridy++;
+        gbc.gridx = 0;
+        add(new JLabel("Nivel Mínimo:"), gbc);
+        gbc.gridx = 1;
+        comboNivelMax = new JComboBox<>(new String[] { "", "Principiante", "Intermedio", "Avanzado" });
+        add(comboNivelMax, gbc);
 
         // Botón Crear
         gbc.gridy++;
@@ -135,9 +144,10 @@ public class CrearPartido extends JPanel {
                 int duracion = getDuracion();
                 String ubicacionTexto = getUbicacion();
                 String horarioTexto = getHorario();
-                String nivelStr = getNivel();
+                String nivelMin = getNivelMin();
+                String nivelMax = getNivelMax();
 
-                if (deporte.isEmpty() || ubicacionTexto.isEmpty() || horarioTexto.isEmpty() || nivelStr.isEmpty()) {
+                if (deporte.isEmpty() || ubicacionTexto.isEmpty() || horarioTexto.isEmpty() || nivelMin.isEmpty() || nivelMax.isEmpty()) {
                     JOptionPane.showMessageDialog(CrearPartido.this, "Por favor, completá todos los campos.");
                     return;
                 }
@@ -147,33 +157,44 @@ public class CrearPartido extends JPanel {
                     LocalDateTime fechaHora = LocalDateTime.parse(horarioTexto.replace(" ", "T"));
 
                     // Parsear ubicación
-                    String[] partesUbicacion = ubicacionTexto.split(",");
-                    if (partesUbicacion.length != 4) {
-                        JOptionPane.showMessageDialog(CrearPartido.this, "Ubicación mal ingresada. Usá: latitud, longitud, varianza, ciudad");
-                        return;
-                    }
-
-                    double lat = Double.parseDouble(partesUbicacion[0].trim());
-                    double lng = Double.parseDouble(partesUbicacion[1].trim());
-                    double var = Double.parseDouble(partesUbicacion[2].trim());
-                    String ciudad = partesUbicacion[3].trim();
-
-                    Geolocalizacion geo = new Geolocalizacion(lat, lng, var, ciudad);
+                    String ciudad = ubicacionTexto;
+ 
+                    Geolocalizacion geo = new Geolocalizacion(1.3, 2.5, 7.6, ciudad); //mas trucho esto
 
                     // Nivel
-                    int nivelMin = 1, nivelMax = 10;
-                    switch (nivelStr.toLowerCase()) {
+                    int min = 0;
+                    int max = 0;
+
+                    switch (nivelMin.toLowerCase()) {
                         case "principiante":
-                            nivelMax = 3;
+                            min = 1;
                             break;
                         case "intermedio":
-                            nivelMin = 4;
-                            nivelMax = 7;
+                            min = 2;
                             break;
                         case "avanzado":
-                            nivelMin = 8;
+                            min = 3;
                             break;
                     }
+
+                    switch (nivelMax.toLowerCase()) {
+                        case "principiante":
+                            max = 1;
+                            break;
+                        case "intermedio":
+                            max = 2;
+                            break;
+                        case "avanzado":
+                            max = 3;
+                            break;
+                    }
+
+                    if (min > max) {
+                        JOptionPane.showMessageDialog(CrearPartido.this, "Error: El nivel máximo no puede ser menor que el mínimo.");
+                        return;
+                    }
+                    
+                    
 
                     UsuarioDTO usuarioDTO = UsuarioController.getInstancia().getUsuario(nicknameActual);
                     if (usuarioDTO == null) {
@@ -203,8 +224,8 @@ public class CrearPartido extends JPanel {
                     dto.setDuracion(duracion);
                     dto.setFecha(fechaHora);
                     dto.setUbicacion(geo);
-                    dto.setNivelJugadorMinimo(nivelMin);
-                    dto.setNivelJugadorMaximo(nivelMax);
+                    dto.setNivelJugadorMinimo(min);
+                    dto.setNivelJugadorMaximo(max);
                     dto.setCreador(usuarioDTO.getNickname());               
 
                     PartidoController.getInstancia().crearPartido(dto);
@@ -240,8 +261,12 @@ public class CrearPartido extends JPanel {
         return txtHorario.getText();
     }
 
-    public String getNivel() {
-        return (String) comboNivel.getSelectedItem();
+    public String getNivelMin() {
+        return (String) comboNivelMin.getSelectedItem();
+    }
+
+    public String getNivelMax() {
+        return (String) comboNivelMax.getSelectedItem();
     }
 
     public JButton getBtnCrear() {

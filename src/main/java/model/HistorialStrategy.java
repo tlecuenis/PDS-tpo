@@ -9,7 +9,7 @@ import repository.UserRepository;
 
 public class HistorialStrategy implements IEmparejamientoStrategy {
 	@Override
-	public void emparejar(List<Equipo> equipos, Partido partido) {
+	public void emparejar(Partido partido) {
 		// Historial del creador, se deja en int para truncar decimales
 		List<Deporte> deportesCreador = partido.getCreador().getDeportes();
 		int historialRequerido;

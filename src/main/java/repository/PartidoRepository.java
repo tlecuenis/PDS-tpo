@@ -27,7 +27,7 @@ public class PartidoRepository implements PartidoDAO{
 
     @Override
     public List<Partido> findAll() {
-        return null;
+        return repo.findAll();
     }
 
     @Override

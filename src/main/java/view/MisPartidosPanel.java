@@ -4,7 +4,9 @@ import controller.PartidoController;
 import controller.UsuarioController;
 import model.Partido;
 import model.Usuario;
-
+import model.CercaniaStrategy;
+import model.NivelStrategy;
+import model.HistorialStrategy;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -21,7 +23,6 @@ public class MisPartidosPanel extends JPanel {
             return;
         }
 
-        // Seteo el usuario logueado en el controlador para filtrar partidos correctamente
         PartidoController.getInstancia().setUsuarioLogueado(usuarioLogeado);
 
         setLayout(new BorderLayout());
@@ -63,14 +64,14 @@ public class MisPartidosPanel extends JPanel {
 
             revalidate();
             repaint();
-            return; // Salir del método para no seguir procesando
+            return; 
         }
         
         for (Partido p : partidos) {
             JPanel partidoPanel = new JPanel();
             partidoPanel.setLayout(new BoxLayout(partidoPanel, BoxLayout.Y_AXIS));
             partidoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), 
-                p.getIdPartido() + " - " + p.getFecha() + " - " + p.getEstado()));
+            		p.getFecha().getDayOfMonth() + "/" + p.getFecha().getMonthValue() + "/" + p.getFecha().getYear() + " - " + p.getFecha().getHour() + ":" + p.getFecha().getMinute() + " - " + p.getEstado().getNombreEstado() + " - " +p.getUbicacion().getCiudad()));
 
             // Compactar el panel
             partidoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
@@ -80,47 +81,84 @@ public class MisPartidosPanel extends JPanel {
             	    "Deporte: " + p.getDeporte() + 
             	    " | Jugadores: " + p.cantidadJugadoresActual() + 
             	    " | Duración: " + p.getDuracion(),
-            	    SwingConstants.CENTER // Centra el texto dentro del JLabel
+            	    SwingConstants.CENTER 
             	);
             	info.setFont(new Font("Arial", Font.PLAIN, 12));
             	info.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            	info.setAlignmentX(Component.CENTER_ALIGNMENT); // Centra el JLabel en el BoxLayout
+            	info.setAlignmentX(Component.CENTER_ALIGNMENT); 
 
-            	partidoPanel.add(info); // No uses BorderLayout.CENTER aquí porque estás con BoxLayout
+            	partidoPanel.add(info); 
 
             JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            JButton btnEmparejarCercania = new JButton("Emparejar Cercanía");
+            JButton btnEmparejarNivel = new JButton("Emparejar Nivel");
+            JButton btnEmparejarHistorial = new JButton("Emparejar Historial");
             JButton btnConfirmar = new JButton("Confirmar");
             JButton btnCancelar = new JButton("Cancelar");
             JButton btnFinalizar = new JButton("Finalizar");
 
+            btnEmparejarCercania.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnEmparejarNivel.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnEmparejarHistorial.setFont(new Font("Arial", Font.PLAIN, 11));
             btnConfirmar.setFont(new Font("Arial", Font.PLAIN, 11));
             btnCancelar.setFont(new Font("Arial", Font.PLAIN, 11));
             btnFinalizar.setFont(new Font("Arial", Font.PLAIN, 11));
 
+            btnEmparejarCercania.addActionListener(e -> {
+                p.setEstrategiaActual(new CercaniaStrategy());
+                p.emparejar(p);
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Cercanía");
+                cargarMisPartidos();
+            });
+            
+            btnEmparejarNivel.addActionListener(e -> {
+            	p.setEstrategiaActual(new NivelStrategy());
+            	p.emparejar(p);
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Nivel");
+                cargarMisPartidos();
+            });
+            
+            btnEmparejarHistorial.addActionListener(e -> {
+            	p.setEstrategiaActual(new HistorialStrategy());
+            	p.emparejar(p);
+                PartidoController.getInstancia().guardarPartido(p);
+                JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Historial");
+                cargarMisPartidos();
+            });           
+            
             btnConfirmar.addActionListener(e -> {
                 p.confirmar();
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Partido confirmado.");
+                cargarMisPartidos();
             });
 
             btnCancelar.addActionListener(e -> {
                 p.cancelar();
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Partido cancelado.");
+                cargarMisPartidos();
             });
 
             btnFinalizar.addActionListener(e -> {
                 p.finalizar();
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Partido finalizado.");
+                cargarMisPartidos();
             });
 
+            botones.add(btnEmparejarCercania);
+            botones.add(btnEmparejarNivel);
+            botones.add(btnEmparejarHistorial);          
+            
             botones.add(btnConfirmar);
             botones.add(btnCancelar);
             botones.add(btnFinalizar);
             partidoPanel.add(botones);
 
-            listaPanel.add(Box.createVerticalStrut(5)); // Espacio entre partidos
+            listaPanel.add(Box.createVerticalStrut(5));
             listaPanel.add(partidoPanel);
         }
 
