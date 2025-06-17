@@ -44,5 +44,8 @@ public class NecesitamosJugadores implements IEstadoPartido {
     public String getNombreEstado() {
         return "NecesitamosJugadores";
     }
+    public void declararGanador(Partido contexto, Equipo ganador) {
+    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+    }
 }
 

@@ -42,4 +42,7 @@ public class Confirmado implements IEstadoPartido {
     public String getNombreEstado() {
         return "Confirmado";
     }
+    public void declararGanador(Partido contexto, Equipo ganador) {
+    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+    }
 }
