@@ -1,7 +1,7 @@
 # ⚽ Uno Más - Plataforma de Encuentros Deportivos (Version 1.0)
 
 Es una aplicación diseñada para ayudar a deportistas a organizar y completar partidos. Los usuarios pueden crear encuentros deportivos, buscar jugadores compatibles y recibir notificaciones automáticas.  
-Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la materia **Análisis y Diseño Orientado a Objetos (1C 2025)**.
+Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la materia **Proceso de Desarrollo de Software (1C 2025)**.
 
 ---
 
@@ -12,6 +12,7 @@ Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la ma
 - [🧱 Arquitectura](#-arquitectura)
 - [📌 Requisitos Técnicos](#-requisitos-técnicos)
 - [👥 Integrantes](#-integrantes)
+- [🛠️ Bugs](#-bugs)
 
 ---
 
@@ -61,7 +62,7 @@ Se aplican al menos 4 de los siguientes patrones:
 - 🔧 IDE recomendado: IntelliJ IDEA / Eclipse IDE
 - 🔗 Firebase SDK (para notificaciones push)
 - 📧 JavaMail API (para emails)
-- 📄 JDK + Maven o Gradle (según configuración)
+- 📄 JDK + Maven 
 
 ---
 
@@ -74,7 +75,10 @@ Se aplican al menos 4 de los siguientes patrones:
 - Theo Ruschanoff
 - Valen Fernandez
 
-- 📚 Materia: Análisis y Diseño Orientado a Objetos
-- 📆 Cuatrimestre: 1C 2025
-- 🏫 Trabajo Práctico Obligatorio: Uno Más
+---
+
+## 🛠️ Bugs
+
+- Vista "Partidos Disponibles" un partido puede aparecer multiples veces en la misma tabla
+- Observer no envía notificaciones por cambio de estado (No se informa en la vista)
 
