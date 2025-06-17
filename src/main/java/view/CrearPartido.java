@@ -117,7 +117,7 @@ public class CrearPartido extends JPanel {
         // Nivel Maximo
         gbc.gridy++;
         gbc.gridx = 0;
-        add(new JLabel("Nivel Mínimo:"), gbc);
+        add(new JLabel("Nivel Maximo:"), gbc);
         gbc.gridx = 1;
         comboNivelMax = new JComboBox<>(new String[] { "", "Principiante", "Intermedio", "Avanzado" });
         add(comboNivelMax, gbc);

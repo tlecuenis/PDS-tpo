@@ -88,7 +88,29 @@ public class MongoPartidoRepository implements PartidoDAO {
         } else {
             //System.out.println("Creador es null al guardar Partido");
         }
+        // Ganador
+        if(p.getGanador() != null) {
+            List<Usuario> ganadores = new ArrayList<>();
+            ganadores = p.getGanador().getJugadores();
 
+            Document ganadorDoc = new Document();
+            ganadorDoc.append("nombre", p.getGanador().getNombre());
+
+            //Lista de usuarios
+            List<Document> integrantes = new ArrayList<>();
+
+            for(Usuario u : ganadores){
+                Document integrante = new Document();
+                integrante.append("id", u.getIdUsuario());
+                integrante.append("nombre", u.getNombre());
+                integrantes.add(integrante);
+            }
+            ganadorDoc.append("integrantes", integrantes);
+            d.append("ganador", ganadorDoc);
+        }
+        else{
+            d.append("ganador", null);
+        }
         return d;
     }
 
@@ -191,6 +213,20 @@ public class MongoPartidoRepository implements PartidoDAO {
                 Usuario u = userRepository.findById(jugadorDoc.getString("id"));
                 partido.añadirAlEquipo(u, nombreEquipo);
             }
+        }
+        // Ganador
+        Equipo ganador = new Equipo();
+        Document ganadorDoc = null;
+        if(ganadorDoc != null) {
+            ganadorDoc = (Document) d.get("ganador");
+            ganador.setNombre(ganadorDoc.getString("nombre"));
+            List<Document> jugadoresDoc = (List<Document>) ganadorDoc.get("jugadores");
+            List<Usuario> jugadores = new ArrayList<>();
+            for (Document jugadorDoc : jugadoresDoc) {
+                Usuario u = userRepository.findById(jugadorDoc.getString("id"));
+                jugadores.add(u);
+            }
+            partido.setGanador(ganador); //Debería ser mediante controller?
         }
         return partido;
     }

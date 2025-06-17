@@ -81,6 +81,7 @@ public class PartidoController {
 		} else {
 			System.out.println("Seteando creador: " + usuarioLogueado.getIdUsuario());
 			partido.setCreador(usuarioLogueado);
+			partido.añadirAlEquipo(usuarioLogueado, "Equipo 1");
 		}
 
 		partidoRepository.save(partido);
@@ -126,13 +127,13 @@ public class PartidoController {
 		System.out.println("Partido cancelado.");
 	}
 
-	public void finalizar(String idPartido) {
+	public void finalizar(String idPartido, Equipo equipo) {
 		Partido partido = partidoRepository.findById(idPartido);
 		if (partido == null || !usuarioLogueado.getIdUsuario().equals(partido.getCreador().getIdUsuario())) {
 			System.out.println("No tienes permiso para finalizar este partido.");
 			return;
 		}
-		partido.finalizar();
+		partido.finalizar(equipo);
 		partidoRepository.save(partido);
 		System.out.println("Partido finalizado.");
 	}

@@ -22,8 +22,13 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 				cantPartidos = deporte.getCantPartidos();
 			}
 		}
-		historialRequerido = score / cantPartidos;
-		
+		try {
+			historialRequerido = score / cantPartidos;
+		} catch (ArithmeticException e) {
+			System.out.println("Error: el creador no tiene partidos registrados para el deporte " + partido.getDeporte());
+			return;
+		}
+
 		List<Usuario> jugadoresBBDD = new ArrayList<>();
 		try {
 			jugadoresBBDD =  new UserRepository().findAll();
@@ -49,7 +54,12 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 					cantPartidosJugador = deporte.getCantPartidos();
 				}
 			}
-			historialJugador = scoreJugador / cantPartidosJugador;
+			try {
+				historialJugador = scoreJugador / cantPartidosJugador;
+			} catch (ArithmeticException e) {
+				System.out.println("Jugador " + jugador.getNombre() + " no tiene partidos registrados para el deporte " + partido.getDeporte());
+				continue;
+			}
 			if (historialJugador == historialRequerido) {
 				// si ya está en el partido no notificar
 				boolean estaEnPartido = false;
@@ -68,4 +78,3 @@ public class HistorialStrategy implements IEmparejamientoStrategy {
 		}
 	}
 }
-

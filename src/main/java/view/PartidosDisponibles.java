@@ -66,13 +66,37 @@ public class PartidosDisponibles extends JPanel {
     private void cargarPartidos(String nickname) {
         modeloTabla.setRowCount(0);
 
+        // Debug: inicio de carga de partidos
+        System.out.println("Cargando partidos para nickname: " + nickname);
+
         SwingWorker<Void, Partido> worker = new SwingWorker<Void, Partido>() {
             @Override
             protected Void doInBackground() {
+                // Debug: dentro de doInBackground
+                System.out.println("Dentro de doInBackground() para nickname: " + nickname);
                 UserRepository userRepo = new UserRepository();
                 Usuario temp = userRepo.findByField("_id", nickname);
-                List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
+                // Debug: usuario obtenido
+                System.out.println("Usuario obtenido: " + (temp != null ? temp.getNombre() : "null"));
+                if (temp == null) {
+                    System.out.println("No se encontró el usuario con nickname: " + nickname);
+                    return null;
+                }
 
+                List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
+                // Debug: id de usuario y cantidad de partidos invitados
+                System.out.println("ID de usuario: " + temp.getIdUsuario());
+                System.out.println("Cantidad de partidos invitados: " + (partidos != null ? partidos.size() : "null"));
+                for (Partido p : partidos) {
+                    System.out.println("Partido recibido: " + p.getDeporte() + " en " +
+                        (p.getUbicacion() != null ? p.getUbicacion().getCiudad() : "null"));
+                    publish(p);
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(List<Partido> partidos) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy - H:mm");
                 for (Partido p : partidos) {
                     String fechaFormateada = p.getFecha().format(formatter);
@@ -83,7 +107,6 @@ public class PartidosDisponibles extends JPanel {
                         "Unirse"
                     });
                 }
-                return null;
             }
         };
         worker.execute();
@@ -140,7 +163,7 @@ public class PartidosDisponibles extends JPanel {
                 UserRepository userRepo = new UserRepository();
                 Usuario temp = userRepo.findByField("_id", nickname);
                 List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
-
+                System.out.println("Invitaciones recibidas: " + (partidos != null ? partidos.size() : "null"));
                 Partido partidoSeleccionado = null;
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy - H:mm");
                 for (Partido p : partidos) {

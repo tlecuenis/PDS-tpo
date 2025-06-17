@@ -17,7 +17,7 @@ public class Finalizado implements IEstadoPartido {
         System.out.println("No se puede armar. El partido ya finalizó.");
     }
 
-    public void finalizar(Partido contexto) {
+    public void finalizar(Partido contexto, Equipo equipo) {
         System.out.println("No se puede finalizar. El partido ya está finalizado");
     }
 

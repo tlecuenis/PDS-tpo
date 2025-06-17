@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import model.notificaciones.IObserver;
 import model.notificaciones.NotificacionDispatcher;
 import model.notificaciones.ObserverPartido;
+import repository.mongoRepository.MongoPartidoRepository;
+import repository.mongoRepository.MongoUserRepository;
 
 public class Partido extends ObserverPartido {
 	private String idPartido;
@@ -37,6 +39,8 @@ public class Partido extends ObserverPartido {
 
 	public void cambiarEstado(IEstadoPartido estado) {
 		this.estadoActual = estado;
+		MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
+		mongoPartidoRepository.save(this);
 	}
 
 	public void crearEquipo(Equipo equipo) {
@@ -166,9 +170,53 @@ public class Partido extends ObserverPartido {
 		this.estadoActual.cancelar(this);
 	}
 
-	public void finalizar() {
-		this.estadoActual.finalizar(this);
+	public void finalizar(Equipo equipoGanador) {
+		this.estadoActual.finalizar(this, equipoGanador);
+		this.actualizarStats();
 	}
+
+	// Actualiza el score y la cantidad de partidos jugados de los jugadores según el equipo ganador
+	public void actualizarStats() {
+		Equipo ganador = this.getGanador();
+		if (ganador == null) {
+			System.out.println("No se puede actualizar estadísticas, el partido no tiene un equipo ganador.");
+			return;
+		}
+
+
+		MongoUserRepository mongoUserRepository = new MongoUserRepository();
+
+
+		// Sumar puntos y contar partido a ganadores
+		ganador.getJugadores().forEach(jugador -> {
+
+			for(Deporte deporte : jugador.getDeportes()) {
+				if(deporte.getNombre().equals(this.deporte)) {
+					deporte.setScore(deporte.getScore() + 3);
+					deporte.setCantPartidos(deporte.getCantPartidos() + 1);
+					mongoUserRepository.update(jugador);
+				}
+			}
+		});
+
+		// Sumar solo partido jugado a los demás jugadores
+		this.getEquipos().stream()
+				.flatMap(e -> e.getJugadores().stream())
+				.filter(jugador -> !ganador.getJugadores().contains(jugador))
+				.forEach(jugador -> {
+
+					for(Deporte deporte : jugador.getDeportes()) {
+						if(deporte.getNombre().equals(this.deporte)) {
+							deporte.setScore(deporte.getScore());
+							deporte.setCantPartidos(deporte.getCantPartidos() + 1);
+							mongoUserRepository.update(jugador);
+						}
+					}
+				});
+
+		System.out.println("Estadísticas actualizadas para los jugadores del partido: " + this.getIdPartido());
+	}
+
 
 	public void iniciar() {
 		this.estadoActual.iniciar(this);
@@ -177,11 +225,11 @@ public class Partido extends ObserverPartido {
 	public void armar() {
 		this.estadoActual.armar(this);
 	}
-	
+
 	public void necesitamosJugadores() {
 		this.estadoActual.necesitamosJugadores(this);
 	}
-	
+
 	public void agregarComentario(String comentario) {
 		this.comentario = comentario;
 	}
@@ -196,7 +244,7 @@ public class Partido extends ObserverPartido {
 	public void setIdPartido(String idPartido) {
 		this.idPartido = idPartido;
 	}
-	
+
 	public String getDeporte() {
 		return deporte;
 	}
@@ -207,6 +255,8 @@ public class Partido extends ObserverPartido {
 
 	public void declararGanador(Equipo ganador) {
 		this.estadoActual.declararGanador(this, ganador);
+		MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
+		mongoPartidoRepository.save(this);
 	}
 
 	public void setGanador(Equipo ganador) {
@@ -222,24 +272,25 @@ public class Partido extends ObserverPartido {
 	}
 
 
-	
+
 	// CAMBIOS DE ESTADO AUTOMÁTICOS
-	
+
 	public void validarArmado() { 		// Se ejecuta cada vez que un usuario se une al partido
 		if (this.getCantJugadores() == this.cantidadJugadoresActual()) {
 			this.armar();
 		}
 	}
-	
+
 	public void validarNecesitamosJugadores() { 			// Se ejecuta cuando un usuario abandona el partido
 		if(this.getCantJugadores() > this.cantidadJugadoresActual()) {
 			this.necesitamosJugadores();
 		}
 	}
-	
+
 	public boolean validarEnJuego() {
 	    if (LocalDateTime.now().isAfter(fecha) || LocalDateTime.now().isEqual(fecha)) {
 	        this.iniciar();
+
 	        return true;
 	    }
 	    return false;
@@ -263,21 +314,21 @@ public class Partido extends ObserverPartido {
 
 
 
-	
-	
+
+
 	// Los cambios a Cancelado, Confirmado y Finalizado se deben de hacer
 	// manualmente desde la vista, solo validando si el creador del Partido es el mismo al
 	// usuario logeado, para mostrarle los botones respectivos dentro la vista de ese partido.
-	
-	
+
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	public int cantidadJugadoresActual() {
 	    return equipos.stream()
 	                  .mapToInt(equipo -> equipo.getJugadores().size())
 	                  .sum();
 	}
-	
+
 	public int getCantJugadores() {
 		return cantJugadores;
 	}

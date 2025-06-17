@@ -25,6 +25,10 @@ public class NotificacionesUsuario extends JPanel {
 
         List<String> mensajes = UsuarioController.getInstancia().getMensaje(temp.getIdUsuario());
 
+        if (mensajes == null || mensajes.isEmpty()) {
+            mensajes = java.util.Arrays.asList("No tenés notificaciones");
+        }
+
         // Crear lista visual de mensajes
         DefaultListModel<String> listaModel = new DefaultListModel<>();
         for (String m : mensajes) {

@@ -24,7 +24,7 @@ public class NecesitamosJugadores implements IEstadoPartido {
         contexto.cambiarEstado(new Armado());
     }
 
-    public void finalizar(Partido contexto) {
+    public void finalizar(Partido contexto, Equipo equipo) {
         System.out.println("No se puede finalizar. El partido no está en juego.");
     }
 
