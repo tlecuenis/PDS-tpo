@@ -16,13 +16,13 @@ public class Finalizado implements IEstadoPartido {
     public void armar(Partido contexto) {
         System.out.println("No se puede armar. El partido ya finalizó.");
     }
-    
+
     public void finalizar(Partido contexto) {
         System.out.println("No se puede finalizar. El partido ya está finalizado");
     }
-    
+
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya terminó");
+        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya terminó");
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
@@ -35,8 +35,8 @@ public class Finalizado implements IEstadoPartido {
         contexto.agregarEstadistica(estadistica);
     }
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.printf("¡Felicidades, el ganador es: ", ganador.getNombre());
-    	contexto.setGanador(ganador);
+        System.out.printf("¡Felicidades, el ganador es: ", ganador.getNombre());
+        contexto.setGanador(ganador);
     }
 
     @Override

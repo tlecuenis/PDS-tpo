@@ -21,9 +21,9 @@ public class Cancelado implements IEstadoPartido {
     }
 
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("No puede cambiar a necesitamos jugadores. El partido está cancelado");
+        System.out.println("No puede cambiar a necesitamos jugadores. El partido está cancelado");
     }
-    
+
     public void agregarComentario(Partido contexto, String comentario) {
         System.out.println("No se puede agregar comentarios, el partido está cancelado.");
     }
@@ -37,7 +37,6 @@ public class Cancelado implements IEstadoPartido {
         return "Cancelado";
     }
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
 }
-

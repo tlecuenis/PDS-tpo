@@ -90,44 +90,53 @@ public class MisPartidosPanel extends JPanel {
             	partidoPanel.add(info); 
 
             JPanel botones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-            JButton btnEmparejarCercania = new JButton("Emparejar Cercanía");
-            JButton btnEmparejarNivel = new JButton("Emparejar Nivel");
-            JButton btnEmparejarHistorial = new JButton("Emparejar Historial");
-            JButton btnConfirmar = new JButton("Confirmar");
-            JButton btnCancelar = new JButton("Cancelar");
-            JButton btnFinalizar = new JButton("Finalizar");
+            JButton btnEmparejar = new JButton("Emparejar");
+            btnEmparejar.setFont(new Font("Arial", Font.PLAIN, 11));
 
-            btnEmparejarCercania.setFont(new Font("Arial", Font.PLAIN, 11));
-            btnEmparejarNivel.setFont(new Font("Arial", Font.PLAIN, 11));
-            btnEmparejarHistorial.setFont(new Font("Arial", Font.PLAIN, 11));
-            btnConfirmar.setFont(new Font("Arial", Font.PLAIN, 11));
-            btnCancelar.setFont(new Font("Arial", Font.PLAIN, 11));
-            btnFinalizar.setFont(new Font("Arial", Font.PLAIN, 11));
+            JPopupMenu menu = new JPopupMenu();
+            JMenuItem opcionCercania = new JMenuItem("Por Cercanía");
+            JMenuItem opcionNivel = new JMenuItem("Por Nivel");
+            JMenuItem opcionHistorial = new JMenuItem("Por Historial");
 
-            btnEmparejarCercania.addActionListener(e -> {
+            opcionCercania.addActionListener(e -> {
                 p.setEstrategiaActual(new CercaniaStrategy());
                 p.emparejar(p);
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Cercanía");
                 cargarMisPartidos();
             });
-            
-            btnEmparejarNivel.addActionListener(e -> {
-            	p.setEstrategiaActual(new NivelStrategy());
-            	p.emparejar(p);
+
+            opcionNivel.addActionListener(e -> {
+                p.setEstrategiaActual(new NivelStrategy());
+                p.emparejar(p);
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Nivel");
                 cargarMisPartidos();
             });
-            
-            btnEmparejarHistorial.addActionListener(e -> {
-            	p.setEstrategiaActual(new HistorialStrategy());
-            	p.emparejar(p);
+
+            opcionHistorial.addActionListener(e -> {
+                p.setEstrategiaActual(new HistorialStrategy());
+                p.emparejar(p);
                 PartidoController.getInstancia().guardarPartido(p);
                 JOptionPane.showMessageDialog(this, "Estrategia elegida: Por Historial");
                 cargarMisPartidos();
-            });           
-            
+            });
+
+            menu.add(opcionCercania);
+            menu.add(opcionNivel);
+            menu.add(opcionHistorial);
+
+            btnEmparejar.addActionListener(e -> menu.show(btnEmparejar, 0, btnEmparejar.getHeight()));
+            botones.add(btnEmparejar);
+
+            JButton btnConfirmar = new JButton("Confirmar");
+            JButton btnCancelar = new JButton("Cancelar");
+            JButton btnFinalizar = new JButton("Finalizar");
+
+            btnConfirmar.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnCancelar.setFont(new Font("Arial", Font.PLAIN, 11));
+            btnFinalizar.setFont(new Font("Arial", Font.PLAIN, 11));
+
             btnConfirmar.addActionListener(e -> {
                 p.confirmar();
                 PartidoController.getInstancia().guardarPartido(p);
@@ -149,10 +158,6 @@ public class MisPartidosPanel extends JPanel {
                 cargarMisPartidos();
             });
 
-            botones.add(btnEmparejarCercania);
-            botones.add(btnEmparejarNivel);
-            botones.add(btnEmparejarHistorial);          
-            
             botones.add(btnConfirmar);
             botones.add(btnCancelar);
             botones.add(btnFinalizar);
@@ -166,4 +171,3 @@ public class MisPartidosPanel extends JPanel {
         repaint();
     }
 }
-

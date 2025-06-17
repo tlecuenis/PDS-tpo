@@ -14,7 +14,7 @@ public class Armado implements IEstadoPartido {
         contexto.notificar(notificacion);
         contexto.cambiarEstado(new Cancelado());
     }
-    
+
     public void armar(Partido contexto) {
         System.out.println("El partido ya está armado.");
     }
@@ -26,10 +26,10 @@ public class Armado implements IEstadoPartido {
     public void finalizar(Partido contexto) {
         System.out.println("No se puede finalizar. El partido no está en juego.");
     }
-    
+
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("¡Partido en necesitamos jugadores!");
-    	contexto.cambiarEstado(new NecesitamosJugadores());
+        System.out.println("¡Partido en necesitamos jugadores!");
+        contexto.cambiarEstado(new NecesitamosJugadores());
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
@@ -46,7 +46,6 @@ public class Armado implements IEstadoPartido {
     }
 
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
 }
-
