@@ -3,7 +3,7 @@ package model;
 import model.notificaciones.Notificacion;
 
 public class EnJuego implements IEstadoPartido {
-	
+
     public void confirmar(Partido contexto) {
         System.out.println("No puede confirmarse. El partido ya está en juego.");
     }
@@ -15,7 +15,7 @@ public class EnJuego implements IEstadoPartido {
     public void iniciar(Partido contexto) {
         System.out.println("No puede iniciarse. El partido ya está en juego.");
     }
-    
+
     public void armar(Partido contexto) {
         System.out.println("No se puede armar. El partido ya está en juego.");
     }
@@ -28,7 +28,7 @@ public class EnJuego implements IEstadoPartido {
     }
 
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en juego");
+        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en juego");
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
@@ -43,8 +43,8 @@ public class EnJuego implements IEstadoPartido {
     public String getNombreEstado() {
         return "EnJuego";
     }
-    
+
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
 }

@@ -3,6 +3,8 @@ package model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import DTO.PartidoDTO;
 import controller.UsuarioController;
 
@@ -41,21 +43,60 @@ public class Partido extends ObserverPartido {
 		this.equipos.add(equipo);
 	}
 
-	public void añadirAlEquipo(Usuario jugador, String nombreEquipo) {
-		for(Equipo equipo : equipos) {
-			if (equipo.getNombre().equals(nombreEquipo)){
-				if (this.validarEntrada(jugador)) {
-					equipo.agregarJugador(jugador);
-					this.validarArmado();
-					return;
-				} else {
-					System.out.println("El usuario ya está en el equipo.");
-					return;
-				}
+	public boolean añadirAlEquipo(Usuario jugador, String nombreEquipo) {
+	    for (Equipo equipo : equipos) {
+	        if (equipo.getNombre().equals(nombreEquipo)) {
+	            if (this.validarEntrada(jugador, equipo)) {
+	                equipo.agregarJugador(jugador);
+	                this.validarArmado();
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        }
+	    }
+	    return false;
+	}
 
-			}
+	public boolean gestionarIngresoAEquipo(Usuario jugador, Equipo equipo1, Equipo equipo2, String nombreEquipo) {
+		boolean enEquipo1 = equipo1.getJugadores().stream()
+				.anyMatch(j -> j.equals(jugador));
+		boolean enEquipo2 = equipo2.getJugadores().stream()
+				.anyMatch(j -> j.equals(jugador));
+
+		if (enEquipo1 || enEquipo2) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(null,
+						"Ya estás anotado en otro equipo del partido",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
+			return false;
 		}
-		System.out.println("No se encontró el equipo");
+
+		int maxJugadoresPorEquipo = this.getCantJugadores() / 2;
+		Equipo equipoDestino = nombreEquipo.equals("Equipo 1") ? equipo1 : equipo2;
+
+		if (equipoDestino.getJugadores().size() >= maxJugadoresPorEquipo) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(null,
+						"El equipo ya tiene la cantidad máxima de jugadores",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
+			return false;
+		}
+
+		boolean agregado = this.añadirAlEquipo(jugador, nombreEquipo);
+		if (!agregado) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(null,
+						"No se pudo agregar al equipo. Ya estás anotado o hubo un error.",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
+		}
+		return agregado;
 	}
 	
 	public void eliminarDelEquipo(Usuario jugador, String nombreEquipo) {
@@ -163,10 +204,15 @@ public class Partido extends ObserverPartido {
 	public Equipo getGanador() {
 		return this.ganador;
 	}
-    public void declararGanador(Equipo ganador) {
-    	this.estadoActual.declararGanador(this, ganador);
-    }
-    
+
+	public void declararGanador(Equipo ganador) {
+		this.estadoActual.declararGanador(this, ganador);
+	}
+
+	public void setGanador(Equipo ganador) {
+		this.ganador = ganador;
+	}
+
 	public void setDeporte(String deporte) {
 		this.deporte = deporte;
 	}
@@ -175,9 +221,6 @@ public class Partido extends ObserverPartido {
 		this.observers = new HashSet<>(observers);
 	}
 
-	public void setGanador(Equipo ganador) {
-		this.ganador = ganador;
-	}
 
 	
 	// CAMBIOS DE ESTADO AUTOMÁTICOS
@@ -210,13 +253,12 @@ public class Partido extends ObserverPartido {
 		return null;
 	}
 
-	public boolean validarEntrada(Usuario jugadorNuevo) {
-		for (Equipo equipo : equipos) {
-			if (equipo.getJugadores().contains(jugadorNuevo)) {
-				return true;
+	public boolean validarEntrada(Usuario jugadorNuevo, Equipo equipo) {
+		for (Usuario jugador : equipo.getJugadores()) {
+			if (jugadorNuevo.equals(jugador)) {
+				return false;
 			}
-		}
-		return false;
+		} return true;
 	}
 
 

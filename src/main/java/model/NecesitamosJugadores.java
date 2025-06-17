@@ -18,7 +18,7 @@ public class NecesitamosJugadores implements IEstadoPartido {
     public void iniciar(Partido contexto) {
         System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
-    
+
     public void armar(Partido contexto) {
         System.out.println("¡Partido armado!.");
         contexto.cambiarEstado(new Armado());
@@ -29,9 +29,9 @@ public class NecesitamosJugadores implements IEstadoPartido {
     }
 
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en ese estado");
+        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en ese estado");
     }
-    
+
     public void agregarComentario(Partido contexto, String comentario) {
         System.out.println("No se puede agregar comentarios, el partido no ha finalizado.");
     }
@@ -45,7 +45,6 @@ public class NecesitamosJugadores implements IEstadoPartido {
         return "NecesitamosJugadores";
     }
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
 }
-

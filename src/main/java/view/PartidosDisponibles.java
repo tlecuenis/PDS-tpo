@@ -12,12 +12,14 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 public class PartidosDisponibles extends JPanel {
 
     private DefaultTableModel modeloTabla;
     private JTable tablaPartidos;
     private JScrollPane scrollTabla;
+    private JPanel panelUnirse;
 
     public PartidosDisponibles(Ejecucion parent, String nickname) {
         setLayout(new BorderLayout());
@@ -40,7 +42,16 @@ public class PartidosDisponibles extends JPanel {
         tablaPartidos.getColumn("Unirse").setCellEditor(new BotonEditor(new JCheckBox(), parent, nickname));
 
         scrollTabla = new JScrollPane(tablaPartidos);
-        add(scrollTabla, BorderLayout.CENTER);
+
+        panelUnirse = new JPanel();
+        panelUnirse.setLayout(new BoxLayout(panelUnirse, BoxLayout.Y_AXIS));
+        panelUnirse.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelUnirse.setVisible(false);
+
+        JPanel panelCentral = new JPanel(new BorderLayout());
+        panelCentral.add(scrollTabla, BorderLayout.CENTER);
+        panelCentral.add(panelUnirse, BorderLayout.SOUTH);
+        add(panelCentral, BorderLayout.CENTER);
 
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
@@ -62,12 +73,14 @@ public class PartidosDisponibles extends JPanel {
                 Usuario temp = userRepo.findByField("_id", nickname);
                 List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
 
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy - H:mm");
                 for (Partido p : partidos) {
+                    String fechaFormateada = p.getFecha().format(formatter);
                     modeloTabla.addRow(new Object[]{
                         p.getDeporte(),
                         p.getUbicacion() != null ? p.getUbicacion().getCiudad() : "Desconocida",
-                        p.getFecha(),
-                        "Unirse" // botón
+                        fechaFormateada,
+                        "Unirse"
                     });
                 }
                 return null;
@@ -129,10 +142,12 @@ public class PartidosDisponibles extends JPanel {
                 List<Partido> partidos = UsuarioController.getInstancia().getInvitaciones(temp.getIdUsuario());
 
                 Partido partidoSeleccionado = null;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy - H:mm");
                 for (Partido p : partidos) {
+                    String fechaPartidoFormateada = p.getFecha().format(formatter);
                     if (p.getDeporte().equals(deporte)
                             && (p.getUbicacion() != null && ciudad.equals(p.getUbicacion().getCiudad()))
-                            && fecha.equals(p.getFecha().toString())) {
+                            && fecha.equals(fechaPartidoFormateada)) {
                         partidoSeleccionado = p;
                         break;
                     }
@@ -142,12 +157,15 @@ public class PartidosDisponibles extends JPanel {
                     Equipo equipo1 = partidoSeleccionado.getEquipo("Equipo 1");
                     Equipo equipo2 = partidoSeleccionado.getEquipo("Equipo 2");
 
-                    StringBuilder mensaje = new StringBuilder();
+                    panelUnirse.removeAll();
+                    panelUnirse.setVisible(true);
 
+                    JTextArea info = new JTextArea();
+                    info.setEditable(false);
+                    StringBuilder mensaje = new StringBuilder();
                     mensaje.append("Equipo 1:\n");
 
                     if (equipo1 != null && equipo1.getJugadores() != null && !equipo1.getJugadores().isEmpty()) {
-
                         for (Usuario jugador : equipo1.getJugadores()) {
                             mensaje.append("- ").append(jugador.getNombre()).append("\n");
                         }
@@ -158,7 +176,6 @@ public class PartidosDisponibles extends JPanel {
                     mensaje.append("\nEquipo 2:\n");
 
                     if (equipo2 != null && equipo2.getJugadores() != null && !equipo2.getJugadores().isEmpty()) {
-
                         for (Usuario jugador : equipo2.getJugadores()) {
                             mensaje.append("- ").append(jugador.getNombre()).append("\n");
                         }
@@ -166,30 +183,54 @@ public class PartidosDisponibles extends JPanel {
                         mensaje.append("(sin jugadores)\n");
                     }
 
-                    String[] opciones = {"Unirse al Equipo 1", "Unirse al Equipo 2"};
-                    int seleccion = JOptionPane.showOptionDialog(
-                            button,
-                            mensaje.toString(),
-                            "Unirse al Partido",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            opciones,
-                            opciones[0]
-                    );
+                    info.setText(mensaje.toString());
+                    info.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    info.setMaximumSize(new Dimension(400, 100));
+                    info.setForeground(Color.WHITE);
+                    JPanel infoPanel = new JPanel();
+                    infoPanel.setOpaque(false);
+                    infoPanel.add(info);
+                    panelUnirse.add(infoPanel);
 
-                    if (seleccion == 0 || seleccion == 1) {
-                        String nombreEquipo = seleccion == 0 ? "Equipo 1" : "Equipo 2";
-                        Usuario jugador = temp; // El usuario logueado
+                    JPanel botones = new JPanel();
+                    botones.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    botones.setLayout(new FlowLayout(FlowLayout.CENTER));
+                    botones.setOpaque(false);
+                    JButton btnEq1 = new JButton("Unirse al Equipo 1");
+                    JButton btnEq2 = new JButton("Unirse al Equipo 2");
 
-                        partidoSeleccionado.añadirAlEquipo(jugador, nombreEquipo);
-                        PartidoController.getInstancia().guardarPartido(partidoSeleccionado);
+                    Partido finalPartidoSeleccionado = partidoSeleccionado;
+                    btnEq1.addActionListener(e -> {
+                        boolean agregado = finalPartidoSeleccionado.gestionarIngresoAEquipo(temp, equipo1, equipo2, "Equipo 1");
+                        if (agregado) {
+                            PartidoController.getInstancia().guardarPartido(finalPartidoSeleccionado);
+                            JOptionPane.showMessageDialog(button,
+                                "Te has unido al Equipo 1 del partido de " + deporte,
+                                "Confirmación",
+                                JOptionPane.INFORMATION_MESSAGE);
+                            panelUnirse.setVisible(false);
+                        }
+                    });
 
-                        JOptionPane.showMessageDialog(button,
-                            "Te has unido al " + nombreEquipo + " del partido de " + deporte,
-                            "Confirmación",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    Partido finalPartidoSeleccionado1 = partidoSeleccionado;
+                    btnEq2.addActionListener(e -> {
+                        boolean agregado = finalPartidoSeleccionado1.gestionarIngresoAEquipo(temp, equipo1, equipo2, "Equipo 2");
+                        if (agregado) {
+                            PartidoController.getInstancia().guardarPartido(finalPartidoSeleccionado1);
+                            JOptionPane.showMessageDialog(button,
+                                "Te has unido al Equipo 2 del partido de " + deporte,
+                                "Confirmación",
+                                JOptionPane.INFORMATION_MESSAGE);
+                            panelUnirse.setVisible(false);
+                        }
+                    });
+
+                    botones.add(btnEq1);
+                    botones.add(btnEq2);
+                    panelUnirse.add(botones, BorderLayout.SOUTH);
+
+                    PartidosDisponibles.this.revalidate();
+                    PartidosDisponibles.this.repaint();
                 }
             }
             clicked = false;

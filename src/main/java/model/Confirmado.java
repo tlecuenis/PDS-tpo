@@ -17,17 +17,17 @@ public class Confirmado implements IEstadoPartido {
         System.out.println("¡Partido en juego!");
         contexto.cambiarEstado(new EnJuego());
     }
-    
+
     public void armar(Partido contexto) {
         System.out.println("No se puede armar. El partido ya está confirmado.");
     }
-    
+
     public void finalizar(Partido contexto) {
         System.out.println("No puede finalizarse. El partido no ha iniciado.");
     }
-    
+
     public void necesitamosJugadores(Partido contexto) {
-    	System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está confirmado");
+        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está confirmado");
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
@@ -43,6 +43,6 @@ public class Confirmado implements IEstadoPartido {
         return "Confirmado";
     }
     public void declararGanador(Partido contexto, Equipo ganador) {
-    	System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
+        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
 }
