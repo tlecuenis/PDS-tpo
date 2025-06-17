@@ -1,4 +1,4 @@
-# ⚽ Plataforma de Encuentros Deportivos
+# ⚽ Uno Más - Plataforma de Encuentros Deportivos (Version 1.0)
 
 Es una aplicación diseñada para ayudar a deportistas a organizar y completar partidos. Los usuarios pueden crear encuentros deportivos, buscar jugadores compatibles y recibir notificaciones automáticas.  
 Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la materia **Análisis y Diseño Orientado a Objetos (1C 2025)**.
