@@ -10,6 +10,7 @@ import controller.UsuarioController;
 
 import java.time.LocalDateTime;
 import model.notificaciones.IObserver;
+import model.notificaciones.Notificacion;
 import model.notificaciones.NotificacionDispatcher;
 import model.notificaciones.ObserverPartido;
 import repository.mongoRepository.MongoPartidoRepository;
@@ -39,9 +40,15 @@ public class Partido extends ObserverPartido {
 
 	public void cambiarEstado(IEstadoPartido estado) {
 		this.estadoActual = estado;
+		Notificacion notificacion = new Notificacion(this, "El partido:" + this.getIdPartido() + " ha cambiado de estado a: " + estado.getNombreEstado() + " ");
+
+		// Notificar a los usuarios anotados
+		this.notificar(notificacion);
+
 		MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
 		mongoPartidoRepository.save(this);
 	}
+
 
 	public void crearEquipo(Equipo equipo) {
 		this.equipos.add(equipo);
@@ -52,6 +59,7 @@ public class Partido extends ObserverPartido {
 	        if (equipo.getNombre().equals(nombreEquipo)) {
 	            if (this.validarEntrada(jugador, equipo)) {
 	                equipo.agregarJugador(jugador);
+					this.agregarDestinatario(jugador);
 	                this.validarArmado();
 	                return true;
 	            } else {
