@@ -19,9 +19,9 @@ Este proyecto fue desarrollado como **Trabajo Práctico Obligatorio** para la ma
 ## ✨ Funcionalidades
 
 - ✅ Registro de usuarios con preferencias deportivas
-- 🔍 Búsqueda de partidos cercanos por tipo de deporte y nivel
+- 🔍 Búsqueda de partidos cercanos por tipo y nivel de deporte o por historial
 - 🏗️ Creación de partidos con:
-  - Deporte, ubicación, cantidad de jugadores, horario, duración
+  - Deporte, ubicación, cantidad de jugadores, fecha y horario, duración
 - 🔄 Gestión de estados del partido:
   - `Necesitamos jugadores`, `Partido armado`, `Confirmado`, `En juego`, `Finalizado`, `Cancelado`
 - 🤝 Emparejamiento inteligente de jugadores por:
