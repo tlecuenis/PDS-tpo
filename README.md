@@ -78,9 +78,6 @@ Se aplican al menos 4 de los siguientes patrones:
 ---
 
 ## 🛠️ Bugs
-
-- Vista "Partidos Disponibles" un partido aparece multiples veces en la misma tabla (solo debe figurar una sola vez)
-- Actualmente te deja unirte a partidos cancelador (no debería)
-- No se muestra el ID del partido en la notificación (Se puede agregar)
 - En Estado "Confimado" se pude pasar a "Cancelado" desde la vista (No afecta al backend, es solo tema de la UI)
+
 
