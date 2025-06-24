@@ -28,16 +28,6 @@ public class Usuario implements IObserver {
 		this.ubicacion = ubicacion;
 		this.preferenciaNotificacion = preferencia;
 	}
-
-	public void registrarse(UsuarioDTO usuario) {
-		// COMPLETAR CON LA BASE DE DATOS
-	}
-	
-	public void iniciarSesion(UsuarioDTO usuario) {
-		// COMPLETAR CON LA BASE DE DATOS
-	}
-	
-	
 	public String getIdUsuario() {
 		return idUsuario;
 	}
@@ -102,10 +92,6 @@ public class Usuario implements IObserver {
 		return this.getEmail().equals(usuario.getEmail()); // O el atributo que los identifica
 	}
 
-	@Override
-	public int hashCode() {
-		return this.getEmail().hashCode(); // Igual que en equals
-	}
 }
 
 

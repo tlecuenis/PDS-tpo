@@ -55,19 +55,7 @@ public class Partido extends ObserverPartido {
 	}
 
 	public boolean añadirAlEquipo(Usuario jugador, String nombreEquipo) {
-	    for (Equipo equipo : equipos) {
-	        if (equipo.getNombre().equals(nombreEquipo)) {
-	            if (this.validarEntrada(jugador, equipo)) {
-	                equipo.agregarJugador(jugador);
-					this.agregarDestinatario(jugador);
-	                this.validarArmado();
-	                return true;
-	            } else {
-	                return false;
-	            }
-	        }
-	    }
-	    return false;
+		return this.getEstado().añadirAlEquipo(this, jugador, nombreEquipo);
 	}
 
 	public boolean gestionarIngresoAEquipo(Usuario jugador, Equipo equipo1, Equipo equipo2, String nombreEquipo) {

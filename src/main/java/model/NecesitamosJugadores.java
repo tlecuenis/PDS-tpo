@@ -9,14 +9,11 @@ public class NecesitamosJugadores implements IEstadoPartido {
     }
 
     public void cancelar(Partido contexto) {
-        Notificacion notificacion = new Notificacion(contexto, "El partido fue cancelado");
-        contexto.notificar(notificacion);
         System.out.println("Partido cancelado");
         contexto.cambiarEstado(new Cancelado());
     }
 
     public void iniciar(Partido contexto) {
-        System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
 
     public void armar(Partido contexto) {
@@ -25,19 +22,15 @@ public class NecesitamosJugadores implements IEstadoPartido {
     }
 
     public void finalizar(Partido contexto, Equipo equipo) {
-        System.out.println("No se puede finalizar. El partido no está en juego.");
     }
 
     public void necesitamosJugadores(Partido contexto) {
-        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya está en ese estado");
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
-        System.out.println("No se puede agregar comentarios, el partido no ha finalizado.");
     }
 
     public void agregarEstadistica(Partido contexto, String estadistica) {
-        System.out.println("No se pueden agregar estadísticas, el partido no ha finalizado.");
     }
 
     @Override
@@ -45,6 +38,20 @@ public class NecesitamosJugadores implements IEstadoPartido {
         return "NecesitamosJugadores";
     }
     public void declararGanador(Partido contexto, Equipo ganador) {
-        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
+	public boolean añadirAlEquipo(Partido contexto, Usuario jugador, String nombreEquipo) {
+	    for (Equipo equipo : contexto.getEquipos()) {
+	        if (equipo.getNombre().equals(nombreEquipo)) {
+	            if (contexto.validarEntrada(jugador, equipo)) {
+	                equipo.agregarJugador(jugador);
+					contexto.agregarDestinatario(jugador);
+	                contexto.validarArmado();
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        }
+	    }
+	    return false;
+	}
 }
