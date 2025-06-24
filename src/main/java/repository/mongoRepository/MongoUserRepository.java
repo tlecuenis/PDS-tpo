@@ -60,7 +60,10 @@ public class MongoUserRepository implements UserDAO {
         }
 
         List<Document> notificaciones = new ArrayList<>();
-
+        for(Notificacion notificacion : user.getNotificaciones()){
+            Document notiDoc = new Document().append("mensaje", notificacion.getMensaje()).append("partidoID", notificacion.getPartido().getIdPartido());
+            notificaciones.add(notiDoc);
+        }
         doc.append("notificaciones", notificaciones);
 
         String preferenciaNoti = user.getPreferenciaNotificacion().name();
@@ -105,7 +108,8 @@ public class MongoUserRepository implements UserDAO {
             System.out.println("Error buscando las preferencias de notificación: "+e.getMessage());
         }
 
-        return new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl, preferencia);
+        Usuario newUser = new Usuario(idUsuario, nombre, email, contrasenia, deportes, gl, preferencia);
+        return newUser;
     }
 
     @Override

@@ -147,7 +147,6 @@ public class Partido extends ObserverPartido {
 	}
 
 	//Constructor necesario para la db
-	//IMPORTANTE --> PASAR A DTO
 	public Partido(String id, String deporte, double duracion, int cantJugadores, Geolocalizacion geolocalizacion, LocalDateTime horario, IEstadoPartido estado, String estadistica, String comentario, List<IObserver> observers, int nivelMinimo, int nivelMaximo, Usuario creador) {
         super(new NotificacionDispatcher());
 		this.idPartido = id;

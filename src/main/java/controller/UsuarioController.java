@@ -80,11 +80,14 @@ public class UsuarioController {
 	public boolean loginUsuario(UsuarioDTO dto) {
 		Usuario user = userDAO.findById(dto.getNickname());
 		if (user == null) return false;
+		user.setNotificaciones(userDAO.getNotificaciones(user.getIdUsuario()));
 		return user.getContraseña().equals(dto.getContrasena());
 	}
 	
 	public Usuario getUserById(String id) {
-	    return userDAO.findById(id);
+	    Usuario usuario = userDAO.findById(id);
+		usuario.setNotificaciones(userDAO.getNotificaciones(usuario.getIdUsuario()));
+		return usuario;
 	}
 
 	public void notificarUsuario(){
@@ -93,6 +96,7 @@ public class UsuarioController {
 
 	public boolean actualizarUsuario(UsuarioDTO dto) {
 	    Usuario usuarioExistente = userDAO.findById(dto.getNombre());
+		usuarioExistente.setNotificaciones(userDAO.getNotificaciones(usuarioExistente.getIdUsuario()));
 	    if (usuarioExistente == null) {
 	        System.out.println("Usuario no existe.");
 	        return false;
@@ -127,6 +131,7 @@ public class UsuarioController {
 	
 	public boolean agregarDeporteAUsuario(String nickname, String deporte, String nivel) {
 	    Usuario usuario = userDAO.findById(nickname);
+		usuario.setNotificaciones(userDAO.getNotificaciones(usuario.getIdUsuario()));
 	    if (usuario == null) return false;
 
 	    List<Deporte> deportes = usuario.getDeportes();
@@ -176,6 +181,7 @@ public class UsuarioController {
 
 	public boolean modificarNivelDeporte(String nickname, String deporte, String nuevoNivel) {
 	    Usuario usuario = userDAO.findById(nickname);
+		usuario.setNotificaciones(userDAO.getNotificaciones(usuario.getIdUsuario()));
 	    if (usuario == null) return false;
 
 	    List<Deporte> deportes = usuario.getDeportes();

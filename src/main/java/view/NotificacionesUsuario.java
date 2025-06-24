@@ -2,6 +2,7 @@ package view;
 
 import controller.UsuarioController;
 import model.Usuario;
+import model.notificaciones.PreferenciaNotificacion;
 import repository.UserRepository;
 
 import javax.swing.*;
@@ -22,6 +23,7 @@ public class NotificacionesUsuario extends JPanel {
         // Obtener mensajes desde controlador
         UserRepository userRepo = new UserRepository();
         Usuario temp = userRepo.findByField("_id", parent.getNicknameActual());
+        temp.setNotificaciones(userRepo.getNotificaciones(temp.getIdUsuario()));
 
         List<String> mensajes = UsuarioController.getInstancia().getMensaje(temp.getIdUsuario());
 
@@ -41,12 +43,50 @@ public class NotificacionesUsuario extends JPanel {
         scrollPane.setBorder(BorderFactory.createTitledBorder("Mensajes"));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Botón Volver
-        JPanel panelInferior = new JPanel();
-        JButton btnVolver = new JButton("Volver");
-        panelInferior.add(btnVolver);
-        add(panelInferior, BorderLayout.SOUTH);
+        // Panel inferior con selector de estrategia y botón Volver
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
+        JLabel lblPreferencia = new JLabel("Preferencia de notificación: ");
+
+        String[] estrategias = {"Firebase", "Email"};
+        JComboBox<String> comboPreferencia = new JComboBox<>(estrategias);
+
+        // Setear la estrategia actual en el combo
+        if (temp.getPreferenciaNotificacion() != null) {
+            if (temp.getPreferenciaNotificacion() == PreferenciaNotificacion.FIREBASE_PREFERENCE) {
+                comboPreferencia.setSelectedItem("Firebase");
+            } else if (temp.getPreferenciaNotificacion() == PreferenciaNotificacion.EMAIL_PREFERENCE) {
+                comboPreferencia.setSelectedItem("Email");
+            }
+        }
+
+        // Listener para cambiar preferencia
+        comboPreferencia.addActionListener(e -> {
+            String seleccion = (String) comboPreferencia.getSelectedItem();
+
+            if (seleccion.equalsIgnoreCase("Firebase")) {
+                temp.setPreferenciaNotificacion(PreferenciaNotificacion.FIREBASE_PREFERENCE);
+            } else if (seleccion.equalsIgnoreCase("Email")) {
+                temp.setPreferenciaNotificacion(PreferenciaNotificacion.EMAIL_PREFERENCE);
+            }
+
+            // Actualizar en la base de datos
+            userRepo.update(temp);
+
+            JOptionPane.showMessageDialog(this,
+                    "Preferencia actualizada a: " + seleccion,
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        // Botón Volver
+        JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(e -> parent.showPanel("menuPrincipal"));
+
+        panelInferior.add(lblPreferencia);
+        panelInferior.add(comboPreferencia);
+        panelInferior.add(btnVolver);
+
+        add(panelInferior, BorderLayout.SOUTH);
     }
 }

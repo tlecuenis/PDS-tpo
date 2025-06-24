@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import DTO.UsuarioDTO;
 import model.notificaciones.IObserver;
@@ -15,6 +16,7 @@ public class Usuario implements IObserver {
 	private List<Deporte> deportes;
 	private Geolocalizacion ubicacion;
 	private PreferenciaNotificacion preferenciaNotificacion;
+	private List<Notificacion> notificaciones = new ArrayList<>();
 
 
 	public Usuario(String idUsuario, String nombre, String email, String contraseña, List<Deporte> deportes, Geolocalizacion ubicacion, PreferenciaNotificacion preferencia) {
@@ -77,6 +79,12 @@ public class Usuario implements IObserver {
 	}
 	public PreferenciaNotificacion getPreferenciaNotificacion() {
 		return preferenciaNotificacion;
+	}
+	public void setNotificaciones(List<Notificacion> notificaciones) {
+		this.notificaciones = notificaciones;
+	}
+	public List<Notificacion> getNotificaciones() {
+		return notificaciones;
 	}
 
 	@Override
