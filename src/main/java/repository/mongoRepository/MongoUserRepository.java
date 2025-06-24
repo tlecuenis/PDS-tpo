@@ -60,7 +60,6 @@ public class MongoUserRepository implements UserDAO {
         }
 
         List<Document> notificaciones = new ArrayList<>();
-        notificaciones.add(new Document("mensaje", "Bienvenido a la app!!"));
 
         doc.append("notificaciones", notificaciones);
 
