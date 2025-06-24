@@ -13,6 +13,7 @@ import model.notificaciones.IObserver;
 import model.notificaciones.Notificacion;
 import model.notificaciones.NotificacionDispatcher;
 import model.notificaciones.ObserverPartido;
+import repository.PartidoRepository;
 import repository.mongoRepository.MongoPartidoRepository;
 import repository.mongoRepository.MongoUserRepository;
 
@@ -40,13 +41,8 @@ public class Partido extends ObserverPartido {
 
 	public void cambiarEstado(IEstadoPartido estado) {
 		this.estadoActual = estado;
-		Notificacion notificacion = new Notificacion(this, "El partido:" + this.getIdPartido() + " ha cambiado de estado a: " + estado.getNombreEstado() + " ");
-
-		// Notificar a los usuarios anotados
-		this.notificar(notificacion);
-
-		MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
-		mongoPartidoRepository.save(this);
+		PartidoRepository partidoRepo = new PartidoRepository();
+		partidoRepo.save(this);
 	}
 
 
@@ -196,7 +192,7 @@ public class Partido extends ObserverPartido {
 
 		// Sumar puntos y contar partido a ganadores
 		ganador.getJugadores().forEach(jugador -> {
-
+			jugador.setNotificaciones(mongoUserRepository.getNotificaciones(jugador.getIdUsuario()));
 			for(Deporte deporte : jugador.getDeportes()) {
 				if(deporte.getNombre().equals(this.deporte)) {
 					deporte.setScore(deporte.getScore() + 3);
@@ -211,7 +207,7 @@ public class Partido extends ObserverPartido {
 				.flatMap(e -> e.getJugadores().stream())
 				.filter(jugador -> !ganador.getJugadores().contains(jugador))
 				.forEach(jugador -> {
-
+					jugador.setNotificaciones(mongoUserRepository.getNotificaciones(jugador.getIdUsuario()));
 					for(Deporte deporte : jugador.getDeportes()) {
 						if(deporte.getNombre().equals(this.deporte)) {
 							deporte.setScore(deporte.getScore());
@@ -262,8 +258,8 @@ public class Partido extends ObserverPartido {
 
 	public void declararGanador(Equipo ganador) {
 		this.estadoActual.declararGanador(this, ganador);
-		MongoPartidoRepository mongoPartidoRepository = new MongoPartidoRepository();
-		mongoPartidoRepository.save(this);
+		PartidoRepository partidoRepo = new PartidoRepository();
+		partidoRepo.save(this);
 	}
 
 	public void setGanador(Equipo ganador) {

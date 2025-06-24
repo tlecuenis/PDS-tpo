@@ -338,7 +338,7 @@ public class MongoPartidoRepository implements PartidoDAO {
         Document obsDoc = new Document()
                 .append("id", user.getIdUsuario())
                 .append("nombre", user.getNombre());
-        Document update = new Document("$push", new Document("observadores", obsDoc));
+        Document update = new Document("$addToSet", new Document("observadores", obsDoc));
 
         try{
             partidos.updateOne(filter, update);

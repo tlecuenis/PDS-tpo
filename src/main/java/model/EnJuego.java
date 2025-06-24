@@ -22,6 +22,7 @@ public class EnJuego implements IEstadoPartido {
         System.out.println("¡Partido finalizado!");
         contexto.cambiarEstado(new Finalizado());
         contexto.declararGanador(equipo);
+        contexto.actualizarStats();
     }
 
     public void armar(Partido contexto) {
