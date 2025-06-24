@@ -194,7 +194,7 @@ public class PartidosDisponibles extends JPanel {
                     info.setText(mensaje.toString());
                     info.setAlignmentX(Component.CENTER_ALIGNMENT);
                     info.setMaximumSize(new Dimension(400, 100));
-                    info.setForeground(Color.BLACK); // más legible
+                    info.setForeground(Color.WHITE); // más legible
                     JPanel infoPanel = new JPanel();
                     infoPanel.setOpaque(false);
                     infoPanel.add(info);

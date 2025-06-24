@@ -89,7 +89,6 @@ public class LoginPanel extends JPanel {
                 if (loginExitoso) {
                     lblMensaje.setForeground(new Color(0, 128, 0));
                     lblMensaje.setText("Inicio de sesión exitoso.");
-
                     Timer timer = new Timer(1000, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
                             parent.setNicknameActual(usuario);

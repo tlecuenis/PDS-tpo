@@ -23,7 +23,7 @@ public class NotificacionesUsuario extends JPanel {
         // Obtener mensajes desde controlador
         UserRepository userRepo = new UserRepository();
         Usuario temp = userRepo.findByField("_id", parent.getNicknameActual());
-        temp.setNotificaciones(userRepo.getNotificaciones(temp.getIdUsuario()));
+        // temp.setNotificaciones(userRepo.getNotificaciones(temp.getIdUsuario()));
 
         List<String> mensajes = UsuarioController.getInstancia().getMensaje(temp.getIdUsuario());
 

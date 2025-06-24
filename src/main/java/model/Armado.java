@@ -10,21 +10,16 @@ public class Armado implements IEstadoPartido {
 
     public void cancelar(Partido contexto) {
         System.out.println("¡Partido cancelado!");
-        Notificacion notificacion = new Notificacion(contexto, "El partido fue cancelado");
-        contexto.notificar(notificacion);
         contexto.cambiarEstado(new Cancelado());
     }
 
     public void armar(Partido contexto) {
-        System.out.println("El partido ya está armado.");
     }
 
     public void iniciar(Partido contexto) {
-        System.out.println("No puede iniciarse. El partido no está confirmado.");
     }
 
     public void finalizar(Partido contexto, Equipo equipo) {
-        System.out.println("No se puede finalizar. El partido no está en juego.");
     }
 
     public void necesitamosJugadores(Partido contexto) {
@@ -33,11 +28,9 @@ public class Armado implements IEstadoPartido {
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
-        System.out.println("No se puede agregar comentarios, el partido no ha finalizado.");
     }
 
     public void agregarEstadistica(Partido contexto, String estadistica) {
-        System.out.println("No se pueden agregar estadísticas, el partido no ha finalizado.");
     }
 
     @Override
@@ -46,6 +39,8 @@ public class Armado implements IEstadoPartido {
     }
 
     public void declararGanador(Partido contexto, Equipo ganador) {
-        System.out.println("No se puede declarar un ganador. El partido no ha finalizado.");
     }
+	public boolean añadirAlEquipo(Partido contexto, Usuario jugador, String nombreEquipo) {
+		return false;
+	}
 }

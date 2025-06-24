@@ -79,14 +79,14 @@ public class UsuarioController {
 
 	public boolean loginUsuario(UsuarioDTO dto) {
 		Usuario user = userDAO.findById(dto.getNickname());
-		if (user == null) return false;
-		user.setNotificaciones(userDAO.getNotificaciones(user.getIdUsuario()));
+		// if (user == null) return false;
+		// user.setNotificaciones(userDAO.getNotificaciones(user.getIdUsuario()));
 		return user.getContraseña().equals(dto.getContrasena());
 	}
 	
 	public Usuario getUserById(String id) {
 	    Usuario usuario = userDAO.findById(id);
-		usuario.setNotificaciones(userDAO.getNotificaciones(usuario.getIdUsuario()));
+		// usuario.setNotificaciones(userDAO.getNotificaciones(usuario.getIdUsuario()));
 		return usuario;
 	}
 

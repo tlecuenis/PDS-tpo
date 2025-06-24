@@ -2,27 +2,21 @@ package model;
 
 public class Finalizado implements IEstadoPartido {
     public void confirmar(Partido contexto) {
-        System.out.println("No se puede confirmar. El partido ya terminó.");
     }
 
     public void cancelar(Partido contexto) {
-        System.out.println("No se puede cancelar. El partido ya terminó");
     }
 
     public void iniciar(Partido contexto) {
-        System.out.println("No se puede iniciar. El partido ya terminó.");
     }
 
     public void armar(Partido contexto) {
-        System.out.println("No se puede armar. El partido ya finalizó.");
     }
 
     public void finalizar(Partido contexto, Equipo equipo) {
-        System.out.println("No se puede finalizar. El partido ya está finalizado");
     }
 
     public void necesitamosJugadores(Partido contexto) {
-        System.out.println("No puede cambiar a necesitamos jugadores. El partido ya terminó");
     }
 
     public void agregarComentario(Partido contexto, String comentario) {
@@ -43,4 +37,7 @@ public class Finalizado implements IEstadoPartido {
     public String getNombreEstado() {
         return "Finalizado";
     }
+	public boolean añadirAlEquipo(Partido contexto, Usuario jugador, String nombreEquipo) {
+		return false;
+	}
 }
